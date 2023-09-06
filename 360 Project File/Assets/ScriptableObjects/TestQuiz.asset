@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: TestQuiz
   m_EditorClassIdentifier: 
   id: 0
-  correctCount: 1
+  fullStarsScoreReq: 150
+  timeLimit: 300
+  correctCount: 2
   questions:
-  - answer: 1
+  - answer: 0
     question:
     - language: en
       text: English
@@ -36,12 +38,12 @@ MonoBehaviour:
     - language: en
       text: t5
       id: 2
-    - language: zh_CN
-      text: t5
-      id: 0
     - language: en
       text: GEEZ
       id: 3
+    - language: zh_CN
+      text: t5
+      id: 0
     - language: zh_CN
       text: test
       id: 1
@@ -51,10 +53,32 @@ MonoBehaviour:
     - language: zh_CN
       text: test2
       id: 3
+    - language: zh_HK
+      text: test1
+      id: 0
+    - language: zh_HK
+      text: test2
+      id: 1
+    - language: zh_HK
+      text: test3
+      id: 2
+    - language: zh_HK
+      text: test4
+      id: 3
+    explaination:
+    - language: en
+      text: 1 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 1 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 1 Text of explaination - Chinese Simplified
+      id: 2
     score:
       rewardScore: 1
-    inputAnswer: 0
-  - answer: 0
+    inputAnswer: 2
+  - answer: 1
     question:
     - language: en
       text: English #2
@@ -70,23 +94,51 @@ MonoBehaviour:
       text: test
       id: 0
     - language: en
-      text: test #2
+      text: test #1
       id: 1
+    - language: en
+      text: test #2
+      id: 2
+    - language: en
+      text: test #3
+      id: 3
     - language: zh_HK
       text: test #4
       id: 0
     - language: zh_HK
       text: test #5
-      id: 0
+      id: 1
+    - language: zh_HK
+      text: test #11
+      id: 2
+    - language: zh_HK
+      text: test #12
+      id: 3
     - language: zh_CN
       text: test #6
       id: 0
     - language: zh_CN
       text: test #7
       id: 1
+    - language: zh_CN
+      text: test #13
+      id: 2
+    - language: zh_CN
+      text: test #14
+      id: 3
+    explaination:
+    - language: en
+      text: 2 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 2 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 2 Text of explaination - Chinese Simplified
+      id: 2
     score:
       rewardScore: 2
-    inputAnswer: 0
+    inputAnswer: 3
   - answer: 2
     question:
     - language: en
@@ -108,9 +160,46 @@ MonoBehaviour:
     - language: en
       text: test #13
       id: 2
+    - language: en
+      text: test #14
+      id: 3
+    - language: zh_HK
+      text: test #21
+      id: 0
+    - language: zh_HK
+      text: test #22
+      id: 0
+    - language: zh_HK
+      text: test #23
+      id: 0
+    - language: zh_HK
+      text: test #24
+      id: 0
+    - language: zh_CN
+      text: test #31
+      id: 0
+    - language: zh_CN
+      text: test #32
+      id: 0
+    - language: zh_CN
+      text: test #33
+      id: 0
+    - language: zh_CN
+      text: test #34
+      id: 0
+    explaination:
+    - language: en
+      text: 3Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 3 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 3 Text of explaination - Chinese Simplified
+      id: 2
     score:
       rewardScore: 3
-    inputAnswer: 0
+    inputAnswer: 3
   - answer: 3
     question:
     - language: en
@@ -134,7 +223,7 @@ MonoBehaviour:
       id: 2
     - language: en
       text: test #24
-      id: 2
+      id: 3
     - language: zh_HK
       text: test #31
       id: 2
@@ -159,7 +248,383 @@ MonoBehaviour:
     - language: zh_CN
       text: test #44
       id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
     score:
       rewardScore: 3
-    inputAnswer: 0
-  language: zh_CN
+    inputAnswer: 3
+  - answer: 0
+    question:
+    - language: en
+      text: English #5
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #5
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #5
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  - answer: 1
+    question:
+    - language: en
+      text: English #6
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #6
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #6
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  - answer: 2
+    question:
+    - language: en
+      text: English #7
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #7
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #7
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  - answer: 3
+    question:
+    - language: en
+      text: English #8
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #8
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #8
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  - answer: 0
+    question:
+    - language: en
+      text: English #9
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #9
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #9
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  - answer: 1
+    question:
+    - language: en
+      text: English #10
+      id: 0
+    - language: zh_HK
+      text: Chinese Traditional #10
+      id: 0
+    - language: zh_CN
+      text: Chinese Simplified #10
+      id: 0
+    options:
+    - language: en
+      text: test #21
+      id: 0
+    - language: en
+      text: test #22
+      id: 1
+    - language: en
+      text: test #23
+      id: 2
+    - language: en
+      text: test #24
+      id: 3
+    - language: zh_HK
+      text: test #31
+      id: 2
+    - language: zh_HK
+      text: test #32
+      id: 2
+    - language: zh_HK
+      text: test #33
+      id: 2
+    - language: zh_HK
+      text: test #34
+      id: 2
+    - language: zh_CN
+      text: test #41
+      id: 0
+    - language: zh_CN
+      text: test #42
+      id: 1
+    - language: zh_CN
+      text: test #43
+      id: 2
+    - language: zh_CN
+      text: test #44
+      id: 3
+    explaination:
+    - language: en
+      text: 4 Text of explaination - ENG
+      id: 0
+    - language: zh_HK
+      text: 4 Text of explaination - Chinese Traditional
+      id: 1
+    - language: zh_CN
+      text: 4 Text of explaination - Chinese Simplified
+      id: 2
+    score:
+      rewardScore: 3
+    inputAnswer: 3
+  language: en

@@ -51,6 +51,6 @@ public class QuizAnsBehaviour : MonoBehaviour
     }
     public void checkAns()
     {
-        quizSO.checkAns();
+        quizSO.checkSingleAns(page);
     }
 }
