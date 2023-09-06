@@ -199,6 +199,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1873790737}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SwitchScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GoTo360WorldOrGoBack, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226107822966440384, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: StartScene
+      objectReference: {fileID: 0}
     - target: {fileID: 2455806223516819582, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -436,6 +460,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1873790737 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4836744290691220590, guid: 1ecba8051f4668b46b7822eeffea174d, type: 3}
+  m_PrefabInstance: {fileID: 668950725}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aa792a1c6e8471428270f92ab3a8016, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2082642938
 GameObject:
   m_ObjectHideFlags: 0
