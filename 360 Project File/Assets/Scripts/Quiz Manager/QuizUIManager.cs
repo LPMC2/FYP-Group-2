@@ -302,7 +302,7 @@ public class QuizUIManager : MonoBehaviour
             setQuestion();
 
             setExplainationUI();
-            if (quizSO.questions[page].inputAnswer == -1)
+            if (currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts != false)
             {
                 explainationUI.SetActive(false);
             }
