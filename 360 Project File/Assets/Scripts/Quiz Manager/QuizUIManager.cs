@@ -302,6 +302,10 @@ public class QuizUIManager : MonoBehaviour
             setQuestion();
 
             setExplainationUI();
+            if (quizSO.questions[page].inputAnswer == -1)
+            {
+                explainationUI.SetActive(false);
+            }
             GetQuestionNumber();
             reloadAns();
         }
