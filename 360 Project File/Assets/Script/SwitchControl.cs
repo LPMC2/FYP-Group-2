@@ -4,31 +4,15 @@ using UnityEngine;
 using UnityEngine.Localization.Settings;
 public class SwitchControl : MonoBehaviour
 {
-    private void Start()
-    {
-       
-    }
-    IEnumerator SetLocale(int id)
+    [SerializeField] private int id;
+    IEnumerator SetLocale()
     {
         yield return LocalizationSettings.InitializationOperation;
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[id];
     }
 
-    public void LangTo0()
+    public void CallSetLocale()
     {
-        StartCoroutine(SetLocale(0));
-    }
-    public void LangTo1()
-    {
-        StartCoroutine(SetLocale(1));
-    }
-    public void LangTo2()
-    {
-        StartCoroutine(SetLocale(2));
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
+        StartCoroutine(SetLocale());
     }
 }
