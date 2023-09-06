@@ -17,7 +17,6 @@ public class DataStorage : ScriptableObject
     public string[] answers = new string[0];
     public void writeData()
     {
-        data = "";
         string filePath = Path.Combine(Application.dataPath, fileName);
         userCount++;
         data += "User" + userCount + " - Correct: " + quizSO.correctCount + "\n";
@@ -81,7 +80,7 @@ public class DataStorage : ScriptableObject
             }
         }
         data += "------------------------------\n";
-        using (StreamWriter writer = new StreamWriter(filePath, true))
+        using (StreamWriter writer = new StreamWriter(filePath))
         {
             writer.WriteLine(data);
         }

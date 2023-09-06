@@ -10,16 +10,12 @@ public class ButtonControll : MonoBehaviour
     [SerializeField]
     private bool press = true;
 
+
     public void Play()
     {
 
             anim.Play("New Animation");
-
-
-
     }
-
-
     public void Close()
     {
      
@@ -38,4 +34,6 @@ public class ButtonControll : MonoBehaviour
         {
 
         }
+
+
     }
