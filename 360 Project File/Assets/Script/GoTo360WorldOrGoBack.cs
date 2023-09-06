@@ -1,24 +1,31 @@
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GoTo360WorldOrGoBack : MonoBehaviour
 {
-    private bool m_Switching;
+    [SerializeField] 
+    private GameObject go;
 
-    public void SwitchScene(string sceneName)
+
+    private bool ispress= false;
+
+    public void gonext()
     {
-        if (m_Switching)
-            return;
-
-        StartCoroutine(LoadScene(sceneName));
-        m_Switching = true;
+        if(!ispress)
+        {
+            SceneManager.LoadScene("360World");
+            ispress = true;
+        }
     }
 
-    private IEnumerator LoadScene(string sceneName)
+    public void GoBack()
     {
-        var asyncOperation = SceneManager.LoadSceneAsync(sceneName);
-        while (asyncOperation.isDone)
-            yield return null;
+        SceneManager.LoadScene("MainMenu");
+        ispress = true;
+
     }
 }
