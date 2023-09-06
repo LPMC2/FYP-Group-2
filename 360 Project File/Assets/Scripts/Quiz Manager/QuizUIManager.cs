@@ -296,12 +296,16 @@ public class QuizUIManager : MonoBehaviour
     public void reloadPage()
     {
 
-        if (page >= 0 && page < pagelimit)
+        if (page >= 0 && page <= pagelimit)
         {
             removeChild(headerUI, "Question");
             setQuestion();
 
             setExplainationUI();
+            if (currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts != false)
+            {
+                explainationUI.SetActive(false);
+            }
             GetQuestionNumber();
             reloadAns();
         }
