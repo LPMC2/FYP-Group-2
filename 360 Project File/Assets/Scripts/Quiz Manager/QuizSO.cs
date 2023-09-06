@@ -5,7 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "QuizMenu", menuName ="ScriptableObjects/QuizSO")]
 public class QuizSO : ScriptableObject
 {
+    [Header("Setup")]
     public int id;
+    public int fullStarsScoreReq = 100;
+    [Header("Unit: Second")]
+    public float timeLimit = 1f;
     [Header("Note: for Language:\n- en -> English\n- zh_HK -> Traditional Chinese\n- zh_CN -> Simplified Chinese")]
     public int correctCount = -1;
     public Question[] questions;
@@ -68,6 +72,7 @@ public class QuizSO : ScriptableObject
         [Header("Input index of options as the answer.")] public int answer;
         public LocalizableString[] question;
         public LocalizableString[] options;
+        public LocalizableString[] explaination;
         public Score score;
         public int inputAnswer;
         //CorrectCount = -1 -> Answer Unselected, CorrectCount >= 0 -> Answer Selected
@@ -99,6 +104,37 @@ public class QuizSO : ScriptableObject
             }
         }
         Debug.Log("Correct Amount: " + correctCount);
+    }
+    public string getLanText(LocalizableString[] stringArr, string lang)
+    {
+        for(int i =0; i<stringArr.Length; i++)
+        {
+            if (stringArr[i].language == lang)
+            {
+                return stringArr[i].text;
+            }
+        }
+        return "";
+    }
+    public bool checkSingleAns(int page)
+    {
+        for (int j = 0; j < questions[page].options.Length; j++)
+        {
+            if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer)
+            {
+                if (questions[page].answer == questions[page].inputAnswer)
+                {
+                    correctCount++;
+                    return true;
+                } else
+                {
+                    return false;
+                }
+                
+            }
+
+        }
+        return false;
     }
     public void GetAns(int page,string lang)
     {
