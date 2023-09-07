@@ -27,4 +27,6 @@ public class ChangePoint : MonoBehaviour
             CanvesObject.SetActive(false);
         }
     }
+
+
 }
