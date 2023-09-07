@@ -1,27 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class Control : MonoBehaviour
 {
-    [SerializeField] private Camera mainCamera;
     private float rotateSpeed = 1.5f;
     private float zoomSpeed = 15f;
     private float zoomAmount = 60f;
     private float fovMin = 30f, fovMax = 90f;
+
+    private Camera m_Camera;
     private Vector2 rotValue;
-    
-    
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-
+        m_Camera = GetComponent<Camera>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         CameraController();
     }
@@ -34,21 +30,22 @@ public class Control : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             rotValue.x += Input.GetAxis("Mouse X") * rotateSpeed;
             rotValue.y += Input.GetAxis("Mouse Y") * rotateSpeed;
-            mainCamera.transform.localRotation = Quaternion.Euler(-rotValue.y, rotValue.x, 0);
-        } else
+            m_Camera.transform.localRotation = Quaternion.Euler(-rotValue.y, rotValue.x, 0);
+        }
+        else
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
 
-
         // Zoom camera
         zoomAmount = Mathf.Clamp(zoomAmount + Input.GetAxis("Mouse ScrollWheel") * zoomSpeed, fovMin, fovMax);
-        mainCamera.fieldOfView = zoomAmount;
+        m_Camera.fieldOfView = zoomAmount;
     }
+
     public void ChangeCameraRotate(float y)
     {
         rotValue.x += y;
-        mainCamera.transform.localRotation = Quaternion.Euler(-rotValue.y, rotValue.x, 0);
+        m_Camera.transform.localRotation = Quaternion.Euler(-rotValue.y, rotValue.x, 0);
     }
 }

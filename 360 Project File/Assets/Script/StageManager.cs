@@ -51,6 +51,11 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    public void ChangeSkybox(Texture texture)
+    {
+        m_SkyboxMaterial.SetTexture("_Tex", texture);
+    }
+
     public void ChangeStage(StageSO stage)
     {
         if (m_CurrentStage == stage)
@@ -78,6 +83,8 @@ public class StageManager : MonoBehaviour
     private IEnumerator PerformStageChange(StageSO newStage)
     {
         m_ChangingStage = true;
+
+        m_UIOverlay.raycastTarget = true;
 
         // Fade out
         var color = new Color(0f, 0f, 0f, 0f);
@@ -110,6 +117,7 @@ public class StageManager : MonoBehaviour
         }
         color.a = 0f;
         m_UIOverlay.color = color;
+        m_UIOverlay.raycastTarget = false;
 
         m_ChangingStage = false;
     }
