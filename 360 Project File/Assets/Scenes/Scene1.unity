@@ -1174,19 +1174,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset1: {fileID: 11400000, guid: f2d69b4df0ad04b4094f3c00763db484, type: 2}
-  Text1:
-  - {fileID: 2010883009}
-  - {fileID: 2084491988}
-  - {fileID: 168814757}
-  - {fileID: 826872632}
-  - {fileID: 279095740}
-  - {fileID: 588851726}
-  - {fileID: 1526955404}
-  - {fileID: 1254451218}
-  - {fileID: 1776216360}
-  - {fileID: 948798572}
-  - {fileID: 1949921832}
-  - {fileID: 1389523151}
 --- !u!114 &313598588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1199,6 +1186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb9c7104ddd6b14eb387161a90b934e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
 --- !u!1 &479990243
 GameObject:
   m_ObjectHideFlags: 0
@@ -4339,19 +4327,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset1: {fileID: 11400000, guid: 4671022a7831ddf40b6e967baa5ed490, type: 2}
-  Text1:
-  - {fileID: 2010883009}
-  - {fileID: 2084491988}
-  - {fileID: 168814757}
-  - {fileID: 826872632}
-  - {fileID: 279095740}
-  - {fileID: 588851726}
-  - {fileID: 1526955404}
-  - {fileID: 1254451218}
-  - {fileID: 1776216360}
-  - {fileID: 948798572}
-  - {fileID: 1949921832}
-  - {fileID: 1389523151}
 --- !u!114 &1124143889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4364,6 +4339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb9c7104ddd6b14eb387161a90b934e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
 --- !u!1 &1152207901
 GameObject:
   m_ObjectHideFlags: 0
@@ -6515,19 +6491,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset1: {fileID: 11400000, guid: 4671022a7831ddf40b6e967baa5ed490, type: 2}
-  Text1:
-  - {fileID: 2010883009}
-  - {fileID: 2084491988}
-  - {fileID: 168814757}
-  - {fileID: 826872632}
-  - {fileID: 279095740}
-  - {fileID: 588851726}
-  - {fileID: 1526955404}
-  - {fileID: 1254451218}
-  - {fileID: 1776216360}
-  - {fileID: 948798572}
-  - {fileID: 1949921832}
-  - {fileID: 1389523151}
 --- !u!114 &1528041011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6540,6 +6503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb9c7104ddd6b14eb387161a90b934e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
 --- !u!1 &1548991331
 GameObject:
   m_ObjectHideFlags: 0
@@ -7009,19 +6973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset1: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
-  Text1:
-  - {fileID: 2010883009}
-  - {fileID: 2084491988}
-  - {fileID: 168814757}
-  - {fileID: 826872632}
-  - {fileID: 279095740}
-  - {fileID: 588851726}
-  - {fileID: 1526955404}
-  - {fileID: 1254451218}
-  - {fileID: 1776216360}
-  - {fileID: 948798572}
-  - {fileID: 1949921832}
-  - {fileID: 1389523151}
 --- !u!114 &1584582647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7034,6 +6985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb9c7104ddd6b14eb387161a90b934e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
 --- !u!1 &1592385684
 GameObject:
   m_ObjectHideFlags: 0
@@ -10358,18 +10310,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d179547ba08a5469f977a17b944e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quizScriptableObject: {fileID: 11400000, guid: c38df8eb54d341342ab498452964e240, type: 2}
   lang: en
-  contentQuestions: {fileID: 208072283672845364}
+  page: 0
+  mainQuizCanvas: {fileID: 0}
+  currentContentUI: {fileID: 0}
+  StartPageUI: {fileID: 0}
+  FailPageUI: {fileID: 0}
+  qnaPanel: {fileID: 0}
+  EndPageUI: {fileID: 0}
+  endQuestionPrefab: {fileID: 0}
+  endQContent: {fileID: 0}
+  correctCountUI: {fileID: 0}
+  correctScoreUI: {fileID: 0}
+  timeBonusUI: {fileID: 0}
+  timeScoreUI: {fileID: 0}
+  totalScoreUI: {fileID: 0}
+  starsUI: {fileID: 0}
+  grayStar: {fileID: 0}
+  star: {fileID: 0}
+  questionNumUI: {fileID: 0}
   questionsUIObject: {fileID: 1012983690367472974, guid: b96b3defe846214418c8e7162b3e1a73, type: 3}
   answerUIObject: {fileID: 1847582886407492675, guid: a117c79379501c54aa1973062d82c9dd, type: 3}
+  headerUI: {fileID: 0}
+  progressBar: {fileID: 0}
+  progressDuration: 0
+  remainingTimeUI: {fileID: 0}
+  explainationUI: {fileID: 0}
   nextBtn: {fileID: 1884481405344179589}
   backBtn: {fileID: 5876010595259154910}
   checkBtn: {fileID: 2883806341817724416}
+  contentPrefab: {fileID: 0}
+  clonedQuizPanel: {fileID: 0}
+  baseQuizPanel: {fileID: 0}
+  offset: {x: 0, y: 0}
   quizSO: {fileID: 11400000, guid: c38df8eb54d341342ab498452964e240, type: 2}
   scoreSO: {fileID: 11400000, guid: 284ee713ed09e744c968e4577894f8f3, type: 2}
   dataStorage: {fileID: 11400000, guid: 73574d3321d2eb740a860892edea2ad3, type: 2}
-  page: 0
 --- !u!114 &8046455801687496414
 MonoBehaviour:
   m_ObjectHideFlags: 0
