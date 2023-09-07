@@ -256,7 +256,6 @@ public class QuizUIManager : MonoBehaviour
             end = true;
             page++;
             quizSO.checkAns();
-            dataStorage.writeData();
             StopTimer();
             remainingTimeUI.gameObject.SetActive(false);
             EndPageUI.gameObject.SetActive(true);
