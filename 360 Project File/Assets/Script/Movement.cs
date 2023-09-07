@@ -45,11 +45,10 @@ public class Control : MonoBehaviour
         // Zoom camera
         zoomAmount = Mathf.Clamp(zoomAmount + Input.GetAxis("Mouse ScrollWheel") * zoomSpeed, fovMin, fovMax);
         mainCamera.fieldOfView = zoomAmount;
-
-        
-       
-
-
-
+    }
+    public void ChangeCameraRotate(float y)
+    {
+        rotValue.x += y;
+        mainCamera.transform.localRotation = Quaternion.Euler(-rotValue.y, rotValue.x, 0);
     }
 }
