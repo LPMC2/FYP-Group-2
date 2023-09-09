@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.46422458, g: 0.4453929, b: 0.43202895, a: 1}
+  m_IndirectSpecularColor: {r: 0.5019536, g: 0.5019536, b: 0.5019536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3596,7 +3596,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26bd871c9279c3e49834ad2aac2dd172, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 963194227}
 --- !u!1 &966365162
 GameObject:
   m_ObjectHideFlags: 0
@@ -4259,7 +4258,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05140eb92ce373a4bbf59c0a2b6fc8a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SkyboxTexture: {fileID: 8900000, guid: 3e5b298b425cc2c46918b861fab02519, type: 3}
 --- !u!4 &1124143886
 Transform:
   m_ObjectHideFlags: 0
@@ -7341,6 +7339,7 @@ GameObject:
   - component: {fileID: 1727841718}
   - component: {fileID: 1727841720}
   - component: {fileID: 1727841719}
+  - component: {fileID: 1727841721}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -7465,6 +7464,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727841717}
   m_CullTransparentMesh: 1
+--- !u!114 &1727841721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727841717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:b39940adb3acbac4499efcf03fc24b0e
+    m_TableEntryReference:
+      m_KeyId: 6515815448576
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1727841719}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1734267061
 GameObject:
   m_ObjectHideFlags: 0
