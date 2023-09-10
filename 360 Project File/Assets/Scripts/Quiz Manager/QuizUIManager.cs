@@ -22,7 +22,8 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private GameObject currentContentUI;
     [SerializeField] private GameObject StartPageUI;
     [SerializeField] private GameObject FailPageUI;
-    [SerializeField] private GameObject qnaPanel;
+    [SerializeField] private GameObject qnaPanelMain;
+    [SerializeField] private GameObject qnaPanelContent;
 
     [Header("End UI - Main")]
     [SerializeField] private GameObject EndPageUI;
@@ -76,6 +77,7 @@ public class QuizUIManager : MonoBehaviour
     int pagelimit = 1;
     void Start()
     {
+        SetupVertical(StartPageUI, 2f);
         timeRemaining = 0;
         quizSO.correctCount = -1;
         dataStorage.questions = arrayBehaviour.ResetArray<string>(dataStorage.questions);
@@ -110,7 +112,7 @@ public class QuizUIManager : MonoBehaviour
             explainationUI.SetActive(false);
             GetQuestionNumber();
             startTime();
-            setQuestion();
+            SetQuestion();
             getAnswers();
             backBtn.SetActive(false);
             checkBtn.SetActive(true);
@@ -123,6 +125,35 @@ public class QuizUIManager : MonoBehaviour
 
 
     }
+    private Dictionary<GameObject, bool> scaledObjects = new Dictionary<GameObject, bool>();
+    private void SetupVertical(GameObject ui, float scale)
+    {
+        if (scaledObjects.ContainsKey(ui) && scaledObjects[ui])
+            return;
+        // Check the current screen orientation
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+        // Determine if it's a vertical screen
+        bool isVerticalScreen = screenHeight > screenWidth;
+
+        // Adjust the scale constraint based on the screen orientation
+        if (isVerticalScreen)
+        {
+            SetVerticalUI(ui, scale);
+            scaledObjects[ui] = true;
+        }
+    }
+    private void SetVerticalUI(GameObject ui, float scale)
+    {
+
+        RectTransform rectTransform = ui.GetComponent<RectTransform>();
+     
+        if (rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y * scale);
+        }
+    }
+
     public void setTimeUI()
     {
         timeUIText = remainingTimeUI.text;
@@ -235,14 +266,15 @@ public class QuizUIManager : MonoBehaviour
         if (page < pagelimit)
         {
             page++;
+            SetupVertical(qnaPanelMain, 2f);
+            SetupVertical(qnaPanelContent, 2f);
             //Set Quiz Data(Language Id)
             quizSO.GetAns(page, lang);
             //Reset Input Answer
             quizSO.questions[page].inputAnswer = -1;
             //Remove All Child Objects inside the content(As the previous page content still exists)
             removeChild(currentContentUI, "Answer");
-            removeChild(headerUI, "Question");
-            setQuestion();
+            SetQuestion();
             getAnswers();
             explainationUI.SetActive(false);
             //Set "Next" Button and "Back" button to be visible or not depending on the current page
@@ -250,20 +282,24 @@ public class QuizUIManager : MonoBehaviour
                 checkBtn.SetActive(true);
                 nextBtn.SetActive(false);
             GetQuestionNumber();
-            
+            SetupVertical(currentContentUI, 2f);
         } else if(page == pagelimit)
         {
-            end = true;
-            page++;
-            quizSO.checkAns();
-            StopTimer();
-            remainingTimeUI.gameObject.SetActive(false);
-            EndPageUI.gameObject.SetActive(true);
-            qnaPanel.gameObject.SetActive(false);
-            getResult();
-            
+            QuizEnd();
         }
         currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+    }
+    private void QuizEnd()
+    {
+        end = true;
+        page++;
+        quizSO.checkAns();
+        StopTimer();
+        remainingTimeUI.gameObject.SetActive(false);
+        EndPageUI.gameObject.SetActive(true);
+        qnaPanelMain.gameObject.SetActive(false);
+        getResult();
+        SetupVertical(EndPageUI, 2f);
     }
     public void backPage()
     {
@@ -271,8 +307,7 @@ public class QuizUIManager : MonoBehaviour
         {
             page--;
             removeChild(currentContentUI, "Answer");
-            removeChild(headerUI, "Question");
-            setQuestion();
+            SetQuestion();
             getAnswers();
             if (page == 0)
             {
@@ -297,8 +332,7 @@ public class QuizUIManager : MonoBehaviour
 
         if (page >= 0 && page <= pagelimit)
         {
-            removeChild(headerUI, "Question");
-            setQuestion();
+            SetQuestion();
 
             setExplainationUI();
             if (currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts != false)
@@ -309,22 +343,21 @@ public class QuizUIManager : MonoBehaviour
             reloadAns();
         }
     }
-    public void setQuestion()
+    public void SetQuestion()
     {
-        //Add UI Object to the content
-        GameObject target = Instantiate(questionsUIObject, contentTransform, Quaternion.identity);
-        target.transform.SetParent(headerUI.transform);
-        target.transform.SetSiblingIndex(0);
+        //Modify UI Text Object to the content
+
         TMP_Text targettext;
-        if (target.GetComponent<TMP_Text>() != null)
+        if (questionsUIObject.GetComponent<TMP_Text>() != null)
         {
-            targettext = target.GetComponent<TMP_Text>();
+            targettext = questionsUIObject.GetComponent<TMP_Text>();
         } else
         {
-            targettext = target.transform.GetChild(0).GetComponent<TMP_Text>();
+            targettext = questionsUIObject.transform.GetChild(0).GetComponent<TMP_Text>();
         }
         //Add text to the UI from the question
         targettext.text = quizSO.GetQuestion(page, lang);
+        
     }
     string[] answers;
     public void setAnswers()
@@ -351,19 +384,15 @@ public class QuizUIManager : MonoBehaviour
             //Set Value to QuizAnsBehaviour
             targetComponent.setAns(i, ans[i], page);
             TMP_Text targettext;
-            if (target.transform.GetChild(0).GetComponent<TMP_Text>() != null)
+            if (target.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>() != null)
             {
-                targettext = target.transform.GetChild(0).GetComponent<TMP_Text>();
-                targettext.text = ans[i];
-            } else if(target.transform.GetChild(1).GetComponent<TMP_Text>() != null)
-            {
-                targettext = target.transform.GetChild(1).GetComponent<TMP_Text>();
+                targettext = target.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
                 targettext.text = ans[i];
             }
-            if(target.transform.childCount >= 3)
+            if (target.transform.GetChild(0).GetChild(1).GetChild(0) != null)
             {
                 TMP_Text alphaText;
-                alphaText = target.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>();
+                alphaText = target.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TMP_Text>();
                 if(alphaText != null)
                 {
                     alphaText.text = alphabet[i]; 
@@ -454,7 +483,7 @@ public class QuizUIManager : MonoBehaviour
             page = -1;
             remainingTimeUI.gameObject.SetActive(false);
             EndPageUI.gameObject.SetActive(false);
-            qnaPanel.gameObject.SetActive(false);
+            qnaPanelMain.gameObject.SetActive(false);
             FailPageUI.gameObject.SetActive(true);
             end = true;
         }
@@ -479,7 +508,7 @@ public class QuizUIManager : MonoBehaviour
         scoreSO.reset();
         removeChild(endQContent, "result");
         end = false;
-        qnaPanel.gameObject.SetActive(false);
+        qnaPanelMain.gameObject.SetActive(false);
         nextPage();
         EndPageUI.gameObject.SetActive(false);
         FailPageUI.gameObject.SetActive(false);
@@ -490,7 +519,7 @@ public class QuizUIManager : MonoBehaviour
     public void StartQuiz()
     {
         end = false;
-        qnaPanel.gameObject.SetActive(true);
+        qnaPanelMain.gameObject.SetActive(true);
         nextPage();
         StartPageUI.gameObject.SetActive(false);
         startTime();
