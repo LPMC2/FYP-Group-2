@@ -428,15 +428,19 @@ public class QuizUIManager : MonoBehaviour
                     targettext.text = "";
                 }
             }
-            else if (target.transform.GetChild(1).GetComponent<TMP_Text>() != null)
+            else if (target.transform.childCount >= 2)
             {
-                targettext = target.transform.GetChild(1).GetComponent<TMP_Text>();
-                if (ans.Length >= i)
+                if (target.transform.GetChild(1).GetComponent<TMP_Text>() != null)
                 {
-                    targettext.text = ans[i - 1];
-                } else
-                {
-                    targettext.text = "";
+                    targettext = target.transform.GetChild(1).GetComponent<TMP_Text>();
+                    if (ans.Length >= i)
+                    {
+                        targettext.text = ans[i - 1];
+                    }
+                    else
+                    {
+                        targettext.text = "";
+                    }
                 }
 
             }
