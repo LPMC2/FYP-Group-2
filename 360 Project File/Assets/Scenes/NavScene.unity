@@ -321,6 +321,7 @@ GameObject:
   - component: {fileID: 61102727}
   - component: {fileID: 61102726}
   - component: {fileID: 61102725}
+  - component: {fileID: 61102728}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -440,6 +441,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 61102728}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &61102726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,6 +491,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 61102723}
   m_CullTransparentMesh: 1
+--- !u!114 &61102728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61102723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 278, y: 223}
+  is_needChangeRotate: 0
 --- !u!1 &121974099
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,6 +821,7 @@ GameObject:
   - component: {fileID: 169471952}
   - component: {fileID: 169471951}
   - component: {fileID: 169471950}
+  - component: {fileID: 169471953}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -912,6 +941,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 169471953}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 335908346}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &169471951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -950,6 +1003,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169471948}
   m_CullTransparentMesh: 1
+--- !u!114 &169471953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169471948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: -180, y: 157}
+  is_needChangeRotate: 1
 --- !u!1 &218466307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,6 +1818,7 @@ GameObject:
   - component: {fileID: 271763038}
   - component: {fileID: 271763037}
   - component: {fileID: 271763036}
+  - component: {fileID: 271763039}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -1869,6 +1938,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 271763039}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &271763037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1907,6 +1988,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 271763034}
   m_CullTransparentMesh: 1
+--- !u!114 &271763039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271763034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 278, y: 223}
+  is_needChangeRotate: 0
 --- !u!1 &274670260
 GameObject:
   m_ObjectHideFlags: 0
@@ -2079,6 +2175,7 @@ GameObject:
   - component: {fileID: 288969998}
   - component: {fileID: 288969997}
   - component: {fileID: 288969996}
+  - component: {fileID: 288969999}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -2198,6 +2295,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 288969999}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &288969997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2236,6 +2345,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 288969994}
   m_CullTransparentMesh: 1
+--- !u!114 &288969999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288969994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: -142, y: 223}
+  is_needChangeRotate: 0
 --- !u!1 &316568326
 GameObject:
   m_ObjectHideFlags: 0
@@ -2445,6 +2569,98 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!1 &335908346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 335908347}
+  - component: {fileID: 335908350}
+  - component: {fileID: 335908349}
+  - component: {fileID: 335908348}
+  m_Layer: 5
+  m_Name: Image (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &335908347
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335908346}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 1109551473}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 766, y: 148}
+  m_SizeDelta: {x: 1098, y: 425}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &335908348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335908346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 0, y: 0}
+  is_needChangeRotate: 0
+--- !u!114 &335908349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335908346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: f99745cfcc9d57240b61eb90864d8b80, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &335908350
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335908346}
+  m_CullTransparentMesh: 1
 --- !u!1 &354486806
 GameObject:
   m_ObjectHideFlags: 0
@@ -3873,6 +4089,7 @@ GameObject:
   - component: {fileID: 557300587}
   - component: {fileID: 557300586}
   - component: {fileID: 557300585}
+  - component: {fileID: 557300588}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -3992,6 +4209,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 557300588}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &557300586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4030,6 +4259,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 557300583}
   m_CullTransparentMesh: 1
+--- !u!114 &557300588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557300583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: 280, y: 259}
+  is_needChangeRotate: 0
 --- !u!1 &594583545
 GameObject:
   m_ObjectHideFlags: 0
@@ -4042,6 +4286,7 @@ GameObject:
   - component: {fileID: 594583549}
   - component: {fileID: 594583548}
   - component: {fileID: 594583547}
+  - component: {fileID: 594583550}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -4161,6 +4406,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 594583550}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &594583548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4199,6 +4456,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 594583545}
   m_CullTransparentMesh: 1
+--- !u!114 &594583550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 594583545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -21, y: 283}
+  is_needChangeRotate: 0
 --- !u!1 &597289323
 GameObject:
   m_ObjectHideFlags: 0
@@ -5651,7 +5923,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1098, y: 425}
+  m_SizeDelta: {x: 1165, y: 708}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &869127786
 MonoBehaviour:
@@ -5687,7 +5959,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4414a3340c1d6324590fd7ee5100118d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f99745cfcc9d57240b61eb90864d8b80, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5820,6 +6092,7 @@ GameObject:
   - component: {fileID: 904791910}
   - component: {fileID: 904791909}
   - component: {fileID: 904791908}
+  - component: {fileID: 904791911}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -5939,6 +6212,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 904791911}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &904791909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5977,6 +6262,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 904791906}
   m_CullTransparentMesh: 1
+--- !u!114 &904791911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904791906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 350, y: 117}
+  is_needChangeRotate: 0
 --- !u!1 &931665262
 GameObject:
   m_ObjectHideFlags: 0
@@ -6667,6 +6967,7 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2144901892}
+  - {fileID: 335908347}
   - {fileID: 132720931}
   - {fileID: 1654793617}
   - {fileID: 792548978}
@@ -7750,6 +8051,7 @@ GameObject:
   - component: {fileID: 1246799319}
   - component: {fileID: 1246799318}
   - component: {fileID: 1246799317}
+  - component: {fileID: 1246799320}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -7869,6 +8171,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1246799320}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1246799318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7907,6 +8221,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1246799315}
   m_CullTransparentMesh: 1
+--- !u!114 &1246799320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246799315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 766, y: 222}
+  is_needChangeRotate: 0
 --- !u!1 &1268376135
 GameObject:
   m_ObjectHideFlags: 0
@@ -8054,6 +8383,7 @@ GameObject:
   - component: {fileID: 1271937017}
   - component: {fileID: 1271937016}
   - component: {fileID: 1271937015}
+  - component: {fileID: 1271937018}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -8173,6 +8503,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1271937018}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1271937016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8211,6 +8553,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271937013}
   m_CullTransparentMesh: 1
+--- !u!114 &1271937018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271937013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: -142, y: 223}
+  is_needChangeRotate: 0
 --- !u!1 &1279394659
 GameObject:
   m_ObjectHideFlags: 0
@@ -8829,6 +9186,7 @@ GameObject:
   - component: {fileID: 1399753823}
   - component: {fileID: 1399753822}
   - component: {fileID: 1399753821}
+  - component: {fileID: 1399753824}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -8948,6 +9306,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1399753824}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1399753822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8986,6 +9356,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399753819}
   m_CullTransparentMesh: 1
+--- !u!114 &1399753824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399753819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -291, y: 349}
+  is_needChangeRotate: 0
 --- !u!1 &1408131120
 GameObject:
   m_ObjectHideFlags: 0
@@ -8998,6 +9383,7 @@ GameObject:
   - component: {fileID: 1408131124}
   - component: {fileID: 1408131123}
   - component: {fileID: 1408131122}
+  - component: {fileID: 1408131125}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9117,6 +9503,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1408131125}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1408131123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9155,6 +9553,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1408131120}
   m_CullTransparentMesh: 1
+--- !u!114 &1408131125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408131120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 766, y: 222}
+  is_needChangeRotate: 0
 --- !u!1 &1432774294
 GameObject:
   m_ObjectHideFlags: 0
@@ -9167,6 +9580,7 @@ GameObject:
   - component: {fileID: 1432774298}
   - component: {fileID: 1432774297}
   - component: {fileID: 1432774296}
+  - component: {fileID: 1432774299}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9286,6 +9700,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1432774299}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1432774297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9324,6 +9750,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432774294}
   m_CullTransparentMesh: 1
+--- !u!114 &1432774299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432774294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 766, y: 140}
+  is_needChangeRotate: 0
 --- !u!1 &1446333312
 GameObject:
   m_ObjectHideFlags: 0
@@ -9439,6 +9880,7 @@ GameObject:
   - component: {fileID: 1449583624}
   - component: {fileID: 1449583623}
   - component: {fileID: 1449583622}
+  - component: {fileID: 1449583625}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9558,6 +10000,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1449583625}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1449583623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9596,6 +10050,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1449583620}
   m_CullTransparentMesh: 1
+--- !u!114 &1449583625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449583620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -291, y: 349}
+  is_needChangeRotate: 0
 --- !u!1 &1517184446
 GameObject:
   m_ObjectHideFlags: 0
@@ -9608,6 +10077,7 @@ GameObject:
   - component: {fileID: 1517184450}
   - component: {fileID: 1517184449}
   - component: {fileID: 1517184448}
+  - component: {fileID: 1517184451}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9727,6 +10197,42 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 335908346}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1517184451}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1654793614}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangeViewAreaRotate
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 180
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1517184449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9765,6 +10271,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517184446}
   m_CullTransparentMesh: 1
+--- !u!114 &1517184451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517184446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: 727, y: 211}
+  is_needChangeRotate: 0
 --- !u!1 &1525736102
 GameObject:
   m_ObjectHideFlags: 0
@@ -9777,6 +10298,7 @@ GameObject:
   - component: {fileID: 1525736106}
   - component: {fileID: 1525736105}
   - component: {fileID: 1525736104}
+  - component: {fileID: 1525736107}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9896,6 +10418,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1525736107}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1525736105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9934,6 +10468,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1525736102}
   m_CullTransparentMesh: 1
+--- !u!114 &1525736107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525736102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -21, y: 283}
+  is_needChangeRotate: 0
 --- !u!1 &1586888596
 GameObject:
   m_ObjectHideFlags: 0
@@ -9946,6 +10495,7 @@ GameObject:
   - component: {fileID: 1586888600}
   - component: {fileID: 1586888599}
   - component: {fileID: 1586888598}
+  - component: {fileID: 1586888601}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -10065,6 +10615,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1586888601}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 335908346}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1586888599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10103,6 +10677,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1586888596}
   m_CullTransparentMesh: 1
+--- !u!114 &1586888601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586888596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -283, y: 241}
+  is_needChangeRotate: 0
 --- !u!1 &1596439851
 GameObject:
   m_ObjectHideFlags: 0
@@ -10364,6 +10953,7 @@ GameObject:
   - component: {fileID: 1679743504}
   - component: {fileID: 1679743503}
   - component: {fileID: 1679743502}
+  - component: {fileID: 1679743505}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -10483,6 +11073,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1679743505}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1679743503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10521,6 +11123,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679743500}
   m_CullTransparentMesh: 1
+--- !u!114 &1679743505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679743500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: 727, y: 211}
+  is_needChangeRotate: 0
 --- !u!1 &1688634948
 GameObject:
   m_ObjectHideFlags: 0
@@ -11144,6 +11761,7 @@ GameObject:
   - component: {fileID: 1769129995}
   - component: {fileID: 1769129994}
   - component: {fileID: 1769129993}
+  - component: {fileID: 1769129996}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -11263,6 +11881,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1769129996}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1769129994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11301,6 +11931,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769129991}
   m_CullTransparentMesh: 1
+--- !u!114 &1769129996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769129991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: -180, y: 157}
+  is_needChangeRotate: 1
 --- !u!1 &1818317116
 GameObject:
   m_ObjectHideFlags: 0
@@ -11609,6 +12254,7 @@ GameObject:
   - component: {fileID: 1917338817}
   - component: {fileID: 1917338816}
   - component: {fileID: 1917338815}
+  - component: {fileID: 1917338818}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -11728,6 +12374,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1917338818}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1917338816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11766,6 +12424,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917338813}
   m_CullTransparentMesh: 1
+--- !u!114 &1917338818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917338813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: -283, y: 241}
+  is_needChangeRotate: 0
 --- !u!1 &1925142668
 GameObject:
   m_ObjectHideFlags: 0
@@ -11881,6 +12554,7 @@ GameObject:
   - component: {fileID: 1942220943}
   - component: {fileID: 1942220942}
   - component: {fileID: 1942220941}
+  - component: {fileID: 1942220944}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -12000,6 +12674,42 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 335908346}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1942220944}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1654793614}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangeViewAreaRotate
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 180
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1942220942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12038,6 +12748,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1942220939}
   m_CullTransparentMesh: 1
+--- !u!114 &1942220944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942220939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 766, y: 140}
+  is_needChangeRotate: 0
 --- !u!1 &1942921251
 GameObject:
   m_ObjectHideFlags: 0
@@ -12664,6 +13389,7 @@ GameObject:
   - component: {fileID: 2047389715}
   - component: {fileID: 2047389714}
   - component: {fileID: 2047389713}
+  - component: {fileID: 2047389716}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -12783,6 +13509,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2047389716}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2047389714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12821,6 +13559,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2047389711}
   m_CullTransparentMesh: 1
+--- !u!114 &2047389716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047389711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: 280, y: 259}
+  is_needChangeRotate: 0
 --- !u!1 &2056664092
 GameObject:
   m_ObjectHideFlags: 0
@@ -13000,6 +13753,7 @@ GameObject:
   - component: {fileID: 2075858613}
   - component: {fileID: 2075858612}
   - component: {fileID: 2075858611}
+  - component: {fileID: 2075858614}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -13119,6 +13873,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2075858614}
+        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
+        m_MethodName: ChangePanelPosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2075858612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13157,6 +13923,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2075858609}
   m_CullTransparentMesh: 1
+--- !u!114 &2075858614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075858609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 335908347}
+  newPosition: {x: 278, y: 223}
+  is_needChangeRotate: 0
 --- !u!1 &2089827778
 GameObject:
   m_ObjectHideFlags: 0
@@ -13570,8 +14351,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelRectTransform: {fileID: 0}
-  newPosition: {x: -291, y: 349}
+  panelRectTransform: {fileID: 2144901892}
+  newPosition: {x: 0, y: 0}
   is_needChangeRotate: 0
 --- !u!114 &2144901890
 MonoBehaviour:
@@ -13628,7 +14409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -38, y: 287}
+  m_AnchoredPosition: {x: -21, y: 283}
   m_SizeDelta: {x: 1696, y: 860}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &272329982975584812

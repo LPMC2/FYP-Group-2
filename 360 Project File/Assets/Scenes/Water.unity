@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 58820572}
   - component: {fileID: 58820571}
   - component: {fileID: 58820570}
+  - component: {fileID: 58820573}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -216,6 +217,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58820568}
   m_CullTransparentMesh: 1
+--- !u!114 &58820573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58820568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2100922911}
+  newPosition: {x: 0, y: 0}
+  is_needChangeRotate: 0
 --- !u!1 &771578130
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,6 +507,7 @@ GameObject:
   - component: {fileID: 1611348813}
   - component: {fileID: 1611348812}
   - component: {fileID: 1611348815}
+  - component: {fileID: 1611348816}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -563,7 +580,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2100922914}
+      - m_Target: {fileID: 1611348816}
         m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
         m_MethodName: ChangePanelPosition
         m_Mode: 1
@@ -572,18 +589,6 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2102922742}
-        m_TargetAssemblyTypeName: ChangeMap, Assembly-CSharp
-        m_MethodName: ChangeCameraRotate
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 40
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -646,6 +651,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1611348816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611348810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 2100922911}
+  newPosition: {x: 0, y: 0}
+  is_needChangeRotate: 0
 --- !u!1 &1750100233
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,7 +935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9935a488d4a1748bd720c61d6f4af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelRectTransform: {fileID: 0}
+  panelRectTransform: {fileID: 2100922911}
   newPosition: {x: -291, y: 349}
   is_needChangeRotate: 0
 --- !u!1 &2102795087
