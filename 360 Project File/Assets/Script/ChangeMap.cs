@@ -11,6 +11,10 @@ public class ChangeMap : MonoBehaviour
     private void Start()
     {
         panelRectTransform = GetComponent<RectTransform>();
+        if (is_needChangeRotate)
+        {
+            ChangeViewAreaRotate(225);
+        }
     }
 
     public void ChangePanelPosition()
@@ -28,10 +32,10 @@ public class ChangeMap : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        CameraController();
+        ViewAreaController();
     }
 
-    private void CameraController()
+    private void ViewAreaController()
     {
         if (is_needChangeRotate)
         {
@@ -51,9 +55,9 @@ public class ChangeMap : MonoBehaviour
 
     }
 
-    public void ChangeCameraRotate(float y)
+    public void ChangeViewAreaRotate(float z)
     {
-        rotValue.z += y;
+        rotValue.z += z;
             transform.localRotation = Quaternion.Euler(0,0, rotValue.z);
     }
 
