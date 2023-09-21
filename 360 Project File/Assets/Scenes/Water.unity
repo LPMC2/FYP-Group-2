@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1395,7 +1395,6 @@ GameObject:
   - component: {fileID: 429012160}
   - component: {fileID: 429012159}
   - component: {fileID: 429012158}
-  - component: {fileID: 429012161}
   m_Layer: 5
   m_Name: down arrow
   m_TagString: Untagged
@@ -1467,10 +1466,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 429012161}
+      - m_Target: {fileID: 1415541005}
         m_TargetAssemblyTypeName: JourneyControl, Assembly-CSharp
         m_MethodName: ChangePanelPosition
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1517,23 +1516,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 429012156}
   m_CullTransparentMesh: 1
---- !u!114 &429012161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429012156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 989e4be9c8793f4419cb549a9f6c9515, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rectTransform: {fileID: 1415541004}
-  newPosition: {x: 0, y: 125}
-  is_up: 0
-  targetPosition: {x: 0, y: 0}
-  moveSpeed: 100
 --- !u!1 &634753576
 GameObject:
   m_ObjectHideFlags: 0
@@ -3078,7 +3060,6 @@ GameObject:
   - component: {fileID: 1175052999}
   - component: {fileID: 1175052998}
   - component: {fileID: 1175052997}
-  - component: {fileID: 1175053000}
   m_Layer: 5
   m_Name: up arrow
   m_TagString: Untagged
@@ -3150,17 +3131,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1175053000}
+      - m_Target: {fileID: 1415541005}
         m_TargetAssemblyTypeName: JourneyControl, Assembly-CSharp
         m_MethodName: ChangePanelPosition
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1175052998
 MonoBehaviour:
@@ -3200,23 +3181,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1175052995}
   m_CullTransparentMesh: 1
---- !u!114 &1175053000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1175052995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 989e4be9c8793f4419cb549a9f6c9515, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rectTransform: {fileID: 1415541004}
-  newPosition: {x: 0, y: 125}
-  is_up: 1
-  targetPosition: {x: 0, y: 0}
-  moveSpeed: 100
 --- !u!1 &1259669772
 GameObject:
   m_ObjectHideFlags: 0
@@ -3658,6 +3622,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1415541004}
+  - component: {fileID: 1415541005}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3693,6 +3658,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 1000}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1415541005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415541003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 989e4be9c8793f4419cb549a9f6c9515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rectTransform: {fileID: 1415541004}
+  nextButton: {fileID: 429012156}
+  BackButton: {fileID: 1175052995}
+  Max: 4
+  Journey: 0
+  is_up: 0
+  targetPosition: {x: 0, y: 0}
+  moveSpeed: 50
 --- !u!1 &1525360369
 GameObject:
   m_ObjectHideFlags: 0
