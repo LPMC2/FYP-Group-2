@@ -125,6 +125,10 @@ public class QuizUIManager : MonoBehaviour
 
 
     }
+    public void getLanguage()
+    {
+        lang = quizSO.language;
+    }
     private Dictionary<GameObject, bool> scaledObjects = new Dictionary<GameObject, bool>();
     private void SetupVertical(GameObject ui, float scale)
     {
