@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(BodyManager))]
 public class CombatBehaviour : MonoBehaviour
 {
+    [Header("Other Objects/Components")]
+    [SerializeField] private CameraManager cameraManager;
     [Header("Attack Settings")]
     [SerializeField] private float damage = 0;
     #region Damage Getter and Setter
@@ -76,19 +78,28 @@ public class CombatBehaviour : MonoBehaviour
     #endregion
     [Header("Input")]
     [SerializeField] private InputAction pressed, axis;
+    [SerializeField] private GameObject armRig, foreArmRig, handRg;
     private Vector2 rotation;
     private bool rotateAllowed;
     private BodyManager body;
     int preSwingSeq;
-    
+    private Animator mainAnimator;
     private void Awake()
     {
+        mainAnimator = GetComponent<Animator>();
         body = gameObject.GetComponent<BodyManager>();
         pressed.Enable();
         axis.Enable();
         pressed.performed += _ => { StartCoroutine(Rotate()); };
-        pressed.canceled += _ => { rotateAllowed = false; StartCoroutine(SwingCD()); PlayHandAni(-1); };
+        pressed.canceled += _ => { rotateAllowed = false;  SetRotateState(true); };
         axis.performed += context => { rotation = context.ReadValue<Vector2>(); }; ;
+    }
+    private void SetRotateState(bool value)
+    {
+        if (cameraManager != null)
+        {
+            cameraManager.SetIsRotateable(value);
+        }
     }
     private IEnumerator SwingCD()
     {
@@ -96,7 +107,10 @@ public class CombatBehaviour : MonoBehaviour
 
         float startTime = Time.time;
         float elapsedTime = 0f;
+        float resetTime = 0.5f; // Adjust this value to control the duration of the reset
 
+        Quaternion startRotation1 = armRig.transform.rotation;
+        Quaternion startRotation2 = foreArmRig.transform.rotation;
         Quaternion targetRotation1 = startRotation[0];
         Quaternion targetRotation2 = startRotation[1];
 
@@ -104,17 +118,34 @@ public class CombatBehaviour : MonoBehaviour
         {
             float t = elapsedTime / swingCoolDown;
 
-            body.bodyParts.rightArm.armObj.transform.rotation = Quaternion.LerpUnclamped(body.bodyParts.rightArm.armObj.transform.rotation, targetRotation1, t);
-            body.bodyParts.rightArm.foreArmObj.transform.rotation = Quaternion.LerpUnclamped(body.bodyParts.rightArm.foreArmObj.transform.rotation, targetRotation2, t);
+            armRig.transform.rotation = Quaternion.RotateTowards(startRotation1, targetRotation1, t * 0.1f);
+            foreArmRig.transform.rotation = Quaternion.RotateTowards(startRotation2, targetRotation2, t * 0.1f);
 
             elapsedTime = Time.time - startTime;
             yield return null;
         }
+
+        // Reset rotation back to target rotation over time
+        float resetStartTime = Time.time;
+        float resetElapsedTime = 0f;
+
+        while (resetElapsedTime < resetTime)
+        {
+            float resetT = resetElapsedTime / resetTime;
+
+            armRig.transform.rotation = Quaternion.RotateTowards(targetRotation1, startRotation1, resetT * 0.1f);
+            foreArmRig.transform.rotation = Quaternion.RotateTowards(targetRotation2, startRotation2, resetT * 0.1f);
+
+            resetElapsedTime = Time.time - resetStartTime;
+            yield return null;
+        }
+
         ResetSwingSequence();
     }
     private IEnumerator Rotate()
     {
         rotateAllowed = true;
+        SetRotateState(false);
         while (rotateAllowed)
         {
             int value = GetMouseDirection(rotation);
@@ -129,6 +160,8 @@ public class CombatBehaviour : MonoBehaviour
                 swingSeq.Add(value);
                 if(swingSeq.Count-1 > maxSwingAmout)
                 {
+                    mainAnimator.enabled = true;
+                    SetRotateState(true);
                     StartCoroutine(SwingCD());
                     PlayHandAni(-1);
                     timeCount = 0.0f;
@@ -150,20 +183,20 @@ public class CombatBehaviour : MonoBehaviour
         switch (preSwingSeq)
         {
             case 0:
-                checkRotationLimit(body.bodyParts.rightArm.armObj,new Vector3(-rotation.x, 0f, rotation.y));
-                checkRotationLimit(body.bodyParts.rightArm.foreArmObj,new Vector3(-rotation.x, 0f, rotation.y));
+                checkRotationLimit(armRig,new Vector3(-rotation.x, 0f, rotation.y));
+                checkRotationLimit(foreArmRig,new Vector3(-rotation.x, 0f, rotation.y));
                 break;
             case 1:
-                checkRotationLimit(body.bodyParts.rightArm.armObj, new Vector3(-rotation.x, 0f, rotation.y));
-                checkRotationLimit(body.bodyParts.rightArm.foreArmObj, new Vector3(-rotation.x, 0f, rotation.y));
+                checkRotationLimit(armRig, new Vector3(-rotation.x, 0f, rotation.y));
+                checkRotationLimit(foreArmRig, new Vector3(-rotation.x, 0f, rotation.y));
                 break;
             case 2:
-                checkRotationLimit(body.bodyParts.rightArm.armObj, new Vector3(-rotation.x, 0f, 0f));
-                checkRotationLimit(body.bodyParts.rightArm.foreArmObj, new Vector3(-rotation.x, 0f, -Mathf.Abs(rotation.y)));
+                checkRotationLimit(armRig, new Vector3(-rotation.x, 0f, 0f));
+                checkRotationLimit(foreArmRig, new Vector3(-rotation.x, 0f, -Mathf.Abs(rotation.y)));
                 break;
             case 3:
-                checkRotationLimit(body.bodyParts.rightArm.armObj, new Vector3(-rotation.x, 0f, 0f));
-                checkRotationLimit(body.bodyParts.rightArm.foreArmObj, new Vector3(-rotation.x, 0f, -Mathf.Abs(rotation.y)));
+                checkRotationLimit(armRig, new Vector3(-rotation.x, 0f, 0f));
+                checkRotationLimit(foreArmRig, new Vector3(-rotation.x, 0f, -Mathf.Abs(rotation.y)));
                 break;
         }
         
@@ -171,27 +204,33 @@ public class CombatBehaviour : MonoBehaviour
     private void checkRotationLimit(GameObject rotateObj, Vector3 vecAngle)
     {
         CharacterJoint characterJoint = rotateObj.GetComponent<CharacterJoint>();
-        // Get the current rotation
-        Vector3 currentRotation = rotateObj.transform.rotation.eulerAngles;
-        // Get the minimum and maximum limits of the Character Joint
-        Vector3 minTwistLimit = new Vector3(characterJoint.lowTwistLimit.limit, -characterJoint.swing1Limit.limit, -characterJoint.swing2Limit.limit);
-        Vector3 maxTwistLimit = new Vector3(characterJoint.highTwistLimit.limit, characterJoint.swing1Limit.limit, characterJoint.swing2Limit.limit);
-        minTwistLimit += currentRotation;
-        maxTwistLimit += currentRotation;
-        // Calculate the new rotation after applying the rotation amount
-        Vector3 newRotation = currentRotation + vecAngle;
-        
-        // Check if the new rotation is within the limits for all axes
-        if (newRotation.x >= minTwistLimit.x && newRotation.x <= maxTwistLimit.x &&
-            newRotation.y >= minTwistLimit.y && newRotation.y <= maxTwistLimit.y &&
-            newRotation.z >= minTwistLimit.z && newRotation.z <= maxTwistLimit.z)
+        if (characterJoint != null)
+        {
+            // Get the current rotation
+            Vector3 currentRotation = rotateObj.transform.rotation.eulerAngles;
+            // Get the minimum and maximum limits of the Character Joint
+            Vector3 minTwistLimit = new Vector3(characterJoint.lowTwistLimit.limit, -characterJoint.swing1Limit.limit, -characterJoint.swing2Limit.limit);
+            Vector3 maxTwistLimit = new Vector3(characterJoint.highTwistLimit.limit, characterJoint.swing1Limit.limit, characterJoint.swing2Limit.limit);
+            minTwistLimit += currentRotation;
+            maxTwistLimit += currentRotation;
+            // Calculate the new rotation after applying the rotation amount
+            Vector3 newRotation = currentRotation + vecAngle;
+
+            // Check if the new rotation is within the limits for all axes
+            if (newRotation.x >= minTwistLimit.x && newRotation.x <= maxTwistLimit.x &&
+                newRotation.y >= minTwistLimit.y && newRotation.y <= maxTwistLimit.y &&
+                newRotation.z >= minTwistLimit.z && newRotation.z <= maxTwistLimit.z)
+            {
+                rotateObj.transform.Rotate(vecAngle);
+                // Rotation is within limits
+            }
+            else
+            {
+                // Rotation exceeds limits
+            }
+        } else
         {
             rotateObj.transform.Rotate(vecAngle);
-            // Rotation is within limits
-        }
-        else
-        {
-            // Rotation exceeds limits
         }
     }
     public Transform objectToMove;
@@ -205,9 +244,12 @@ public class CombatBehaviour : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         swingSeq = new List<int>();
-        startRotation[0] = body.bodyParts.rightArm.armObj.transform.rotation;
-        startRotation[1] = body.bodyParts.rightArm.foreArmObj.transform.rotation;
-        
+        StoreStartRotation();
+    }
+    private void StoreStartRotation()
+    {
+        startRotation[0] = Quaternion.identity;
+        startRotation[1] = Quaternion.identity;
     }
     float speed = 0.01f;
     float timeCount = 0.0f;

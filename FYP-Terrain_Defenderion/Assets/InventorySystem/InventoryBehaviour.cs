@@ -196,10 +196,14 @@ public class InventoryBehaviour : MonoBehaviour
     {
         setSlotUI(SlotPlaceHolder, "hotbar");
         setInitialInventory();
-        invBagPanel.SetActive(true);
-        setSlotUI(invBagContainer, "bag");
-        initalizeInvBag();
-        invBagPanel.SetActive(false);
+        if (invBagPanel != null)
+        {
+            invBagPanel.SetActive(true);
+            setSlotUI(invBagContainer, "bag");
+            initalizeInvBag();
+
+            invBagPanel.SetActive(false);
+        }
     }
     private void setSlotUI(GameObject slotPH, string type)
     {
@@ -306,6 +310,7 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 itemCollider.isTrigger = true;
             }
+            targetItem.transform.eulerAngles = Vector3.zero;
         }
         Image targetImg = SlotPlaceHolder.transform.GetChild(slotId).GetComponent<Image>();
         targetImg.sprite = slotImageSelected;
