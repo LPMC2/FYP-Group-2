@@ -14,6 +14,10 @@ public class QuizSO : ScriptableObject
     public int correctCount = -1;
     public Question[] questions;
     public string language;
+    public void setLanguage(string lan)
+    {
+        language = lan;
+    }
     public string GetQuestion(int index, string language)
     {
         return questions[index].question.FirstOrDefault(q => q.language == language)?.text;
