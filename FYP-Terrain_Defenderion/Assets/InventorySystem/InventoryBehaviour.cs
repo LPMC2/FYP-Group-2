@@ -310,7 +310,7 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 itemCollider.isTrigger = true;
             }
-            targetItem.transform.eulerAngles = Vector3.zero;
+            targetItem.transform.rotation = new Quaternion(0,0,0,0);
         }
         Image targetImg = SlotPlaceHolder.transform.GetChild(slotId).GetComponent<Image>();
         targetImg.sprite = slotImageSelected;
