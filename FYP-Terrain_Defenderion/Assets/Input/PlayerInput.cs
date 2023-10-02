@@ -71,6 +71,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FlyUpDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""1af36bb6-b4f8-42f6-b55a-e13061849c6e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -304,6 +313,39 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Dodge"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""ac7cdbbc-1eb5-4199-bdae-77958e22e29f"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyUpDown"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""20d1942c-77da-44d5-912f-eb9f35907dde"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyUpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""01bd9be7-0b55-4a2b-9741-4e27c8f944f6"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlyUpDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -356,6 +398,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_PlayerMovement_Sprint = m_PlayerMovement.FindAction("Sprint", throwIfNotFound: true);
         m_PlayerMovement_Jump = m_PlayerMovement.FindAction("Jump", throwIfNotFound: true);
         m_PlayerMovement_Dodge = m_PlayerMovement.FindAction("Dodge", throwIfNotFound: true);
+        m_PlayerMovement_FlyUpDown = m_PlayerMovement.FindAction("FlyUpDown", throwIfNotFound: true);
         // PlayerActions
         m_PlayerActions = asset.FindActionMap("PlayerActions", throwIfNotFound: true);
         m_PlayerActions_Sprint = m_PlayerActions.FindAction("Sprint", throwIfNotFound: true);
@@ -425,6 +468,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerMovement_Sprint;
     private readonly InputAction m_PlayerMovement_Jump;
     private readonly InputAction m_PlayerMovement_Dodge;
+    private readonly InputAction m_PlayerMovement_FlyUpDown;
     public struct PlayerMovementActions
     {
         private @PlayerInput m_Wrapper;
@@ -434,6 +478,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Sprint => m_Wrapper.m_PlayerMovement_Sprint;
         public InputAction @Jump => m_Wrapper.m_PlayerMovement_Jump;
         public InputAction @Dodge => m_Wrapper.m_PlayerMovement_Dodge;
+        public InputAction @FlyUpDown => m_Wrapper.m_PlayerMovement_FlyUpDown;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMovement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -458,6 +503,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Dodge.started += instance.OnDodge;
             @Dodge.performed += instance.OnDodge;
             @Dodge.canceled += instance.OnDodge;
+            @FlyUpDown.started += instance.OnFlyUpDown;
+            @FlyUpDown.performed += instance.OnFlyUpDown;
+            @FlyUpDown.canceled += instance.OnFlyUpDown;
         }
 
         private void UnregisterCallbacks(IPlayerMovementActions instance)
@@ -477,6 +525,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Dodge.started -= instance.OnDodge;
             @Dodge.performed -= instance.OnDodge;
             @Dodge.canceled -= instance.OnDodge;
+            @FlyUpDown.started -= instance.OnFlyUpDown;
+            @FlyUpDown.performed -= instance.OnFlyUpDown;
+            @FlyUpDown.canceled -= instance.OnFlyUpDown;
         }
 
         public void RemoveCallbacks(IPlayerMovementActions instance)
@@ -547,6 +598,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnDodge(InputAction.CallbackContext context);
+        void OnFlyUpDown(InputAction.CallbackContext context);
     }
     public interface IPlayerActionsActions
     {
