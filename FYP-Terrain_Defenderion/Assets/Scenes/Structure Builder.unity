@@ -173,17 +173,16 @@ MonoBehaviour:
   numRows: 25
   numColumns: 25
   numHeight: 25
-  cellSize: 1
+  cellSize: 0.5
   cameraObject: {fileID: 1851295853}
   gridContainer: {fileID: 2120980749}
   gridBlockObj: {fileID: 42713721120813818, guid: de936d7c6f4770540b047cf2d28b4edd, type: 3}
   gridVisualLayer: {fileID: 6367932011207324742}
   gridVisibleObj: {fileID: 6367932011207324742}
-  ContactRange: 5
-  placeBlockObject: {fileID: 0}
+  ContactRange: 3
+  placeBlockObject: {fileID: 6062487747859630790, guid: 0983b14fd90e94295ac983ccf4c55307, type: 3}
   placeCooldown: 0.05
   breakCooldown: 0.05
-  hitList: []
 --- !u!1 &100189782
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,6 +411,8 @@ GameObject:
   - component: {fileID: 389179035}
   - component: {fileID: 389179033}
   - component: {fileID: 389179037}
+  - component: {fileID: 389179039}
+  - component: {fileID: 389179038}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -503,6 +504,100 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &389179038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389179032}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dadd4b340e011143861ab44ea3b288e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDropable: 0
+  haveInventoryBag: 0
+  dropKey: 113
+  invBagKey: 101
+  SlotPlaceHolder: {fileID: 0}
+  slotImageNormal: {fileID: 0}
+  slotImageSelected: {fileID: 0}
+  DisplayText: {fileID: 0}
+  fadeInDuration: 1
+  displayDuration: 2
+  fadeOutDuration: 1
+  scrollCoolDown: 0.2
+  inventory: {fileID: 389179039}
+  selectedSlot: 1
+  slotObject: {fileID: 0}
+  placeItemLocation: {fileID: 0}
+  initialSlotItem: 
+  dropItemPrefab: {fileID: 0}
+  dropForce: 10
+  dropOffset: {x: 0, y: 0, z: 0}
+  invBagPanel: {fileID: 0}
+  invBagContainer: {fileID: 0}
+  interactableSlotObj: {fileID: 0}
+--- !u!114 &389179039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389179032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f391d509623a9a64bbe5917dfe449ece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFrontSlots: 3
+  slot:
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
 --- !u!1 &795464897
 GameObject:
   m_ObjectHideFlags: 0

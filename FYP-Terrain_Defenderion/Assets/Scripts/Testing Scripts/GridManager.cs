@@ -33,7 +33,7 @@ public class GridManager : MonoBehaviour
     private GridCell[,] grid;
     private GameObject[,] cellVisuals;
     private GameObject lastOutlineBlock;
-   [SerializeField] private List<GameObject> hitList = new List<GameObject>();
+    private List<GameObject> hitList = new List<GameObject>();
     private void Start()
     {
         CreateGrid();
@@ -101,9 +101,9 @@ public class GridManager : MonoBehaviour
                     cellInteractable.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                     cellInteractable.transform.SetParent(gridContainer.transform);
                     cellVisuals[row, col] = cellInteractable;
-                    if(height != 0)
+                    if(height > -1)
                     {
-                        //cellInteractable.SetActive(false);
+                        cellInteractable.SetActive(false);
                     }
                 }
             }
@@ -142,6 +142,21 @@ public class GridManager : MonoBehaviour
         {
             PerformBreakRaycast();
             canBreak = false;
+        }
+        UpdateLoadGrid();
+    }
+    private void UpdateLoadGrid()
+    {
+        foreach (Transform target in gridContainer.transform)
+        {
+            float distance = Vector3.Distance(cameraObject.transform.position, target.position);
+            if(distance <= ContactRange && !target.gameObject.activeInHierarchy)
+            {
+                target.gameObject.SetActive(true);
+            } else if(distance > ContactRange && target.childCount == 0 && target.gameObject.activeInHierarchy)
+            {
+                target.gameObject.SetActive(false);
+            }
         }
     }
     private void PerformPlaceRaycast()
@@ -214,7 +229,6 @@ public class GridManager : MonoBehaviour
     private void HandleOutlineBlock(RaycastHit[] hits)
     {
         bool stopLoop = false;
-        hitList.Clear();
         if (hits.Length > 0)
         {
             Array.Sort(hits, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
@@ -270,7 +284,10 @@ public class GridManager : MonoBehaviour
     private void HandlePlaceBlock(RaycastHit[] hits)
     {
         bool stopLoop = false;
-        hitList.Clear();
+        if (hitList != null && hitList.Count > 0) 
+        {
+            hitList.Clear();
+        }
         if (hits.Length > 0)
         {
             Array.Sort(hits, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
@@ -312,7 +329,6 @@ public class GridManager : MonoBehaviour
     private void HandleBreakBlock(RaycastHit[] hits)
     {
         bool stopLoop = false;
-        hitList.Clear();
         if (hits.Length > 0)
         {
             Array.Sort(hits, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
@@ -324,7 +340,6 @@ public class GridManager : MonoBehaviour
                 {
                     if (hits[i].collider.transform.childCount == 0)
                     {
-                        hitList.Add(hits[i].collider.gameObject);
                         continue;
                     }
                     else

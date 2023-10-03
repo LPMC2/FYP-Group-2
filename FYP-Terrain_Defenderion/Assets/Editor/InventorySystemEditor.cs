@@ -24,12 +24,13 @@ public class InventorySystemEditor : Editor
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(maxFrontSlotsProperty);
         EditorGUI.EndChangeCheck();
-
+        if (inventorySystem != null)
+        {
             // Limit the maxFrontSlots value to the count of slot array
-        int slotCount = Mathf.Clamp(inventorySystem.slot.Length,0,9);
-            
+            int slotCount = Mathf.Clamp(inventorySystem.slot.Length, 0, 9);
+
             inventorySystem.SetMaxFrontSlots(Mathf.Clamp(inventorySystem.GetMaxFrontSlots(), 1, slotCount));
-        
+        }
 
         // Exclude maxFrontSlots from the inspector
         SerializedProperty property = serializedObject.GetIterator();
