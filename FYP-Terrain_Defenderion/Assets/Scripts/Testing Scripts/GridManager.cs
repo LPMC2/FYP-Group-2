@@ -16,6 +16,13 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject gridVisualLayer;
     [SerializeField] private GameObject gridVisibleObj;
     [SerializeField] private float ContactRange = 10f;
+    [SerializeField] private GameObject placeBlockObject;
+    #region placeBlockObject Setter and Getter
+    public GameObject PlaceBlockObject {
+        get { return placeBlockObject; }
+        private set { placeBlockObject = value; }
+    }
+    #endregion
     [Header("Place/Break Settings")]
     private bool canPlace = true; // Flag to track if placing is allowed
     private bool canBreak = true; // Flag to track if breaking is allowed
@@ -340,7 +347,13 @@ public class GridManager : MonoBehaviour
         Debug.Log("Trigger collider detected: " + hitObject.name);
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
-        CreateCube(hitObject);
+        if (PlaceBlockObject == null)
+        {
+            CreateCube(hitObject);
+        } else
+        {
+            CreateBlock(hitObject);
+        }
         UpdateBlockState(hitObject, true);
     }
     private void HandleBlockBreak(GameObject hitObject)
@@ -359,6 +372,17 @@ public class GridManager : MonoBehaviour
             cube.transform.SetParent(parentObj.transform);
             cube.transform.localPosition = Vector3.zero;
             cube.transform.localScale = Vector3.one;
+        }
+    }
+    void CreateBlock(GameObject parentObj)
+    {
+        if (parentObj.transform.childCount == 0)
+        {
+            GameObject block = Instantiate(PlaceBlockObject, parentObj.transform.position, Quaternion.identity);
+            block.transform.localPosition = parentObj.transform.localPosition;
+            block.transform.SetParent(parentObj.transform);
+            block.transform.localPosition = Vector3.zero;
+            block.transform.localScale = Vector3.one;
         }
     }
     //private void HandleRegularHit(GameObject hitObject)
