@@ -14,18 +14,22 @@ public class CheckLanguage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //LocalizationSettings.SelectedLocale;
-        Debug.Log(LocalizationSettings.SelectedLocale);
+        getLanguage();
     }
     public string getLanguage()
     {
-        // currentSelectedLocale = LocalizationSettings.SelectedLocale;
-        //string a = (string) currentSelectedLocale;
-        //if(a == "English(United States)(en - US)")
-        //{
+        if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[0])
+        {
+            Debug.Log("Now is using English");
+        }else if(LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[1])
+        {
+            Debug.Log("Now is using HK");
+        }
+        else if(LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[2])
+        {
+            Debug.Log("Now is using CN");
+        }
 
-        //}
-        
         return "";
     }
 }
