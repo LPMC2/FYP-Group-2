@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class QuizUIManager : MonoBehaviour
 {
@@ -127,7 +128,19 @@ public class QuizUIManager : MonoBehaviour
     }
     public void getLanguage()
     {
-        lang = quizSO.language;
+        if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[0])
+        {
+            lang = "en";
+        }
+        else if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[1])
+        {
+            lang = "zh_HK";
+        }
+        else if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[2])
+        {
+            lang = "zh_CN";
+        }
+        
     }
     private Dictionary<GameObject, bool> scaledObjects = new Dictionary<GameObject, bool>();
     private void SetupVertical(GameObject ui, float scale)
