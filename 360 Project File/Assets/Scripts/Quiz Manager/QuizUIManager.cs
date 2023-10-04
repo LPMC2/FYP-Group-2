@@ -549,6 +549,9 @@ public class QuizUIManager : MonoBehaviour
 
     public void getResult()
     {
+        targetProgress = 0;
+        StopAllCoroutines();
+        progressBar.value = 0;
         removeChild(endQContent, "result");
         for (int i = 0; i < quizSO.questions.Length; i++)
         {
