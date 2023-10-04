@@ -16,7 +16,11 @@ public class InventoryBehaviour : MonoBehaviour
     public float displayDuration = 2f; // Duration to display the text
     public float fadeOutDuration = 1f; // Duration of the fade out animation
     private Coroutine fadeCoroutine;
+    [Header("Mouse Input")]
+    [SerializeField] private float scrollCoolDown = 0.2f;
+    private float scrollTimer = 0f; // Timer to track cooldown
     [Header("Main Settings")]
+    [SerializeField] private int selectedSlot = 1;
     public InventorySystem inventory;
     [SerializeField] private GameObject slotObject;
     [SerializeField] private GameObject placeItemLocation;
@@ -51,18 +55,65 @@ public class InventoryBehaviour : MonoBehaviour
     }
     public void inputNumDetection()
     {
-        for (int i = 1; i <= 9; i++)
+        if (inventory.slot.Length > 1)
         {
-            if (Input.GetKeyDown(i.ToString()))
+            for (int i = 1; i <= 9; i++)
             {
-                int inputIndex = i - 1; // Adjust the index to match array or list indices
-
-                // Check if the inventory slot at the input index exists
-                if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null)
+                if (Input.GetKeyDown(i.ToString()))
                 {
-                    EquipItem(inputIndex);
+                    int inputIndex = i - 1; // Adjust the index to match array or list indices
+
+                    // Check if the inventory slot at the input index exists
+                    if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null)
+                    {
+                        EquipItem(inputIndex);
+                    }
                 }
             }
+            scrollWheelDetection();
+        }
+    }
+    private void scrollWheelDetection()
+    {
+        if (scrollTimer <= 0f)
+        {
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+            if (scrollInput < 0f)
+            {
+                // Scroll Upward
+                // Perform actions or increase a value
+                if (selectedSlot < inventory.GetMaxFrontSlots() - 1)
+                {
+                    selectedSlot++;
+                }
+                else
+                {
+                    selectedSlot = 0;
+                }
+                EquipItem(selectedSlot);
+                scrollTimer = scrollCoolDown;
+            }
+            else if (scrollInput > 0f)
+            {
+                // Scroll Downward
+                // Perform actions or decrease a value
+                if (selectedSlot > 0)
+                {
+                    selectedSlot--;
+                }
+                else
+                {
+                    selectedSlot = inventory.GetMaxFrontSlots() - 1;
+                }
+                EquipItem(selectedSlot);
+                scrollTimer = scrollCoolDown;
+            }
+        }
+        else
+        {
+            // Update the cooldown timer
+            scrollTimer -= Time.deltaTime;
         }
     }
     public void setup()
@@ -94,15 +145,31 @@ public class InventoryBehaviour : MonoBehaviour
     }
     public void setSlotItem(int id, int item)
     {
+        if(item >= itemData.item.Length)
+        {
+            return;
+        }
         inventory.slot[id].setId(item);
         if (item != -1 && item < itemData.item.Length)
         {
             inventory.slot[id].item.SetItem(itemData.item[item].itemObject);
         }
         setSlotUI(id);
-        if (id == inventory.getSelectedSlot())
+        if (id == selectedSlot)
         {
             EquipItem(id);
+        }
+    }
+    public void setEquipItem(int item)
+    {
+        setSlotItem(selectedSlot, item);
+    }
+    public void setEquipItem(string item)
+    {
+        if (!string.IsNullOrEmpty(item) && int.TryParse(item, out _))
+        {
+            int index = int.Parse(item);
+            setSlotItem(selectedSlot, index);
         }
     }
     private void resetSelectUI()
@@ -118,9 +185,9 @@ public class InventoryBehaviour : MonoBehaviour
     {
         ItemManager.removeChilds(placeItemLocation);
         resetSelectUI();
-        if (inventory.getSelectedSlot() != slotId)
+        if (selectedSlot != slotId)
         {
-            inventory.setSelectedSlot(slotId);
+            selectedSlot = slotId;
         }
         if (inventory.slot[slotId].getId() >= 0 && inventory.slot[slotId].getId() < inventory.slot.Length)
         {
@@ -139,6 +206,14 @@ public class InventoryBehaviour : MonoBehaviour
         {
 
             GameObject targetUI = SlotPlaceHolder.transform.GetChild(id).gameObject;
+            if (targetUI.transform.childCount > 0)
+            {
+                foreach(Transform child in targetUI.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+                
+            }
             if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < itemData.item.Length)
             {
                 GameObject instantiatedUI = Instantiate(slotObject, Vector3.zero, Quaternion.identity);
@@ -169,7 +244,7 @@ public class InventoryBehaviour : MonoBehaviour
         string itemName = "";
         if (inventory.slot[itemId].getId() != -1)
         {
-            itemName = itemData.item[inventory.slot[itemId].getId()].itemName;
+            itemName = itemData.item[inventory.slot[itemId].getId()].itemName.text;
         }
 
         // Start the fade coroutine

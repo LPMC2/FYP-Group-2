@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
+public enum InventoryType
+{
+    item,
+    block
+}
 public class InventoryBehaviour : MonoBehaviour
 {
     [Header("Toggle")]
@@ -27,6 +32,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private float scrollCoolDown = 0.2f;
     private float scrollTimer = 0f; // Timer to track cooldown
     [Header("Main Settings")]
+    [SerializeField] private InventoryType inventoryType; 
     public InventorySystem inventory;
     [SerializeField] private int selectedSlot = 1;
     [SerializeField] private GameObject slotObject;
@@ -40,10 +46,14 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private GameObject invBagPanel;
     [SerializeField] private GameObject invBagContainer;
     [SerializeField] private GameObject interactableSlotObj;
+    [Header("Block Inventory Settings")]
+    public GridManager gridManager;
     private ItemSO itemData;
+    private BlockSO blockData;
     private void Awake()
     {
         itemData = ItemManager.ItemData;
+        blockData = BlockManager.BlockData;
     }
 
     // Start is called before the first frame update
@@ -157,7 +167,7 @@ public class InventoryBehaviour : MonoBehaviour
         {
             float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
-            if (scrollInput > 0f)
+            if (scrollInput < 0f)
             {
                 // Scroll Upward
                 // Perform actions or increase a value
@@ -171,7 +181,7 @@ public class InventoryBehaviour : MonoBehaviour
                 EquipItem(selectedSlot);
                 scrollTimer = scrollCoolDown;
             }
-            else if (scrollInput < 0f)
+            else if (scrollInput > 0f)
             {
                 // Scroll Downward
                 // Perform actions or decrease a value
@@ -244,10 +254,23 @@ public class InventoryBehaviour : MonoBehaviour
     public void setSlotItem(int id, int item)
     {
         inventory.slot[id].setId(item);
-        if (item != -1 && item < itemData.item.Length)
+        switch(inventoryType)
         {
-            inventory.slot[id].item.SetItem(itemData.item[item].itemObject);
+            case InventoryType.item:
+                if (item != -1 && item < itemData.item.Length)
+                {
+                    inventory.slot[id].item.SetItem(itemData.item[item].itemObject);
+                }
+            break;
+            case InventoryType.block:
+                if (item != -1 && item < blockData.blockData.Length)
+                {
+                    inventory.slot[id].item.SetItem(blockData.blockData[item].blockModel);
+
+                }
+            break;
         }
+       
         setSlotObjUI(id, SlotPlaceHolder, slotObject);
         if (id == selectedSlot)
         {
@@ -303,7 +326,20 @@ public class InventoryBehaviour : MonoBehaviour
         if (inventory.slot[slotId].getId() >= 0 && inventory.slot[slotId].getId() < inventory.slot.Length)
         {
             Debug.Log(inventory.slot[slotId].getId());
-            GameObject targetItem = Instantiate(itemData.item[inventory.slot[slotId].getId()].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+            GameObject targetItem = null;
+            switch (inventoryType)
+            {
+                case InventoryType.item:
+                    targetItem = Instantiate(itemData.item[inventory.slot[slotId].getId()].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+                break;
+                case InventoryType.block:
+                    GameObject gameObject = blockData.blockData[inventory.slot[slotId].getId()].blockModel;
+                    targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
+                    targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                    gridManager.PlaceBlockObject = gameObject;
+                    gridManager.CurrentBlockId = inventory.slot[slotId].getId();
+                break;
+            }
             targetItem.transform.SetParent(placeItemLocation.transform);
             Collider itemCollider = targetItem.GetComponent<Collider>();
             if (itemCollider != null)
@@ -319,27 +355,69 @@ public class InventoryBehaviour : MonoBehaviour
     }
     private void setSlotObjUI(int id, GameObject slotPH, GameObject slotObj)
     {
-
         if (id < slotPH.transform.childCount)
         {
 
             GameObject targetUI = slotPH.transform.GetChild(id).gameObject;
-            if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < itemData.item.Length)
+            if (targetUI.transform.childCount > 1)
             {
-                GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
-                instantiatedUI.transform.SetParent(targetUI.transform);
-                if (instantiatedUI.GetComponent<Image>() == null)
+                Destroy(targetUI.transform.GetChild(0).gameObject);
+            }
+            if (inventoryType == InventoryType.item)
+            {
+                if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < itemData.item.Length)
                 {
-                    instantiatedUI.AddComponent<Image>();
-                }
-                instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                Image uiImg = instantiatedUI.GetComponent<Image>();
+                    GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
+                    instantiatedUI.transform.SetParent(targetUI.transform);
+                    if (instantiatedUI.GetComponent<Image>() == null)
+                    {
+                        instantiatedUI.AddComponent<Image>();
+                    }
+                    instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                    Image uiImg = instantiatedUI.GetComponent<Image>();
 
-                uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
-                uiImg.preserveAspect = true;
+                    uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
+                    uiImg.preserveAspect = true;
+                }
+            }
+            if(inventoryType == InventoryType.block)
+            {
+                if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < blockData.blockData.Length)
+                {
+                    GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
+                    instantiatedUI.transform.SetParent(targetUI.transform);
+                    if (instantiatedUI.GetComponent<Image>() == null)
+                    {
+                        instantiatedUI.AddComponent<Image>();
+                    }
+                    instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                    Image uiImg = instantiatedUI.GetComponent<Image>();
+
+                    uiImg.sprite = ConvertMaterialToSprite(blockData.blockData[inventory.slot[id].getId()].blockTexture);
+                    uiImg.preserveAspect = true;
+                }
             }
         }
 
+    }
+    private Sprite ConvertMaterialToSprite(Material sourceMaterial)
+    {
+        // Get the main texture from the material
+        Texture2D texture = (Texture2D)sourceMaterial.mainTexture;
+
+        if (texture != null)
+        {
+            // Create a new sprite using the texture
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+
+            // Use the sprite as desired (e.g., assign it to a SpriteRenderer component)
+            return sprite;
+        }
+        else
+        {
+            Debug.LogError("Texture not found in the material!");
+            return null;
+        }
     }
     private void initalizeInvBag()
     {
@@ -361,7 +439,16 @@ public class InventoryBehaviour : MonoBehaviour
         string itemName = "";
         if (inventory.slot[itemId].getId() != -1)
         {
-            itemName = itemData.item[inventory.slot[itemId].getId()].itemName;
+            switch (inventoryType)
+            {
+                case InventoryType.item:
+                    itemName = itemData.item[inventory.slot[itemId].getId()].itemName;
+                break;
+
+                case InventoryType.block:
+                    itemName = blockData.blockData[inventory.slot[itemId].getId()].blockModel.name;
+                break;
+            }
         }
 
         // Start the fade coroutine

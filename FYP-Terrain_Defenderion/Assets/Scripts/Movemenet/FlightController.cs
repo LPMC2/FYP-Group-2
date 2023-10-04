@@ -34,8 +34,8 @@ public class FlightController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
         //playerInput.Enable();
     }
     private void OnEnable()
@@ -47,12 +47,13 @@ public class FlightController : MonoBehaviour
         //    playerInput.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
         //    playerInput.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
         //}
-
+        if(playerInput != null)
         playerInput.Enable();
     }
     private void OnDisable()
     {
-        playerInput.Disable();
+        if (playerInput != null)
+            playerInput.Disable();
     }
     private void Update()
     {

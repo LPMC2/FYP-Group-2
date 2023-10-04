@@ -7,17 +7,26 @@ public class InventorySystem : MonoBehaviour
 {
   
     [Header("Inventory")]
-    [SerializeField] private int selectedSlot = 1;
     [SerializeField] private int maxFrontSlots = 9;
+    #region maxFrontSlots getter
+    public int GetMaxFrontSlots()
+    {
+        return maxFrontSlots;
+    }
+    public void SetMaxFrontSlots(int value)
+    {
+        maxFrontSlots = value;
+    }
+    #endregion
     public Slot[] slot;
-    public int getSelectedSlot()
-    {
-        return selectedSlot;
-    }
-    public void setSelectedSlot(int id)
-    {
-        selectedSlot = id;
-    }
+    //public int getSelectedSlot()
+    //{
+    //    return selectedSlot;
+    //}
+    //public void setSelectedSlot(int id)
+    //{
+    //    selectedSlot = id;
+    //}
 
     [System.Serializable]
     public class Slot

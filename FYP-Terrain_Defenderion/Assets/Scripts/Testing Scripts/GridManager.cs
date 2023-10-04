@@ -17,12 +17,19 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject gridVisibleObj;
     [SerializeField] private float ContactRange = 10f;
     [SerializeField] private GameObject placeBlockObject;
-    #region placeBlockObject Setter and Getter
+    [SerializeField] private int currentBlockId;
+    #region placeBlockObject + currentBlockId Setter and Getter
     public GameObject PlaceBlockObject {
         get { return placeBlockObject; }
-        private set { placeBlockObject = value; }
+        set { placeBlockObject = value; }
+    }
+    public int CurrentBlockId
+    {
+        get { return currentBlockId; }
+        set { currentBlockId = value; }
     }
     #endregion
+    [SerializeField] private string path = "/SavedObjectData.json";
     [Header("Place/Break Settings")]
     private bool canPlace = true; // Flag to track if placing is allowed
     private bool canBreak = true; // Flag to track if breaking is allowed
@@ -34,6 +41,11 @@ public class GridManager : MonoBehaviour
     private GameObject[,] cellVisuals;
     private GameObject lastOutlineBlock;
     private List<GameObject> hitList = new List<GameObject>();
+    private BlockSO blockData;
+    private void Awake()
+    {
+        blockData = BlockManager.BlockData;
+    }
     private void Start()
     {
         CreateGrid();
@@ -101,7 +113,7 @@ public class GridManager : MonoBehaviour
                     cellInteractable.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                     cellInteractable.transform.SetParent(gridContainer.transform);
                     cellVisuals[row, col] = cellInteractable;
-                    if(height > -1)
+                    if(height > -1 && cellInteractable != null)
                     {
                         cellInteractable.SetActive(false);
                     }
@@ -349,6 +361,7 @@ public class GridManager : MonoBehaviour
                             stopLoop = true;
                             HandleBlockBreak(hits[i].collider.gameObject);
                             UpdateBlockState(hits[i].collider.gameObject, false);
+                            
                             break;
                         }
                     }
@@ -359,6 +372,11 @@ public class GridManager : MonoBehaviour
     }
     private void HandleBlockPlace(GameObject hitObject)
     {
+        GridData gridData = hitObject.GetComponent<GridData>();
+        if(gridData != null)
+        {
+            gridData.blockId = CurrentBlockId;
+        }
         Debug.Log("Trigger collider detected: " + hitObject.name);
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
@@ -376,6 +394,11 @@ public class GridManager : MonoBehaviour
         Debug.Log("Trigger collider detected: " + hitObject.name);
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
+        GridData gridData = hitObject.GetComponent<GridData>();
+        if(gridData != null)
+        {
+            gridData.reset();
+        }
         Destroy(hitObject.transform.GetChild(0).gameObject);
     }
     void CreateCube(GameObject parentObj)
@@ -414,6 +437,43 @@ public class GridManager : MonoBehaviour
         // Adjust the visual representation of the cell based on its state
         Renderer cellRenderer = cellVisuals[row, col].GetComponent<Renderer>();
         cellRenderer.material.color = grid[row, col].IsAlive ? Color.red : Color.white;
+    }
+    public void SaveStructure()
+    {
+        StructureSerializer.SaveObject(gridContainer, path);
+    }
+    public void LoadStructure()
+    {
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
+        foreach(StructureStorage structureStorage in structureStorages)
+        {
+            Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+        }
+        GameObject gameObject = GenerateStructure(structureStorages);
+        
+    }
+    public GameObject GenerateStructure(StructureStorage[] structureStorage)
+    {
+        GameObject structure = new GameObject();
+        for(int i=0; i< structureStorage.Length; i++)
+        {
+            GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
+            block.transform.SetParent(structure.transform);
+            
+            block.transform.position = new Vector3((structureStorage[i].cellPos[0] - numRows/2) * cellSize, (structureStorage[i].cellPos[1] + cellSize) * cellSize, (structureStorage[i].cellPos[2] - numColumns/2) * cellSize);
+            block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
+            block.transform.localScale = new Vector3(structureStorage[i].Scale[0] * cellSize, structureStorage[i].Scale[1] * cellSize, structureStorage[i].Scale[2] * cellSize);
+
+            GridData gridData = block.AddComponent<GridData>();
+            gridData.isAutoRotatable = structureStorage[i].isAutoRotatable;
+            gridData.cellX = (int)structureStorage[i].cellPos[0];
+            gridData.cellY = (int)structureStorage[i].cellPos[2];
+            gridData.cellHeight = (int)structureStorage[i].cellPos[1];
+            gridData.blockId = structureStorage[i].structureId;
+            gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
+            gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
+        }
+        return structure;
     }
 }
 
