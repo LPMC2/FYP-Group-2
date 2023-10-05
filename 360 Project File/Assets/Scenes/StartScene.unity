@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4419,12 +4419,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddb3fce3fbde784ab47ccd88667cbdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pagelimit: 10
   contentQuestions: {fileID: 985469954}
   questionsUIObject: {fileID: 1064788410755525560, guid: 7490ca724e21d3b49afcfeb13746aa2f, type: 3}
   nextBtn: {fileID: 1221645701}
   backBtn: {fileID: 1901016843}
   page: 1
-  pagelimit: 10
+  rectTransform: {fileID: 985469955}
+  nextButton: {fileID: 1064788410755525560, guid: 7490ca724e21d3b49afcfeb13746aa2f, type: 3}
+  BackButton: {fileID: 1064788410755525560, guid: 7490ca724e21d3b49afcfeb13746aa2f, type: 3}
+  is_up: 0
+  targetPosition: {x: 0, y: 0}
+  moveSpeed: 100
+  SavePosition: 0
 --- !u!1 &2126806008
 GameObject:
   m_ObjectHideFlags: 0
