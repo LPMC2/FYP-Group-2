@@ -14,12 +14,9 @@ public class GridData : MonoBehaviour
 
     public void reset()
     {
-       cellX = 0;
-       cellY = 0;
-       cellHeight = 0;
        blockId = -1;
        Rotation = Vector3.zero;
-       Scale = Vector3.zero;
+       Scale = Vector3.one;
        isAutoRotatable = false;
 }
 }

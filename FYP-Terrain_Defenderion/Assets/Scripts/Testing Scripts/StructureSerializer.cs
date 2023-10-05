@@ -52,7 +52,6 @@ public static class StructureSerializer
                 }
             }
         }
-
         return structureStorages.ToArray();
     }
     public static StructureStorage[] LoadObject(string savePath)
@@ -66,7 +65,7 @@ public static class StructureSerializer
 
             StructureStorage[] structureStorages = formatter.Deserialize(stream) as StructureStorage[];
             stream.Close();
-
+            Debug.Log("Count: " + structureStorages.Length);
             return structureStorages;
         } else
         {

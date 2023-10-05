@@ -10,6 +10,7 @@ public class BlockData
     [Header("Note: Block texture only applies when no block model found")]
     public Material blockTexture;
     public int maxHealth = 1;
+    public int tokenCost = 1;
     public Material getBlockTexture()
     {
         return blockTexture;

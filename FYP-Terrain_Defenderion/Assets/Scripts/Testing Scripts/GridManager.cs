@@ -31,6 +31,7 @@ public class GridManager : MonoBehaviour
     #endregion
     [SerializeField] private string path = "/SavedObjectData.json";
     [Header("Place/Break Settings")]
+    [SerializeField] private bool isEditable = true;
     private bool canPlace = true; // Flag to track if placing is allowed
     private bool canBreak = true; // Flag to track if breaking is allowed
     [SerializeField] private float placeCooldown = 0.05f; // Cooldown duration for placing (in seconds)
@@ -48,9 +49,12 @@ public class GridManager : MonoBehaviour
     }
     private void Start()
     {
-        CreateGrid();
-        CreateVisualGrid();
-        CreateInteractableGrid();
+        if (isEditable)
+        {
+            CreateGrid();
+            CreateVisualGrid();
+            CreateInteractableGrid();
+        }
     }
     T GetSecondToLastItem<T>(List<T> list)
     {
@@ -347,7 +351,7 @@ public class GridManager : MonoBehaviour
             for (int i = 0; i < hits.Length && stopLoop == false; i++)
             {
 
-                Debug.Log(hits[i].collider.name);
+
                 if (hits[i].collider.isTrigger && hits[i].collider.CompareTag("Grid"))
                 {
                     if (hits[i].collider.transform.childCount == 0)
@@ -370,6 +374,7 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+    int count = 0;
     private void HandleBlockPlace(GameObject hitObject)
     {
         GridData gridData = hitObject.GetComponent<GridData>();
@@ -377,7 +382,6 @@ public class GridManager : MonoBehaviour
         {
             gridData.blockId = CurrentBlockId;
         }
-        Debug.Log("Trigger collider detected: " + hitObject.name);
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
         if (PlaceBlockObject == null)
@@ -387,6 +391,8 @@ public class GridManager : MonoBehaviour
         {
             CreateBlock(hitObject);
         }
+        count++;
+        Debug.Log("Placed blocks: " + count);
         UpdateBlockState(hitObject, true);
     }
     private void HandleBlockBreak(GameObject hitObject)
@@ -399,6 +405,8 @@ public class GridManager : MonoBehaviour
         {
             gridData.reset();
         }
+        count--;
+        Debug.Log("Placed blocks: " + count);
         Destroy(hitObject.transform.GetChild(0).gameObject);
     }
     void CreateCube(GameObject parentObj)
@@ -440,7 +448,10 @@ public class GridManager : MonoBehaviour
     }
     public void SaveStructure()
     {
-        StructureSerializer.SaveObject(gridContainer, path);
+        if (isEditable)
+        {
+            StructureSerializer.SaveObject(gridContainer, path);
+        }
     }
     public void LoadStructure()
     {
@@ -454,12 +465,13 @@ public class GridManager : MonoBehaviour
     }
     public GameObject GenerateStructure(StructureStorage[] structureStorage)
     {
+        int count = 0;
         GameObject structure = new GameObject();
         for(int i=0; i< structureStorage.Length; i++)
         {
             GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
             block.transform.SetParent(structure.transform);
-            
+            count++;
             block.transform.position = new Vector3((structureStorage[i].cellPos[0] - numRows/2) * cellSize, (structureStorage[i].cellPos[1] + cellSize) * cellSize, (structureStorage[i].cellPos[2] - numColumns/2) * cellSize);
             block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
             block.transform.localScale = new Vector3(structureStorage[i].Scale[0] * cellSize, structureStorage[i].Scale[1] * cellSize, structureStorage[i].Scale[2] * cellSize);
@@ -473,6 +485,7 @@ public class GridManager : MonoBehaviour
             gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
             gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
         }
+        Debug.Log("Count: " + count);
         return structure;
     }
 }
