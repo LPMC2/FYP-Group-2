@@ -18,8 +18,6 @@ public class JourneyControl : MonoBehaviour
     public Vector2 targetPosition;
     public float moveSpeed = 100.0f;
 
-    private bool isMoving = false;
-
     private void Start()
     {
         BackButton.SetActive(false);
@@ -30,33 +28,16 @@ public class JourneyControl : MonoBehaviour
     public void ChangePanelPosition(bool is_up)
     {
         this.is_up = is_up;
-        isMoving = true;
         AddPosition(is_up);
         checkJourney();
     }
     public void Update()
     {
-        if (isMoving)
+        float step = moveSpeed * Time.deltaTime;
+
+        if (Journey < Max && Journey > Min || Journey == Min && !is_up || Journey == Max && is_up)
         {
-            if (Journey < Max || Journey > Min)
-            {
-                float step = moveSpeed * Time.deltaTime;
-                rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
-            }
-            else if(Journey == Min || !is_up)
-            {
-                float step = moveSpeed * Time.deltaTime;
-                rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
-            }
-            else if (Journey == Max || is_up)
-            {
-                float step = moveSpeed * Time.deltaTime;
-                rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
-            }
-            if(targetPosition.y == rectTransform.anchoredPosition.y)
-            {
-                isMoving = !isMoving;
-            }
+            rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
         }
 
     }
