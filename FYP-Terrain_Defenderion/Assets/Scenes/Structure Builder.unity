@@ -909,7 +909,7 @@ MonoBehaviour:
   selectedSlot: 1
   slotObject: {fileID: 6544837374524206601, guid: bb09e563a7a079b4bb48a91788719429, type: 3}
   placeItemLocation: {fileID: 1254259441}
-  initialSlotItem: 000000000100000002000000
+  initialSlotItem: 00000000010000000200000003000000
   dropItemPrefab: {fileID: 0}
   dropForce: 10
   dropOffset: {x: 0, y: 0, z: 0}
@@ -929,8 +929,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f391d509623a9a64bbe5917dfe449ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFrontSlots: 3
+  maxFrontSlots: 4
   slot:
+  - item:
+      itemObject: {fileID: 0}
+    count: 0
+    name: 
+    itemId: 0
   - item:
       itemObject: {fileID: 0}
     count: 0
