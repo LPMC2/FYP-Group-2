@@ -463,10 +463,24 @@ public class GridManager : MonoBehaviour
         GameObject gameObject = GenerateStructure(structureStorages);
         
     }
-    public GameObject GenerateStructure(StructureStorage[] structureStorage)
+    public void LoadStructure(string filePath)
     {
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
+        foreach (StructureStorage structureStorage in structureStorages)
+        {
+            Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+        }
+        GameObject gameObject = GenerateStructure(structureStorages);
+    }
+    public GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3))
+    {
+        if (position == default(Vector3))
+        {
+            position = Vector3.zero; // Set a default value here
+        }
         int count = 0;
         GameObject structure = new GameObject();
+        structure.transform.localPosition = position;
         for(int i=0; i< structureStorage.Length; i++)
         {
             GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);

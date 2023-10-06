@@ -73,6 +73,7 @@ public static class StructureSerializer
             return null;
         }
     }
+
 }
 
 [System.Serializable]
