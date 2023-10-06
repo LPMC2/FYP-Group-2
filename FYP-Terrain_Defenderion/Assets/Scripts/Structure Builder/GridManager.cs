@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class GridManager : MonoBehaviour
 {
+    [Header("User Settings")]
+    [SerializeField] private GameObject player;
+    [Header("Display Settings")]
+    [SerializeField] private GameObject displayActionBar;
+    [Header("Grid Settings")]
     public int numRows = 5;
     public int numColumns = 5;
     public int numHeight = 5;
@@ -375,25 +380,64 @@ public class GridManager : MonoBehaviour
         }
     }
     int count = 0;
+    public bool isTokenAffordable(TokenManager tokenManager, GridData gridData)
+    {
+        if (gridData != null)
+        {
+            if (tokenManager != null)
+            {
+                int cost = tokenManager.GetTokenCost(currentBlockId);
+                if (tokenManager.getTokens() - cost >= 0)
+                {
+                    tokenManager.addTokens(-cost);
+                    gridData.tokenCost = cost;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
     private void HandleBlockPlace(GameObject hitObject)
     {
+        TokenManager tokenManager = player.GetComponent<TokenManager>();
+        bool isAffordable = true;
         GridData gridData = hitObject.GetComponent<GridData>();
         if(gridData != null)
         {
+            
+            if(tokenManager != null)
+            {
+                isAffordable = isTokenAffordable(tokenManager, gridData);
+            }
             gridData.blockId = CurrentBlockId;
         }
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
-        if (PlaceBlockObject == null)
+        if (isAffordable)
         {
-            CreateCube(hitObject);
+            if (PlaceBlockObject == null)
+            {
+                CreateCube(hitObject);
+            }
+            else
+            {
+                CreateBlock(hitObject);
+            }
+            UpdateBlockState(hitObject, true);
         } else
         {
-            CreateBlock(hitObject);
+            InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
+            if(inventoryBehaviour!= null && tokenManager != null)
+            {
+                inventoryBehaviour.StartFadeInText("Unable to afford " + blockData.blockData[currentBlockId].blockModel.name + ". Need " + -(tokenManager.getTokens() - tokenManager.GetTokenCost(currentBlockId)) + " more tokens", Color.red);
+            }
         }
         count++;
         Debug.Log("Placed blocks: " + count);
-        UpdateBlockState(hitObject, true);
     }
     private void HandleBlockBreak(GameObject hitObject)
     {
@@ -403,6 +447,11 @@ public class GridManager : MonoBehaviour
         GridData gridData = hitObject.GetComponent<GridData>();
         if(gridData != null)
         {
+            TokenManager tokenManager = player.GetComponent<TokenManager>();
+            if(tokenManager != null)
+            {
+                tokenManager.addTokens(gridData.tokenCost);
+            }
             gridData.reset();
         }
         count--;
@@ -456,12 +505,14 @@ public class GridManager : MonoBehaviour
     public void LoadStructure()
     {
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
-        foreach(StructureStorage structureStorage in structureStorages)
+        if (structureStorages != null)
         {
-            Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+            foreach (StructureStorage structureStorage in structureStorages)
+            {
+                Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+            }
+            GameObject gameObject = GenerateStructure(structureStorages);
         }
-        GameObject gameObject = GenerateStructure(structureStorages);
-        
     }
     public void LoadStructure(string filePath)
     {

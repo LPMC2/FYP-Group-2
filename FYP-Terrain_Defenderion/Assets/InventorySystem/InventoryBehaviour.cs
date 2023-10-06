@@ -427,8 +427,12 @@ public class InventoryBehaviour : MonoBehaviour
         }
     }
     #region Text Display
-    public void StartFadeInText(int itemId)
+    public void StartFadeInText(int itemId, Color color = default(Color))
     {
+        if (color == default(Color))
+        {
+            color = Color.white;
+        }
         // Stop any ongoing fade coroutine
         if (fadeCoroutine != null)
         {
@@ -452,15 +456,30 @@ public class InventoryBehaviour : MonoBehaviour
         }
 
         // Start the fade coroutine
-        fadeCoroutine = StartCoroutine(FadeText(itemName));
+        fadeCoroutine = StartCoroutine(FadeText(itemName, color));
     }
+    public void StartFadeInText(string text, Color color = default(Color))
+    {
+        if(color == default(Color))
+        {
+            color = Color.white;
+        }
+        // Stop any ongoing fade coroutine
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+        }
 
-    private IEnumerator FadeText(string text)
+        // Get the item name from the item data using the provided item ID
+        // Start the fade coroutine
+        fadeCoroutine = StartCoroutine(FadeText(text, color));
+    }
+    private IEnumerator FadeText(string text, Color color)
     {
         // Set the initial text and alpha value
         DisplayText.text = text;
         DisplayText.alpha = 0f;
-
+        DisplayText.color = color;
         // Fade in animation
         float fadeInTimer = 0f;
         while (fadeInTimer < fadeInDuration)

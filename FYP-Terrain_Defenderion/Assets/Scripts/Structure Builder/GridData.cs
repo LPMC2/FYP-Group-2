@@ -11,12 +11,13 @@ public class GridData : MonoBehaviour
     public Vector3 Rotation;
     public Vector3 Scale = new Vector3(1,1,1);
     public bool isAutoRotatable;
-
+    public int tokenCost = 0;
     public void reset()
     {
        blockId = -1;
        Rotation = Vector3.zero;
        Scale = Vector3.one;
        isAutoRotatable = false;
-}
+       tokenCost = 0;
+    }
 }
