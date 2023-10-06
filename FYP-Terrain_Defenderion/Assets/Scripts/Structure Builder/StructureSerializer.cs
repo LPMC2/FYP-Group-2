@@ -46,7 +46,7 @@ public static class StructureSerializer
                         structureStorage.Scale[0] = gridData.Scale.x;
                         structureStorage.Scale[1] = gridData.Scale.y;
                         structureStorage.Scale[2] = gridData.Scale.z;
-
+                        structureStorage.tokenCost = gridData.tokenCost;
                         structureStorages.Add(structureStorage);
                     }
                 }
@@ -73,7 +73,20 @@ public static class StructureSerializer
             return null;
         }
     }
-
+    public static string GetFileName(string savePath)
+    {
+        string path = Application.persistentDataPath + savePath;
+        if(File.Exists(path))
+        {
+            string name = Path.GetFileNameWithoutExtension(path);
+            Debug.Log(name);
+            return name;
+        } else
+        {
+            Debug.LogError("Save file not found in " + path);
+            return null;
+        }
+    }
 }
 
 [System.Serializable]

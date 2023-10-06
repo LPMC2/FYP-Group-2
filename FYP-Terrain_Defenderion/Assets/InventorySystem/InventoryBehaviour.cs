@@ -415,7 +415,7 @@ public class InventoryBehaviour : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Texture not found in the material!");
+            Debug.LogWarning("Texture not found in the material!");
             return null;
         }
     }

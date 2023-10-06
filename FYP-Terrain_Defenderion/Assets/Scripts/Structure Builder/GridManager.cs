@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GridManager : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
+    [Header("Token Settings")]
+    [SerializeField] private GameObject tokenAmountTextDisplay;
     [Header("Grid Settings")]
     public int numRows = 5;
     public int numColumns = 5;
@@ -48,12 +51,18 @@ public class GridManager : MonoBehaviour
     private GameObject lastOutlineBlock;
     private List<GameObject> hitList = new List<GameObject>();
     private BlockSO blockData;
+    private TokenManager tokenManager;
     private void Awake()
     {
         blockData = BlockManager.BlockData;
     }
     private void Start()
     {
+        tokenManager = player.GetComponent<TokenManager>();
+        if (tokenManager != null)
+        {
+            UpdateTokenDisplay(tokenManager.getTokens());
+        }
         if (isEditable)
         {
             CreateGrid();
@@ -100,10 +109,11 @@ public class GridManager : MonoBehaviour
         //    }
         //}
     }
-    private void CreateInteractableGrid()
+    public void CreateInteractableGrid()
     {
-        cellVisuals = new GameObject[numRows, numColumns];
 
+        cellVisuals = new GameObject[numRows, numColumns];
+        int count = 0;
         // Calculate the offset to position the grid at the center of the current holder object
         Vector3 gridOffset = new Vector3((numRows - 1) * cellSize * 0.5f, -(cellSize/2), (numColumns - 1) * cellSize * 0.5f);
 
@@ -122,10 +132,13 @@ public class GridManager : MonoBehaviour
                     cellInteractable.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                     cellInteractable.transform.SetParent(gridContainer.transform);
                     cellVisuals[row, col] = cellInteractable;
-                    if(height > -1 && cellInteractable != null)
-                    {
-                        cellInteractable.SetActive(false);
-                    }
+
+                        if (height > -1 && cellInteractable != null)
+                        {
+                            cellInteractable.SetActive(false);
+                        }
+                    
+                    count++;
                 }
             }
         }
@@ -380,30 +393,41 @@ public class GridManager : MonoBehaviour
         }
     }
     int count = 0;
-    public bool isTokenAffordable(TokenManager tokenManager, GridData gridData)
+    public bool isTokenAffordable(int cost, GridData gridData = default(GridData), string name = null)
     {
-        if (gridData != null)
-        {
             if (tokenManager != null)
             {
-                int cost = tokenManager.GetTokenCost(currentBlockId);
                 if (tokenManager.getTokens() - cost >= 0)
                 {
                     tokenManager.addTokens(-cost);
+                if (gridData != null)
+                {
                     gridData.tokenCost = cost;
+                }
+                    UpdateTokenDisplay(tokenManager.getTokens());
                     return true;
                 }
                 else
                 {
+                    InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
+                    if (inventoryBehaviour != null && tokenManager != null)
+                    {
+                    if (name == null)
+                    {
+                        inventoryBehaviour.StartFadeInText("Unable to afford " + blockData.blockData[currentBlockId].blockModel.name + ". Need " + -(tokenManager.getTokens() - cost) + " more tokens", Color.red);
+                    } else
+                    {
+                        inventoryBehaviour.StartFadeInText("Unable to afford " + name + ". Need " + -(tokenManager.getTokens() - cost) + " more tokens", Color.red);
+                    }
+                    } 
                     return false;
                 }
             }
-        }
+        
         return false;
     }
     private void HandleBlockPlace(GameObject hitObject)
     {
-        TokenManager tokenManager = player.GetComponent<TokenManager>();
         bool isAffordable = true;
         GridData gridData = hitObject.GetComponent<GridData>();
         if(gridData != null)
@@ -411,7 +435,7 @@ public class GridManager : MonoBehaviour
             
             if(tokenManager != null)
             {
-                isAffordable = isTokenAffordable(tokenManager, gridData);
+                isAffordable = isTokenAffordable(tokenManager.GetTokenCost(currentBlockId), gridData);
             }
             gridData.blockId = CurrentBlockId;
         }
@@ -428,13 +452,6 @@ public class GridManager : MonoBehaviour
                 CreateBlock(hitObject);
             }
             UpdateBlockState(hitObject, true);
-        } else
-        {
-            InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
-            if(inventoryBehaviour!= null && tokenManager != null)
-            {
-                inventoryBehaviour.StartFadeInText("Unable to afford " + blockData.blockData[currentBlockId].blockModel.name + ". Need " + -(tokenManager.getTokens() - tokenManager.GetTokenCost(currentBlockId)) + " more tokens", Color.red);
-            }
         }
         count++;
         Debug.Log("Placed blocks: " + count);
@@ -451,6 +468,7 @@ public class GridManager : MonoBehaviour
             if(tokenManager != null)
             {
                 tokenManager.addTokens(gridData.tokenCost);
+                UpdateTokenDisplay(tokenManager.getTokens());
             }
             gridData.reset();
         }
@@ -504,24 +522,37 @@ public class GridManager : MonoBehaviour
     }
     public void LoadStructure()
     {
+        int cost = 0;
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
         if (structureStorages != null)
         {
             foreach (StructureStorage structureStorage in structureStorages)
             {
-                Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+                //Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+                cost += structureStorage.tokenCost;
             }
-            GameObject gameObject = GenerateStructure(structureStorages);
+            Debug.Log("cost: " + cost);
+            if (isTokenAffordable(cost, default, StructureSerializer.GetFileName(path)))
+            {
+                GameObject gameObject = GenerateStructure(structureStorages);
+            }
         }
     }
     public void LoadStructure(string filePath)
     {
+        int cost = 0;
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
         foreach (StructureStorage structureStorage in structureStorages)
         {
-            Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+            //Debug.Log("Pos: " + structureStorage.cellPos[0] + ", " + structureStorage.cellPos[1] + ", " + structureStorage.cellPos[2] + "\nStructure: " + structureStorage.structureId);
+            cost += structureStorage.tokenCost;
+
         }
-        GameObject gameObject = GenerateStructure(structureStorages);
+        Debug.Log("cost: " + cost);
+        if (isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath)))
+        {
+            GameObject gameObject = GenerateStructure(structureStorages);
+        }
     }
     public GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3))
     {
@@ -552,6 +583,62 @@ public class GridManager : MonoBehaviour
         }
         Debug.Log("Count: " + count);
         return structure;
+    }
+    public void GenerateStructureWithGrid(string path)
+    {
+        tokenManager.setTokens(tokenManager.initialTokens);
+        int cost = 0;
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
+        foreach(Transform child in gridContainer.transform)
+        {
+            child.gameObject.SetActive(true);
+            GridData gridData = child.GetComponent<GridData>();
+            gridData.reset();
+            if (child.childCount > 0)
+            {
+                Destroy(child.transform.GetChild(0).gameObject);
+            }
+            foreach (StructureStorage structureStorage in structureStorages)
+            {
+                
+                if (gridData.cellX == structureStorage.cellPos[0] && gridData.cellHeight == structureStorage.cellPos[1] && gridData.cellY == structureStorage.cellPos[2])
+                {
+                    GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].blockModel, Vector3.zero, Quaternion.identity);
+                    block.transform.localPosition = child.transform.position;
+                    block.transform.SetParent(child.transform);
+                    block.transform.eulerAngles = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
+                    block.transform.localScale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
+
+                    gridData.isAutoRotatable = structureStorage.isAutoRotatable;
+                    gridData.cellX = (int)structureStorage.cellPos[0];
+                    gridData.cellY = (int)structureStorage.cellPos[2];
+                    gridData.cellHeight = (int)structureStorage.cellPos[1];
+                    gridData.blockId = structureStorage.structureId;
+                    gridData.Rotation = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
+                    gridData.Scale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
+                    gridData.tokenCost = structureStorage.tokenCost;
+                    cost += structureStorage.tokenCost;
+                }
+               
+            }
+            if(child.childCount == 0)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+        isTokenAffordable(cost, default, StructureSerializer.GetFileName(path));
+    }
+    public void UpdateTokenDisplay(int newAmount)
+    {
+        if(tokenAmountTextDisplay != null)
+        {
+            TMP_Text textField = tokenAmountTextDisplay.GetComponent<TMP_Text>();
+            if(textField != null)
+            {
+                textField.text = newAmount.ToString();
+            }
+        }
+        
     }
 }
 

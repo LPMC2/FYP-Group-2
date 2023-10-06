@@ -5,6 +5,7 @@ using UnityEngine;
 public class TokenManager : MonoBehaviour
 {
     [SerializeField] private int tokens = 0;
+    public int initialTokens {get; private set; }
 # region Getter and Setter
   public int getTokens()
     {
@@ -22,6 +23,10 @@ public class TokenManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+    }
+    private void Start()
+    {
+        initialTokens = tokens;
     }
     public int GetTokenCost(int blockID)
     {
