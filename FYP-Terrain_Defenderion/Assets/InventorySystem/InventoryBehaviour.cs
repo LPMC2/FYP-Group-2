@@ -17,6 +17,7 @@ public class InventoryBehaviour : MonoBehaviour
     [Header("Input Settings")]
     public KeyCode dropKey = KeyCode.Q;
     public KeyCode invBagKey = KeyCode.E;
+    public bool isItemSelectable = true;
     [Header("Canvas")]
     public GameObject SlotPlaceHolder;
     [Header("Slot UI")]
@@ -30,6 +31,8 @@ public class InventoryBehaviour : MonoBehaviour
     private Coroutine fadeCoroutine;
     [Header("Mouse Input")]
     [SerializeField] private float scrollCoolDown = 0.2f;
+    public bool isMouseVisble = false;
+    private bool preIsMouseVisible = false;
     private float scrollTimer = 0f; // Timer to track cooldown
     [Header("Main Settings")]
     [SerializeField] private InventoryType inventoryType; 
@@ -52,19 +55,70 @@ public class InventoryBehaviour : MonoBehaviour
     private BlockSO blockData;
     private void Awake()
     {
+        StartCursorState();
         itemData = ItemManager.ItemData;
         blockData = BlockManager.BlockData;
     }
-
+    private void OnValidate()
+    {
+        if(isMouseVisble != preIsMouseVisible)
+        {
+            StartCursorState();
+            preIsMouseVisible = isMouseVisble;
+        }
+    }
+    public void StartCursorState()
+    {
+        StartCoroutine(CursorState());
+    }
+    public void ToggleCursorState(bool state = default)
+    {
+        if (state == default)
+        {
+            isMouseVisble = !isMouseVisble;
+        } else
+        {
+            isMouseVisble = state;
+        }
+        StartCursorState();
+    }
+    private IEnumerator CursorState()
+    {
+        yield return null;
+        FlightController flightController = GetComponent<FlightController>();
+        #region MouseVisible State
+        if (isMouseVisble)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            if(flightController)
+            {
+                flightController.enabled = false;
+            }
+            isItemSelectable = false;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            if (flightController)
+            {
+                flightController.enabled = true;
+            }
+            isItemSelectable = true;
+        }
+        yield break;
+        #endregion
+    }
     // Start is called before the first frame update
     void Start()
     {
         #region ShowItem(Debug)
-        Debug.Log("Item List: ");
-        for (int i = 0; i < itemData.item.Length; i++)
-        {
-            Debug.Log(itemData.item[i].itemObject);
-        }
+        //Debug.Log("Item List: ");
+        //for (int i = 0; i < itemData.item.Length; i++)
+        //{
+        //    Debug.Log(itemData.item[i].itemObject);
+        //}
         #endregion
         if (inventory == null)
         {
@@ -76,7 +130,10 @@ public class InventoryBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        inputNumDetection();
+        if (isItemSelectable)
+        {
+            inputNumDetection();
+        }
         if(isDropable)
         {
             dropDetection();
@@ -325,7 +382,7 @@ public class InventoryBehaviour : MonoBehaviour
         }
         if (inventory.slot[slotId].getId() >= 0 && inventory.slot[slotId].getId() < inventory.slot.Length)
         {
-            Debug.Log(inventory.slot[slotId].getId());
+            //Debug.Log(inventory.slot[slotId].getId());
             GameObject targetItem = null;
             switch (inventoryType)
             {

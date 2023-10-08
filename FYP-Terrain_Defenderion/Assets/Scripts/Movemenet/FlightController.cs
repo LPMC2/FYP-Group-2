@@ -9,6 +9,7 @@ public class FlightController : MonoBehaviour
     [SerializeField] float movementSpeed = 5f;
     [SerializeField] float movementSpeedMultiplier = 1f;
     [SerializeField] float rotationSpeed = 3f;
+    [SerializeField] private bool isRotatable = true;
     [SerializeField] float mouseSensitivity = 3f;
     [SerializeField] float acceleration = 1f;
     [SerializeField] PlayerInput playerInput;
@@ -62,6 +63,10 @@ public class FlightController : MonoBehaviour
     }
     private void UpdateLook()
     {
+        if(!isRotatable)
+        {
+            return;
+        }
         Vector2 lookInput = lookAction.ReadValue<Vector2>();
         look.x += lookInput.x * mouseSensitivity;
         look.y += lookInput.y * mouseSensitivity;

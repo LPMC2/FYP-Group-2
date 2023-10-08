@@ -7,12 +7,23 @@ using TMPro;
 
 public class GridManager : MonoBehaviour
 {
+    [Header("Input Settings")]
+    [SerializeField] private KeyCode openMenuKey = KeyCode.M;
     [Header("User Settings")]
     [SerializeField] private GameObject player;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
+    [SerializeField] private Camera captureCamera;
     [Header("Token Settings")]
     [SerializeField] private GameObject tokenAmountTextDisplay;
+    [Header("Menu Settings")]
+    private bool isMenuOpen = false;
+    [SerializeField] private Image tempStructureImg;
+    [SerializeField] private string tempImgPath = "/StructureData/Temp/tempStructureImg.png";
+    [SerializeField] private TMP_Text structureNameText;
+    [SerializeField] private Image structureImg;
+    [SerializeField] private GameObject saveMenu;
+    [SerializeField] private GameObject loadMenu;
     [Header("Grid Settings")]
     public int numRows = 5;
     public int numColumns = 5;
@@ -26,6 +37,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private float ContactRange = 10f;
     [SerializeField] private GameObject placeBlockObject;
     [SerializeField] private int currentBlockId;
+    [SerializeField] private GameObject menuObj;
     #region placeBlockObject + currentBlockId Setter and Getter
     public GameObject PlaceBlockObject {
         get { return placeBlockObject; }
@@ -37,9 +49,33 @@ public class GridManager : MonoBehaviour
         set { currentBlockId = value; }
     }
     #endregion
-    [SerializeField] private string path = "/SavedObjectData.json";
+    [SerializeField] private string path = "Default";
+    string imgPath = "Default";
+    private int structureId = 0;
+    [SerializeField]private string name = "";
+    #region pathSetter
+    public void SetPath(string str)
+    {
+        path = "/StructureData/StructureFile/" + str + ".json";
+        name = str;
+    }
+    #endregion
     [Header("Place/Break Settings")]
     [SerializeField] private bool isEditable = true;
+    #region isEditable Toggler
+    public void ToggleIsEditable(bool state = default)
+    {
+        if (state == default)
+        {
+            isEditable = !isEditable;
+            isMenuOpen = !isEditable;
+        } else
+        {
+            isEditable = state;
+            isMenuOpen = state;
+        }
+    }
+    #endregion
     private bool canPlace = true; // Flag to track if placing is allowed
     private bool canBreak = true; // Flag to track if breaking is allowed
     [SerializeField] private float placeCooldown = 0.05f; // Cooldown duration for placing (in seconds)
@@ -52,6 +88,87 @@ public class GridManager : MonoBehaviour
     private List<GameObject> hitList = new List<GameObject>();
     private BlockSO blockData;
     private TokenManager tokenManager;
+
+    #region Menu UI
+    public void SetSaveMenuImg()
+    {
+        Sprite sprite = StructureSerializer.LoadSpriteFromFile(tempImgPath);
+        tempStructureImg.sprite = sprite;
+    }
+    #endregion
+
+    #region Menu Keycode Detection
+    private void OnEnable()
+    {
+        StartCoroutine(DetectKeyCode());
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine(DetectKeyCode());
+    }
+
+    private IEnumerator DetectKeyCode()
+    {
+        while (true)
+        {
+            if (Input.GetKeyDown(openMenuKey))
+            {
+                if (saveMenu.activeInHierarchy == false && loadMenu.activeInHierarchy == false)
+                {
+                    if (menuObj != null)
+                    {
+
+                        ToggleEditState();
+
+                    }
+                }
+            }
+
+            yield return null;
+        }
+    }
+    public void ToggleEditState(bool state = default)
+    {
+        Animator animator = menuObj.GetComponent<Animator>();
+        if (animator != null)
+            animator.SetTrigger("State");
+        InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
+        if (inventoryBehaviour != null)
+        {
+            ToggleIsEditable(state);
+            inventoryBehaviour.ToggleCursorState(state);
+        }
+    }
+    #endregion
+
+    #region Selction Function
+    public void SelectStructure(int value = 0)
+    {
+        // -1 -> Left, 1 -> Right, 0 -> Unset
+        value = Mathf.Clamp(value, -1, 1);
+        structureId += value;
+        //Debug.Log("Length " + (StructureSerializer.GetFileItemsLength("/StructureData/StructureFile/") - 1));
+        structureId = Mathf.Clamp(structureId, 0, StructureSerializer.GetFileItemsLength("/StructureData/StructureFile/") -1);
+        SetStructurePath(structureId);
+        SetStructureImg(structureId);
+       
+    }
+    private void SetStructurePath(int id)
+    {
+        StructureTypeFile structureTypeFile = StructureSerializer.SearchStructureFile(id, StructureSerializer.StructureType.file);
+        path = structureTypeFile.FilePath;
+        structureNameText.text = structureTypeFile.FileName;
+    }
+    private void SetStructureImg(int id)
+    {
+        StructureTypeFile structureTypeFile = StructureSerializer.SearchStructureFile(id, StructureSerializer.StructureType.image);
+        if (structureTypeFile.ImageData != null)
+        {
+            structureImg.sprite = structureTypeFile.ImageData;
+        }
+    }
+    #endregion
     private void Awake()
     {
         blockData = BlockManager.BlockData;
@@ -111,7 +228,6 @@ public class GridManager : MonoBehaviour
     }
     public void CreateInteractableGrid()
     {
-
         cellVisuals = new GameObject[numRows, numColumns];
         int count = 0;
         // Calculate the offset to position the grid at the center of the current holder object
@@ -146,6 +262,10 @@ public class GridManager : MonoBehaviour
 
     private void Update()
     {
+        if(!isEditable)
+        {
+            return;
+        }
         if (!canPlace)
         {
             placeTimer += Time.deltaTime;
@@ -202,14 +322,45 @@ public class GridManager : MonoBehaviour
         HandlePlaceBlock(hits);
         Debug.DrawRay(cameraObject.transform.position, cameraObject.transform.forward * ContactRange, Color.red, 5f);
     }
+
     private void PerformOutlineRaycast()
     {
-        RaycastHit[] hits = new RaycastHit[(int)ContactRange];
+        List<RaycastHit> hits = new List<RaycastHit>((int)(ContactRange * ContactRange));
         Ray ray = new Ray(cameraObject.transform.position, cameraObject.transform.forward);
-        hits = Physics.RaycastAll(ray, ContactRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
-        Physics.RaycastNonAlloc(ray, hits);
-        HandleOutlineBlock(hits);
-       
+        RaycastHit[] hitsArray = new RaycastHit[(int)(ContactRange * ContactRange)];
+
+        Physics.RaycastNonAlloc(ray, hitsArray,ContactRange * ContactRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
+        hits.AddRange(hitsArray);
+        GameObject newHitBlock = null;
+
+        foreach (var hit in hits)
+        {
+            if(hit.collider != null)
+            if (hit.collider.isTrigger && hit.collider.CompareTag("Grid") && hit.collider.transform.childCount > 0)
+            {
+                newHitBlock = hit.collider.transform.GetChild(0).gameObject;
+                break;
+            }
+        }
+
+        if (newHitBlock != lastOutlineBlock)
+        {
+            if (lastOutlineBlock != null)
+            {
+                setOutline(lastOutlineBlock, false);
+            }
+
+            if (newHitBlock != null)
+            {
+                setOutline(newHitBlock, true);
+            }
+
+            lastOutlineBlock = newHitBlock;
+        } else if(lastOutlineBlock == null && newHitBlock != null)
+        {
+            setOutline(newHitBlock, true);
+            lastOutlineBlock = newHitBlock;
+        }
     }
     private void PerformBreakRaycast()
     {
@@ -515,10 +666,13 @@ public class GridManager : MonoBehaviour
     }
     public void SaveStructure()
     {
-        if (isEditable)
+        if (path == "Default")
         {
-            StructureSerializer.SaveObject(gridContainer, path);
+            return;
         }
+        StructureSerializer.SaveObject(gridContainer, path);
+
+       
     }
     public void LoadStructure()
     {
@@ -541,6 +695,7 @@ public class GridManager : MonoBehaviour
     public void LoadStructure(string filePath)
     {
         int cost = 0;
+        
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
         foreach (StructureStorage structureStorage in structureStorages)
         {
@@ -584,11 +739,21 @@ public class GridManager : MonoBehaviour
         Debug.Log("Count: " + count);
         return structure;
     }
-    public void GenerateStructureWithGrid(string path)
+    public void GenerateStructureWithGrid(string filePath = default)
     {
+        
+        if(filePath == default || filePath == "default")
+        {
+            filePath = path;
+            Debug.Log("Path: " + filePath);
+        }
+        if(isEditable == false && isMenuOpen == false)
+        {
+            return;
+        }
         tokenManager.setTokens(tokenManager.initialTokens);
         int cost = 0;
-        StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
         foreach(Transform child in gridContainer.transform)
         {
             child.gameObject.SetActive(true);
@@ -626,7 +791,7 @@ public class GridManager : MonoBehaviour
                 child.gameObject.SetActive(false);
             }
         }
-        isTokenAffordable(cost, default, StructureSerializer.GetFileName(path));
+        isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath));
     }
     public void UpdateTokenDisplay(int newAmount)
     {
@@ -639,6 +804,26 @@ public class GridManager : MonoBehaviour
             }
         }
         
+    }
+    public void SetNameFromPath()
+    {
+        name = StructureSerializer.SetStructureNameFromFile(path);
+    }
+    public void SaveStructureImg()
+    {
+        if(path == "Default")
+        {
+            return;
+        }
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
+        ModelPictureSaver.CaptureAndSaveImage(captureCamera ,GenerateStructure(structureStorages), "/StructureData/StructureImg/", name);
+    }
+    public void SaveTempStructureImg()
+    {
+        int oldMask = captureCamera.cullingMask;
+        captureCamera.cullingMask = -1;
+        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gridContainer, "/StructureData/Temp/", "tempStructureImg", false);
+        captureCamera.cullingMask = oldMask;
     }
 }
 

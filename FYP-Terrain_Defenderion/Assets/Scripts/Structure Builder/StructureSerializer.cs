@@ -3,9 +3,15 @@ using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
-
+public struct StructureTypeFile
+{
+    public string FileName;
+    public string FilePath;
+    public Sprite ImageData;
+}
 public static class StructureSerializer
 {
+
     public static void SaveObject(GameObject target, string savePath)
     {
         BinaryFormatter formatter = new BinaryFormatter();
@@ -54,6 +60,14 @@ public static class StructureSerializer
         }
         return structureStorages.ToArray();
     }
+    public static int GetFileItemsLength(string path)
+    {
+        string filePath = "";
+        filePath = Application.persistentDataPath + path;
+        string[] files = Directory.GetFiles(filePath);
+        return files.Length;
+
+    }
     public static StructureStorage[] LoadObject(string savePath)
     {
         string path = Application.persistentDataPath + savePath;
@@ -79,13 +93,89 @@ public static class StructureSerializer
         if(File.Exists(path))
         {
             string name = Path.GetFileNameWithoutExtension(path);
-            Debug.Log(name);
+            //Debug.Log(name);
+            return name;
+        } else if(savePath.Contains(Application.persistentDataPath))
+        {
+            string name = Path.GetFileNameWithoutExtension(savePath);
             return name;
         } else
         {
             Debug.LogError("Save file not found in " + path);
             return null;
         }
+    }
+    public static string[] GetFilesInDirectory(string[] files)
+    {
+
+        // Remove Application.persistentDataPath from file paths
+        for (int i = 0; i < files.Length; i++)
+        {
+            files[i] = files[i].Replace(Application.persistentDataPath, "");
+        }
+
+        return files;
+    }
+    public static StructureTypeFile SearchStructureFile(int id, StructureType structureType)
+    {
+        //Debug.Log(id);
+        StructureTypeFile result = new StructureTypeFile();
+        string directoryPath = "";
+        switch(structureType)
+        {
+            case StructureType.file:
+                directoryPath = Application.persistentDataPath + "/StructureData/StructureFile";
+                break;
+            case StructureType.image:
+                directoryPath = Application.persistentDataPath + "/StructureData/StructureImg";
+                break;
+        }
+        string[] files = Directory.GetFiles(directoryPath);
+        string[] filesMain = GetFilesInDirectory(files);
+        if(id > files.Length)
+        {
+            return result;
+        }
+        switch(structureType)
+        {
+            case StructureType.file:
+                result.FilePath = filesMain[id];
+                result.ImageData = null;
+                result.FileName = GetFileName(files[id]);
+                break;
+            case StructureType.image:
+                result.FilePath = filesMain[id];
+                result.ImageData = LoadSpriteFromFile(files[id]);
+                result.FileName = GetFileName(files[id]);
+                break;
+        }
+        return result;
+    }
+    public static string SetStructureNameFromFile(string path)
+    {
+        path = path.Replace("/StructureData/StructureFile\\", "");
+        path = path.Replace(".json", "");
+        return path;
+    }
+    public enum StructureType
+    {
+        file,
+        image
+    }
+    public static StructureType structureType;
+    public static Sprite LoadSpriteFromFile(string filePath)
+    {
+        filePath = Application.persistentDataPath + filePath;
+        
+        byte[] imageData = File.ReadAllBytes(filePath);
+
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(imageData);
+
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Sprite sprite = Sprite.Create(texture, rect, Vector2.zero);
+
+        return sprite;
     }
 }
 
