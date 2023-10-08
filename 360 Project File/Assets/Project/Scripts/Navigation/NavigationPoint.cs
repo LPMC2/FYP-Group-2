@@ -26,4 +26,6 @@ public class NavigationPoint : MonoBehaviour
         Navigate,
         Information
     }
+
+
 }
