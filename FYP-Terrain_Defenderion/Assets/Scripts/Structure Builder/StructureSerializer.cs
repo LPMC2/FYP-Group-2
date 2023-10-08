@@ -93,11 +93,13 @@ public static class StructureSerializer
         if(File.Exists(path))
         {
             string name = Path.GetFileNameWithoutExtension(path);
+            name = SetStructureNameFromFile(name);
             //Debug.Log(name);
             return name;
         } else if(savePath.Contains(Application.persistentDataPath))
         {
             string name = Path.GetFileNameWithoutExtension(savePath);
+            name = SetStructureNameFromFile(name);
             return name;
         } else
         {
@@ -155,6 +157,7 @@ public static class StructureSerializer
     {
         path = path.Replace("/StructureData/StructureFile\\", "");
         path = path.Replace(".json", "");
+        path = path.Replace("_", " ");
         return path;
     }
     public enum StructureType

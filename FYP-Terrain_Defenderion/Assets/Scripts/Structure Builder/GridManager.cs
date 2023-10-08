@@ -686,14 +686,24 @@ public class GridManager : MonoBehaviour
                 cost += structureStorage.tokenCost;
             }
             Debug.Log("cost: " + cost);
-            if (isTokenAffordable(cost, default, StructureSerializer.GetFileName(path)))
+            string structureName = StructureSerializer.GetFileName(path);
+            if (isTokenAffordable(cost, default, structureName))
             {
                 GameObject gameObject = GenerateStructure(structureStorages);
+                gameObject.name = structureName;
             }
         }
     }
-    public void LoadStructure(string filePath)
+    public void LoadStructure(string filePath = default)
     {
+        if(filePath == default || filePath == "")
+        {
+            filePath = path;
+            if(filePath == "Default")
+            {
+                return;
+            }
+        }
         int cost = 0;
         
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
@@ -704,9 +714,11 @@ public class GridManager : MonoBehaviour
 
         }
         Debug.Log("cost: " + cost);
-        if (isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath)))
+        string structureName = StructureSerializer.GetFileName(path);
+        if (isTokenAffordable(cost, default, structureName))
         {
             GameObject gameObject = GenerateStructure(structureStorages);
+            gameObject.name = structureName;
         }
     }
     public GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3))

@@ -77,6 +77,10 @@ public class ModelPictureSaver : MonoBehaviour
 
     private static void CaptureObjectImage(Camera cameraObj, GameObject modelInstance, string filePath)
     {
+        if(filePath == null || filePath == "")
+        {
+            return;
+        } 
         RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
         cameraObj.targetTexture = renderTexture;
         cameraObj.Render();
