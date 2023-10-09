@@ -11,7 +11,8 @@ public class ModelPictureSaver : MonoBehaviour
 
     public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true)
     {
-
+        FolderManager.CreateFolder("/StructureData/StructureImg");
+        FolderManager.CreateFolder("/StructureData/Temp");
         modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
         // Generate a unique file name
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
@@ -35,45 +36,45 @@ public class ModelPictureSaver : MonoBehaviour
 
         return target;
     }
-    private static bool IsModelFullyRendered(Camera cameraObj, GameObject modelInstance)
-    {
-        if (modelRenderer == null)
-        {
-            modelRenderer = modelInstance.GetComponent<Renderer>();
-        }
+    //private static bool IsModelFullyRendered(Camera cameraObj, GameObject modelInstance)
+    //{
+    //    if (modelRenderer == null)
+    //    {
+    //        modelRenderer = modelInstance.GetComponent<Renderer>();
+    //    }
 
-        if (modelRenderer != null && modelRenderer.isVisible)
-        {
-            // Check if the model's bounds are within the camera's view frustum
-            Plane[] cameraPlanes = GeometryUtility.CalculateFrustumPlanes(cameraObj);
-            if (!GeometryUtility.TestPlanesAABB(cameraPlanes, modelRenderer.bounds))
-            {
-                return false;
-            }
-        }
+    //    if (modelRenderer != null && modelRenderer.isVisible)
+    //    {
+    //        // Check if the model's bounds are within the camera's view frustum
+    //        Plane[] cameraPlanes = GeometryUtility.CalculateFrustumPlanes(cameraObj);
+    //        if (!GeometryUtility.TestPlanesAABB(cameraPlanes, modelRenderer.bounds))
+    //        {
+    //            return false;
+    //        }
+    //    }
 
-        // Check if any child models' bounds are within the camera's view frustum
-        Renderer[] childRenderers = modelInstance.GetComponentsInChildren<Renderer>();
-        foreach (Renderer childRenderer in childRenderers)
-        {
-            if (childRenderer.isVisible)
-            {
-                if (!IsChildModelFullyRendered(childRenderer))
-                {
-                    return false;
-                }
-            }
-        }
+    //    // Check if any child models' bounds are within the camera's view frustum
+    //    Renderer[] childRenderers = modelInstance.GetComponentsInChildren<Renderer>();
+    //    foreach (Renderer childRenderer in childRenderers)
+    //    {
+    //        if (childRenderer.isVisible)
+    //        {
+    //            if (!IsChildModelFullyRendered(childRenderer))
+    //            {
+    //                return false;
+    //            }
+    //        }
+    //    }
 
-        return true;
-    }
+    //    return true;
+    //}
 
-    private static bool IsChildModelFullyRendered(Renderer childRenderer)
-    {
-        // Check if the child model's bounds are within the camera's view frustum
-        Plane[] cameraPlanes = GeometryUtility.CalculateFrustumPlanes(cameraObj);
-        return GeometryUtility.TestPlanesAABB(cameraPlanes, childRenderer.bounds);
-    }
+    //private static bool IsChildModelFullyRendered(Renderer childRenderer)
+    //{
+    //    // Check if the child model's bounds are within the camera's view frustum
+    //    Plane[] cameraPlanes = GeometryUtility.CalculateFrustumPlanes(cameraObj);
+    //    return GeometryUtility.TestPlanesAABB(cameraPlanes, childRenderer.bounds);
+    //}
 
     private static void CaptureObjectImage(Camera cameraObj, GameObject modelInstance, string filePath)
     {

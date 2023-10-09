@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using SFB;
 
 public class GridManager : MonoBehaviour
 {
@@ -153,6 +154,10 @@ public class GridManager : MonoBehaviour
         SetStructurePath(structureId);
         SetStructureImg(structureId);
        
+    }
+    public void SetSelection(int value)
+    {
+        structureId = value;
     }
     private void SetStructurePath(int id)
     {
@@ -656,6 +661,22 @@ public class GridManager : MonoBehaviour
     //    // Example: Apply damage to the collided object
     //    hitObject.GetComponent<Health>().TakeDamage(10);
     //}
+    public void ResetGrid()
+    {
+        foreach (Transform child in gridContainer.transform)
+        {
+            GridData gridData = child.GetComponent<GridData>();
+            gridData.reset();
+            if(child.childCount > 0)
+            {
+                Destroy(child.GetChild(0).gameObject);
+            }
+            if (gridData.cellHeight != 0)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
     private void ToggleCellState(int row, int col)
     {
         grid[row, col].ToggleState();
@@ -837,6 +858,30 @@ public class GridManager : MonoBehaviour
         ModelPictureSaver.CaptureAndSaveImage(captureCamera, gridContainer, "/StructureData/Temp/", "tempStructureImg", false);
         captureCamera.cullingMask = oldMask;
     }
+
+    #region File Upload / Export
+    public void UploadStructure()
+    {
+        var extensions = new[] {
+        new ExtensionFilter("Json Files", "json")
+        };
+        var paths = StandaloneFileBrowser.OpenFilePanel("Upload File", "", extensions, false);
+        if(paths.Length == 0 || paths[0] == null)
+        {
+            return;
+        }
+        StructureSerializer.UploadStructure(paths[0]);
+    }
+    public void ExportStructure()
+    {
+        var paths = StandaloneFileBrowser.OpenFolderPanel("Export File", "", false);
+        if (paths.Length == 0 || paths[0] == null)
+        {
+            return;
+        }
+        StructureSerializer.ExportStructure(paths[0],Application.persistentDataPath + path);
+    }
+    #endregion
 }
 
 public class GridCell
