@@ -20,6 +20,7 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
     }
 
+    // This is chack the icon type and set the on click what even will do
     public void Interact()
     {
         switch (m_NavPoint.NavigationType)
@@ -33,6 +34,7 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
     }
 
+    //show text
     public void OnPointerEnter(PointerEventData eventData)
     {
         var navUI = NavigationPointUI.Instance;
@@ -40,6 +42,7 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
             navUI.LocationDisplay = m_NavPoint.name;
     }
 
+    //delete text
     public void OnPointerExit(PointerEventData eventData)
     {
         var navUI = NavigationPointUI.Instance;

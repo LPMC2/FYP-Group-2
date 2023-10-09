@@ -13,7 +13,7 @@ public class ChangeMap : MonoBehaviour
         //panelRectTransform = GetComponent<RectTransform>();
         if (is_needChangeRotate)
         {
-            ChangeViewAreaRotate(225);
+            ChangeViewAreaRotate(137);
         }
     }
 
@@ -60,7 +60,11 @@ public class ChangeMap : MonoBehaviour
         rotValue.z += z;
             transform.localRotation = Quaternion.Euler(0,0, rotValue.z);
     }
-
+    public void ViewAreaRotate(float z)
+    {
+        rotValue.z = z;
+        transform.localRotation = Quaternion.Euler(0, 0, rotValue.z);
+    }
     public void changeposition(Vector2 poA)
     {
         transform.position = poA;
