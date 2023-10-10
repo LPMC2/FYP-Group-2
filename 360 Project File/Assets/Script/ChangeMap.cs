@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class ChangeMap : MonoBehaviour
 {
-    
+
 
     public RectTransform panelRectTransform;
     public Vector2 newPosition;
+    public Camera maincamera;
     private void Start()
     {
         //panelRectTransform = GetComponent<RectTransform>();
@@ -34,23 +35,24 @@ public class ChangeMap : MonoBehaviour
     {
         ViewAreaController();
     }
-
+    private Quaternion cameraRotation;
     private void ViewAreaController()
     {
         if (is_needChangeRotate)
         {
-            if (Input.GetMouseButton(1))
-            {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-                rotValue.z += Input.GetAxis("Mouse X") * rotateSpeed;
-                transform.localRotation = Quaternion.Euler(0, 0, -rotValue.z);
-            }
-            else
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            cameraRotation = maincamera.transform.rotation;
+            //rotValue = cameraRotation.eulerAngles;
+            //transform.localRotation = cameraRotation;
+            transform.rotation = Quaternion.Euler(0f, 0f, -cameraRotation.eulerAngles.y - 137);
+        }
+        else
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
 
     }
@@ -58,7 +60,7 @@ public class ChangeMap : MonoBehaviour
     public void ChangeViewAreaRotate(float z)
     {
         rotValue.z += z;
-            transform.localRotation = Quaternion.Euler(0,0, rotValue.z);
+        transform.localRotation = Quaternion.Euler(0, 0, rotValue.z);
     }
     public void ViewAreaRotate(float z)
     {
