@@ -12,6 +12,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private KeyCode openMenuKey = KeyCode.M;
     [Header("User Settings")]
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject cameraObject;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
     [SerializeField] private Camera captureCamera;
@@ -30,7 +31,7 @@ public class GridManager : MonoBehaviour
     public int numColumns = 5;
     public int numHeight = 5;
     public float cellSize = 1f;
-    [SerializeField] private GameObject cameraObject;
+
     [SerializeField] private GameObject gridContainer;
     [SerializeField] private GameObject gridBlockObj;
     [SerializeField] private GameObject gridVisualLayer;
@@ -38,6 +39,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private float ContactRange = 10f;
     [SerializeField] private GameObject placeBlockObject;
     [SerializeField] private int currentBlockId;
+    [Header("Menu & Saving Settings")]
     [SerializeField] private GameObject menuObj;
     #region placeBlockObject + currentBlockId Setter and Getter
     public GameObject PlaceBlockObject {
