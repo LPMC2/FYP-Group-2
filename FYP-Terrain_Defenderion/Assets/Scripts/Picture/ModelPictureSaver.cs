@@ -86,11 +86,10 @@ public class ModelPictureSaver : MonoBehaviour
         cameraObj.targetTexture = renderTexture;
         cameraObj.Render();
 
-        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
         RenderTexture.active = renderTexture;
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture.Apply();
-
         byte[] bytes = texture.EncodeToPNG();
         File.WriteAllBytes(filePath, bytes);
 
@@ -101,7 +100,20 @@ public class ModelPictureSaver : MonoBehaviour
 
         Debug.Log("Image captured and saved as " + filePath);
     }
+    private static void ImageTransparent(Texture2D image, Camera camera)
+    {
+        Color bgColor = camera.backgroundColor;
+        Color[] pixels = image.GetPixels();
 
+        for(int i=0; i< pixels.Length;i++)
+        {
+            Color pixel = pixels[i];
+            if (pixel == bgColor)
+                pixel.a = 0f;
+        }
+        image.SetPixels(pixels);
+        image.Apply();
+    }
     private static string GenerateFileType(string name, string type)
     {
         string fileName = name + "." + type;
