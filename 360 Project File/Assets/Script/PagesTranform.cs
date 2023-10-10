@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-public class Test : MonoBehaviour
+public class PagesTranform : MonoBehaviour
 {
     //This is two funtion need to use
 
@@ -23,75 +23,16 @@ public class Test : MonoBehaviour
         contentTransform = contentQuestions.transform.position;
         SavePosition = rectTransform.anchoredPosition.x;
         targetPosition.x = (int)SavePosition;
-        //setQuestion();
         backBtn.SetActive(false);
 
     }
-    //public void nextPage()
-    //{
-    //    if (page < pagelimit)
-    //    {
-    //        page++;
-    //        foreach (Transform child in contentQuestions.transform)
-    //        {
-    //            Destroy(child.gameObject);
-    //        }
-    //        setQuestion();
-    //        if (page == pagelimit)
-    //        {
-    //            nextBtn.SetActive(false);
-    //        }
-    //        else
-    //        {
-
-    //            nextBtn.SetActive(true);
-    //        }
-    //        backBtn.SetActive(true);
-    //    }
-    //}
-    //public void backPage()
-    //{
-    //    if (page > 0)
-    //    {
-    //        page--;
-    //        foreach (Transform child in contentQuestions.transform)
-    //        {
-    //            Destroy(child.gameObject);
-    //        }
-    //        //setQuestion();
-    //        if (page == 0)
-    //        {
-    //            backBtn.SetActive(false);
-    //            nextBtn.SetActive(true);
-    //        }
-    //        else
-    //        {
-    //            nextBtn.SetActive(true);
-    //        }
-    //    }
-    //}
-
-    //public void setQuestion()
-    //{
-    //    //Add UI Object to the content
-        
-
-    //    for(int i = 0; i < pagelimit; i++)
-    //    {
-    //        GameObject target = Instantiate(questionsUIObject, contentTransform, Quaternion.identity);
-    //        target.transform.SetParent(contentQuestions.transform);
-            
-    //    }
-
-    //}
-
+    
     //--------------------------------------------------------------------------------
     //There are make the scroll move
     // Update is called once per frame
     //cal the contect position (1314*1.2 + 100)*max-100= full size||fullsize/2 = middle ||
     public RectTransform rectTransform;
     JourneyControl control;
-    //public Vector2 newPosition;
     public bool is_up;
     public Vector2 targetPosition;
     public float moveSpeed = 20.0f;
@@ -108,11 +49,6 @@ public class Test : MonoBehaviour
     public void Update()
     {
         float step = moveSpeed * Time.deltaTime;
-
-        //if (page < pagelimit && page > Min || page == Min && !is_up || page == pagelimit && is_up)
-        //{
-            //rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
-        //}
         rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
 
     }
@@ -138,9 +74,9 @@ public class Test : MonoBehaviour
         SavePosition = 0;
         SavePosition -= addnum * (a-1);
         targetPosition.x = (int)SavePosition;
-        //SavePosition +=201+ (addnum - 100) / 2;
         checkpage();
     }
+
     private void checkpage()
     {
         
@@ -163,6 +99,7 @@ public class Test : MonoBehaviour
             Tour360Button.SetActive(false);
         }
     }
+
     public void addpage()
     {
         if (this.is_up)
