@@ -11,10 +11,9 @@ public class ChangeMap : MonoBehaviour
     public Camera maincamera;
     private void Start()
     {
-        //panelRectTransform = GetComponent<RectTransform>();
         if (is_needChangeRotate)
         {
-            ChangeViewAreaRotate(137);
+            //SaveMapPos = obj.transform.position;
         }
     }
 
@@ -28,12 +27,16 @@ public class ChangeMap : MonoBehaviour
     private float zoomAmount = 60f;
 
     private GameObject gameObjectValue;
-    private Vector3 rotValue;
+
+    [SerializeField] private Vector3 mapPos;
+    [SerializeField] private Vector3 SaveMapPos;
     public bool is_needChangeRotate = false;
+    GameObject obj;
     // Update is called once per frame
     private void Update()
     {
         ViewAreaController();
+        changeposition();
     }
     private Quaternion cameraRotation;
     private void ViewAreaController()
@@ -45,8 +48,6 @@ public class ChangeMap : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
 
             cameraRotation = maincamera.transform.rotation;
-            //rotValue = cameraRotation.eulerAngles;
-            //transform.localRotation = cameraRotation;
             transform.rotation = Quaternion.Euler(0f, 0f, -cameraRotation.eulerAngles.y - 137);
         }
         else
@@ -57,18 +58,18 @@ public class ChangeMap : MonoBehaviour
 
     }
 
-    public void ChangeViewAreaRotate(float z)
+    public RectTransform rectTransform;
+    public void changeposition()
     {
-        rotValue.z += z;
-        transform.localRotation = Quaternion.Euler(0, 0, rotValue.z);
+        mapPos = maincamera.transform.position;
+        Vector2 ve = new Vector2(mapPos.x-SaveMapPos.x, mapPos.y-SaveMapPos.y);
+        changeMap(ve);
+        SaveMapPos = maincamera.transform.position;
     }
-    public void ViewAreaRotate(float z)
+    public void changeMap(Vector2 pos)
     {
-        rotValue.z = z;
-        transform.localRotation = Quaternion.Euler(0, 0, rotValue.z);
-    }
-    public void changeposition(Vector2 poA)
-    {
-        transform.position = poA;
+        float step = 20 * Time.deltaTime;
+        pos +=rectTransform.anchoredPosition;
+        rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, pos, step);
     }
 }
