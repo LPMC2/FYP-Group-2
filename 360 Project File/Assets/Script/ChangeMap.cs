@@ -35,8 +35,12 @@ public class ChangeMap : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        ViewAreaController();
-        changeposition();
+        if (is_needChangeRotate)
+        {
+            ViewAreaController();
+            changeposition();
+        }
+        
     }
     private Quaternion cameraRotation;
     private void ViewAreaController()
