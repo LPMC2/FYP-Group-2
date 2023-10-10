@@ -33,6 +33,7 @@ public class ScoreBehaviour : ScriptableObject
         correctCalScore = correctAmount * correctScore;
         timeBonusScore = 1 + (timeRemain/TotalTime) * timeBonusMultiplier;
         score = Mathf.RoundToInt(correctCalScore * timeBonusScore);
+        score = Mathf.Clamp(score, 0, 100);
     }
     public int getCorrectScore()
     {

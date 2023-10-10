@@ -30,12 +30,15 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private GameObject EndPageUI;
     [SerializeField] private GameObject endQuestionPrefab;
     [SerializeField] private GameObject endQContent;
+    [SerializeField] private GameObject ScoreEllipseBar;
+    [SerializeField] private float lerpSpeed = 1f;
     [Header("End UI - Score")]
     [SerializeField] private TMP_Text correctCountUI;
     [SerializeField] private TMP_Text correctScoreUI;
     [SerializeField] private TMP_Text timeBonusUI;
     [SerializeField] private TMP_Text timeScoreUI;
     [SerializeField] private TMP_Text totalScoreUI;
+    [SerializeField] private TMP_Text ScoreProportionUI;
     [Header("End UI - Stars")]
     [SerializeField] private GameObject starsUI;
     [SerializeField] private Sprite grayStar;
@@ -110,6 +113,7 @@ public class QuizUIManager : MonoBehaviour
                 quizSO.questions[i].inputAnswer = -1;
                 quizSO.GetAns(i, lang);
             }
+            if(explainationUI != null)
             explainationUI.SetActive(false);
             GetQuestionNumber();
             startTime();
@@ -195,9 +199,12 @@ public class QuizUIManager : MonoBehaviour
     }
     private void setExplainationUI()
     {
-        TMP_Text explUI = explainationUI.transform.GetChild(0).GetComponent<TMP_Text>();
-        explainationUI.SetActive(true);
-        explUI.text = quizSO.getLanText(quizSO.questions[page].explaination, lang);
+        if (explainationUI != null)
+        {
+            TMP_Text explUI = explainationUI.transform.GetChild(0).GetComponent<TMP_Text>();
+            explainationUI.SetActive(true);
+            explUI.text = quizSO.getLanText(quizSO.questions[page].explaination, lang);
+        }
     }
     public void checkAnswer()
     {
@@ -293,6 +300,7 @@ public class QuizUIManager : MonoBehaviour
             removeChild(currentContentUI, "Answer");
             SetQuestion();
             getAnswers();
+            if(explainationUI != null)
             explainationUI.SetActive(false);
             //Set "Next" Button and "Back" button to be visible or not depending on the current page
 
@@ -351,10 +359,13 @@ public class QuizUIManager : MonoBehaviour
         {
             SetQuestion();
 
-            setExplainationUI();
-            if (currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts != false)
+            if (explainationUI != null)
             {
-                explainationUI.SetActive(false);
+                setExplainationUI();
+                if (currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts != false)
+                {
+                    explainationUI.SetActive(false);
+                }
             }
             GetQuestionNumber();
             reloadAns();
@@ -576,16 +587,18 @@ public class QuizUIManager : MonoBehaviour
         timeScoreUI.text = "x " + scoreSO.getTimeBonusScore().ToString();
         totalScoreUI.text = scoreSO.getScore().ToString();
         getStars();
+        LerpEllipseValue();
+        GetProportionUI();
     }
     private void getStars()
     {
         int starCount = 0;
         float scorePercentage = 0;
         scorePercentage = ((float)scoreSO.getScore() / quizSO.fullStarsScoreReq) * 100f;
-        if(scorePercentage < 60 && scorePercentage > 0)
+        if(scorePercentage < 50 && scorePercentage > 0)
         {
             starCount = 1;
-        } else if(scorePercentage >= 60 && scorePercentage < 100)
+        } else if(scorePercentage >= 75 && scorePercentage < 100)
         {
             starCount = 2;
         } else if(scorePercentage >= 100)
@@ -608,5 +621,16 @@ public class QuizUIManager : MonoBehaviour
             }
         }
         
+    }
+    public void LerpEllipseValue()
+    {
+        Image image = ScoreEllipseBar.GetComponent<Image>();
+        float scorePercentage = 0;
+        scorePercentage = (float)scoreSO.getScore() / quizSO.fullStarsScoreReq;
+        LerpUtility.SmoothLerp(image, 0, scorePercentage, lerpSpeed);
+    }
+    private void GetProportionUI()
+    {
+        ScoreProportionUI.text = (int)scoreSO.getScore() + "/" + (int)quizSO.fullStarsScoreReq;
     }
 }
