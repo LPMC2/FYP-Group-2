@@ -6,20 +6,11 @@ public class ChangeMap : MonoBehaviour
 {
 
 
-    public RectTransform panelRectTransform;
     public Vector2 newPosition;
     public Camera maincamera;
     private void Start()
     {
-        if (is_needChangeRotate)
-        {
-            //SaveMapPos = obj.transform.position;
-        }
-    }
-
-    public void ChangePanelPosition()
-    {
-        panelRectTransform.anchoredPosition = newPosition;
+            SaveMapPos = obj.transform.position;
     }
 
     private float rotateSpeed = 1.5f;
@@ -28,52 +19,59 @@ public class ChangeMap : MonoBehaviour
 
     private GameObject gameObjectValue;
 
-    [SerializeField] private Vector3 mapPos;
-    [SerializeField] private Vector3 SaveMapPos;
-    public bool is_needChangeRotate = false;
-    GameObject obj;
+    [SerializeField] GameObject obj;
     // Update is called once per frame
     private void Update()
     {
-        if (is_needChangeRotate)
-        {
             ViewAreaController();
             changeposition();
-        }
-        
     }
     private Quaternion cameraRotation;
     private void ViewAreaController()
     {
-        if (is_needChangeRotate)
-        {
-
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-
             cameraRotation = maincamera.transform.rotation;
             transform.rotation = Quaternion.Euler(0f, 0f, -cameraRotation.eulerAngles.y - 137);
-        }
-        else
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
 
     }
 
-    public RectTransform rectTransform;
+    public GameObject Map1;
+    public GameObject Map2;
+
+    public RectTransform F1MapRectTransform;
+    public RectTransform F2MapRectTransform;
+
+    [SerializeField] private Vector3 mapPos;
+    [SerializeField] private Vector3 SaveMapPos;
+    [SerializeField] private Vector3 mapPos1;
+    [SerializeField] private Vector3 SaveMapPos1;
     public void changeposition()
     {
         mapPos = maincamera.transform.position;
-        Vector2 ve = new Vector2(mapPos.x-SaveMapPos.x, mapPos.y-SaveMapPos.y);
+        Vector2 ve = new Vector2(-(mapPos.x - SaveMapPos.x) * 100, -(mapPos.z - SaveMapPos.z) * 100);
+
+        if (mapPos.y == 0)
+        {
+            Map1.SetActive(true);
+            Map2.SetActive(false);
+        }
+        else
+        {
+            Map1.SetActive(false);
+            Map2.SetActive(true);
+        }
+        
         changeMap(ve);
         SaveMapPos = maincamera.transform.position;
     }
     public void changeMap(Vector2 pos)
     {
-        float step = 20 * Time.deltaTime;
-        pos +=rectTransform.anchoredPosition;
-        rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, pos, step);
+        Vector2 M1;
+        Vector2 M2;
+
+        M1 = pos + F1MapRectTransform.anchoredPosition;
+        M2 = pos + F2MapRectTransform.anchoredPosition;
+
+        F1MapRectTransform.anchoredPosition = M1;
+        F2MapRectTransform.anchoredPosition = M2;
     }
 }
