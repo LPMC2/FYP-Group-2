@@ -42,6 +42,25 @@ public class arrayBehaviour
         }
         return newArray;
     }
+    public static T[] addArray<T>(T[] arr)
+    {
+        int originalsize = arr.Length;
+        T[] newArray = new T[originalsize + 1];
+        for (int i = 0; i <= originalsize; i++)
+        {
+            if (i < originalsize)
+            {
+
+                newArray[i] = arr[i];
+            }
+            else
+            {
+
+                newArray[i] = default;
+            }
+        }
+        return newArray;
+    }
     public static T[] ResetArray<T>(T[] originalArray)
     {
         T[] newArray = new T[1];
@@ -49,6 +68,25 @@ public class arrayBehaviour
 
         return newArray;
     }
+    public static T[] RemoveArrayElement<T>(T[] originalArray, int rmId)
+    {
+        originalArray[rmId] = default(T);
+        T[] newArray = new T[originalArray.Length - 1];
+        for(int i=0; i<newArray.Length; i++)
+        {
+            if(i != rmId)
+            {
+                newArray[i] = originalArray[i];
+            } else
+            {
+                if(i != originalArray.Length-1)
+                newArray[i] = originalArray[i+1];
+            }
+        }
+        return newArray;
+
+    }
+
     public static string[,] Add2DArray(string[,] originalArray, string newValue)
     {
         int rows = originalArray.GetLength(0);

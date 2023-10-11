@@ -27,14 +27,17 @@ public class InventorySystem : MonoBehaviour
     //{
     //    selectedSlot = id;
     //}
-
+    public Slot[] GetSlots()
+    {
+        return slot;
+    }
     [System.Serializable]
     public class Slot
     {
         public Item item;
-        [SerializeField] int count;
-        [SerializeField] string name;
-        [SerializeField] int itemId;
+        [SerializeField] int count = 0;
+        [SerializeField] string name = "";
+        [SerializeField] int itemId = -1;
         public int getCount()
         {
             return count;
@@ -57,7 +60,13 @@ public class InventorySystem : MonoBehaviour
         }
         public string getName()
         {
-            return name;
+            if (name != null || name != "")
+            {
+                return name;
+            } else
+            {
+                return item.GetItem().name;
+            }
         }
     }
     [System.Serializable]

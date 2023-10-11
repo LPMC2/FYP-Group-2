@@ -19,6 +19,7 @@ public class InventoryBehaviour : MonoBehaviour
     [Header("Mouse Input")]
     [SerializeField] private float scrollCoolDown = 0.2f;
     private float scrollTimer = 0f; // Timer to track cooldown
+    [SerializeField] private bool isScrollable = true;
     [Header("Main Settings")]
     [SerializeField] private int selectedSlot = 1;
     public InventorySystem inventory;
@@ -116,6 +117,52 @@ public class InventoryBehaviour : MonoBehaviour
             scrollTimer -= Time.deltaTime;
         }
     }
+    #region Add / Remove Slot Controls
+    public void AddSlot()
+    {
+        GameObject ui = Instantiate(slotObject, SlotPlaceHolder.transform.position, Quaternion.identity);
+        ui.transform.SetParent(SlotPlaceHolder.transform);
+        if (ui.GetComponent<Image>() == null)
+        {
+            ui.AddComponent<Image>();
+        }
+        Image uiImg = ui.GetComponent<Image>();
+        uiImg.sprite = slotImageNormal;
+        uiImg.preserveAspect = true;
+
+    }
+    public void AddNewItemAndSlot(int id)
+    {
+        //id -> Item Element from ItemSO
+        AddSlot();
+        if (inventory != null) 
+        {
+            //Add new slot and assign data into it
+            inventory.slot = arrayBehaviour.addArray<InventorySystem.Slot>(inventory.slot);
+            
+            int slotLength = inventory.slot.Length - 1;
+            inventory.slot[slotLength] = new InventorySystem.Slot();
+            inventory.slot[slotLength].item = new InventorySystem.Item();
+            setSlotItem(slotLength, id);
+
+        }
+    }
+    public void RemoveSlot(int id)
+    {
+        if(SlotPlaceHolder.transform.childCount-1 >= id)
+        {
+            if (inventory != null)
+            {
+                inventory.slot[id] = null;
+                inventory.slot = arrayBehaviour.RemoveArrayElement<InventorySystem.Slot>(inventory.slot, id);
+            }
+            Destroy(SlotPlaceHolder.transform.GetChild(id).gameObject);
+
+
+        }
+    }
+
+    #endregion
     public void setup()
     {
         setSlotUI();
@@ -125,15 +172,7 @@ public class InventoryBehaviour : MonoBehaviour
     {
         for (int i = 0; i < inventory.slot.Length; i++)
         {
-            GameObject ui = Instantiate(slotObject, SlotPlaceHolder.transform.position, Quaternion.identity);
-            ui.transform.SetParent(SlotPlaceHolder.transform);
-            if (ui.GetComponent<Image>() == null)
-            {
-                ui.AddComponent<Image>();
-            }
-            Image uiImg = ui.GetComponent<Image>();
-            uiImg.sprite = slotImageNormal;
-            uiImg.preserveAspect = true;
+            AddSlot();
         }
     }
     private void setInitialInventory()
@@ -145,10 +184,11 @@ public class InventoryBehaviour : MonoBehaviour
     }
     public void setSlotItem(int id, int item)
     {
-        if(item >= itemData.item.Length)
+        if(item >= itemData.item.Length || id >= inventory.slot.Length)
         {
             return;
         }
+        Debug.Log(id + ":" + item + "\n" + inventory.slot[inventory.slot.Length-1] + "\n" + inventory.slot[inventory.slot.Length - 2].getId());
         inventory.slot[id].setId(item);
         if (item != -1 && item < itemData.item.Length)
         {

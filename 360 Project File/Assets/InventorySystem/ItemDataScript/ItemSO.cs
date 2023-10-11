@@ -13,5 +13,16 @@ public class ItemSO : ScriptableObject
         public GameObject itemObject;
         public LocalizableString itemName;
         public Sprite itemSprite;
+
+        public string GetItemName()
+        {
+            if(itemName.text == null || itemName.text == "")
+            {
+                return itemObject.name;
+            } else
+            {
+                return itemName.text;
+            }
+        }
     }
 }
