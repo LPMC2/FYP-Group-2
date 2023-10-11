@@ -51,13 +51,13 @@ public class ChangeMap : MonoBehaviour
 
         if (mapPos.y == 0)
         {
-            Map1.SetActive(true);
-            Map2.SetActive(false);
+            //Map1.SetActive(true);
+            //Map2.SetActive(false);
         }
         else
         {
-            Map1.SetActive(false);
-            Map2.SetActive(true);
+            //Map1.SetActive(false);
+            //Map2.SetActive(true);
         }
         
         changeMap(ve);
