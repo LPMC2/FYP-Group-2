@@ -8,6 +8,10 @@ using SFB;
 
 public class GridManager : MonoBehaviour
 {
+    [Header("Managers")]
+    [SerializeField] private GridGenerator gridGenerator;
+    [SerializeField] private GridUIManager gridUIManager;
+    [SerializeField] private GridInputManager gridInputManager;
     [Header("Input Settings")]
     [SerializeField] private KeyCode openMenuKey = KeyCode.M;
     [Header("User Settings")]
@@ -179,6 +183,9 @@ public class GridManager : MonoBehaviour
     private void Awake()
     {
         blockData = BlockManager.BlockData;
+        gridInputManager = gameObject.GetComponent<GridInputManager>();
+        gridGenerator = gameObject.GetComponent<GridGenerator>();
+        gridUIManager = gameObject.GetComponent<GridUIManager>();
     }
     private void Start()
     {
@@ -235,36 +242,36 @@ public class GridManager : MonoBehaviour
     }
     public void CreateInteractableGrid()
     {
-        cellVisuals = new GameObject[numRows, numColumns];
-        int count = 0;
-        // Calculate the offset to position the grid at the center of the current holder object
-        Vector3 gridOffset = new Vector3((numRows - 1) * cellSize * 0.5f, -(cellSize/2), (numColumns - 1) * cellSize * 0.5f);
+        //cellVisuals = new GameObject[numRows, numColumns];
+        //int count = 0;
+        //// Calculate the offset to position the grid at the center of the current holder object
+        //Vector3 gridOffset = new Vector3((numRows - 1) * cellSize * 0.5f, -(cellSize/2), (numColumns - 1) * cellSize * 0.5f);
 
-        for (int height = 0; height < numHeight; height++)
-        {
-            for (int row = 0; row < numRows; row++)
-            {
-                for (int col = 0; col < numColumns; col++)
-                {
-                    GameObject cellInteractable = GameObject.Instantiate(gridBlockObj, gridContainer.transform.position + new Vector3(row * cellSize, height * cellSize, col * cellSize) - gridOffset, Quaternion.identity);
-                    cellInteractable.name = "GridBlock: " + (row + col + height);
-                    GridData gridData = cellInteractable.AddComponent<GridData>();
-                    gridData.cellX = row;
-                    gridData.cellY = col;
-                    gridData.cellHeight = height;
-                    cellInteractable.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
-                    cellInteractable.transform.SetParent(gridContainer.transform);
-                    cellVisuals[row, col] = cellInteractable;
+        //for (int height = 0; height < numHeight; height++)
+        //{
+        //    for (int row = 0; row < numRows; row++)
+        //    {
+        //        for (int col = 0; col < numColumns; col++)
+        //        {
+        //            GameObject cellInteractable = GameObject.Instantiate(gridBlockObj, gridContainer.transform.position + new Vector3(row * cellSize, height * cellSize, col * cellSize) - gridOffset, Quaternion.identity);
+        //            cellInteractable.name = "GridBlock: " + (row + col + height);
+        //            GridData gridData = cellInteractable.AddComponent<GridData>();
+        //            gridData.cellX = row;
+        //            gridData.cellY = col;
+        //            gridData.cellHeight = height;
+        //            cellInteractable.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
+        //            cellInteractable.transform.SetParent(gridContainer.transform);
+        //            cellVisuals[row, col] = cellInteractable;
 
-                        if (height > -1 && cellInteractable != null)
-                        {
-                            cellInteractable.SetActive(false);
-                        }
+        //                if (height > -1 && cellInteractable != null)
+        //                {
+        //                    cellInteractable.SetActive(false);
+        //                }
                     
-                    count++;
-                }
-            }
-        }
+        //            count++;
+        //        }
+        //    }
+        //}
     }
 
     private void Update()
@@ -322,12 +329,13 @@ public class GridManager : MonoBehaviour
     }
     private void PerformPlaceRaycast()
     {
-        RaycastHit[] hits = new RaycastHit[(int)ContactRange];
-        Ray ray = new Ray(cameraObject.transform.position, cameraObject.transform.forward);
-        hits = Physics.RaycastAll(ray, ContactRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
-        Physics.RaycastNonAlloc(ray, hits);
-        HandlePlaceBlock(hits);
-        Debug.DrawRay(cameraObject.transform.position, cameraObject.transform.forward * ContactRange, Color.red, 5f);
+        //RaycastHit[] hits = new RaycastHit[(int)ContactRange];
+        //Ray ray = new Ray(cameraObject.transform.position, cameraObject.transform.forward);
+        //hits = Physics.RaycastAll(ray, ContactRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
+        //Physics.RaycastNonAlloc(ray, hits);
+        //HandlePlaceBlock(hits);
+        //Debug.DrawRay(cameraObject.transform.position, cameraObject.transform.forward * ContactRange, Color.red, 5f);
+        
     }
 
     private void PerformOutlineRaycast()
