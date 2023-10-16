@@ -17,12 +17,13 @@ public class PagesTranform : MonoBehaviour
     [SerializeField] GameObject backBtn;
     Vector3 contentTransform;
     Vector3 contentbetween = new Vector3(0,26,0);
-    [SerializeField] private int page = 0;
+    private int page = 1;
     void Start()
     {
         contentTransform = contentQuestions.transform.position;
         SavePosition = rectTransform.anchoredPosition.x;
-        targetPosition.x = (int)SavePosition;
+        targetPosition.y = 0;
+        targetPosition.x = 0;
         backBtn.SetActive(false);
 
     }
@@ -32,17 +33,15 @@ public class PagesTranform : MonoBehaviour
     // Update is called once per frame
     //cal the contect position (1314*1.2 + 100)*max-100= full size||fullsize/2 = middle ||
     public RectTransform rectTransform;
-    JourneyControl control;
     public bool is_up;
-    public Vector2 targetPosition;
-    public float moveSpeed = 20.0f;
-    [SerializeField]
-    float SavePosition;
+    private Vector2 targetPosition;
+    private float moveSpeed = 20.0f;
+    private float SavePosition;
 
     public void ChangePanelPosition(bool is_up)
     {
         this.is_up = is_up;
-        AddPosition(is_up);
+        AddPosition();
         addpage();
         checkpage();
     }
@@ -52,7 +51,7 @@ public class PagesTranform : MonoBehaviour
         rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
 
     }
-    public void AddPosition(bool is_up)
+    public void AddPosition()
     {
         float addnum = 1676.8f;
         if (is_up)
