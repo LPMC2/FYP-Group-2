@@ -24,6 +24,7 @@ public class QuizSO : ScriptableObject
     }
     public string[] GetAnswers(int page, string language)
     {
+        //Get the list of answers from specific language
         string[] items = new string[1];
         int i = 0;
         int num = 0;
@@ -52,6 +53,7 @@ public class QuizSO : ScriptableObject
         }
         return items;
     }
+
     private string[] addArray(string[] arr, string newValue)
     {
         int originalsize = arr.Length;
@@ -91,6 +93,7 @@ public class QuizSO : ScriptableObject
     }
     public void checkAns()
     {
+        //Get the number of correct answers and store the value to correctCount variable
         correctCount = 0;
         for (int i = 0; i < questions.Length;i++)
         {
@@ -111,6 +114,7 @@ public class QuizSO : ScriptableObject
     }
     public string getLanText(LocalizableString[] stringArr, string lang)
     {
+        //Get text from language
         for(int i =0; i<stringArr.Length; i++)
         {
             if (stringArr[i].language == lang)
@@ -122,6 +126,7 @@ public class QuizSO : ScriptableObject
     }
     public bool checkSingleAns(int page)
     {
+        //Check if the answer is correct
         for (int j = 0; j < questions[page].options.Length; j++)
         {
             if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer)
@@ -142,6 +147,7 @@ public class QuizSO : ScriptableObject
     }
     public void GetAns(int page,string lang)
     {
+        //Set the answer id to sort from language
         int index = 0;
         language = lang;
         for(int i=0; i< questions[page].options.Length; i++)
