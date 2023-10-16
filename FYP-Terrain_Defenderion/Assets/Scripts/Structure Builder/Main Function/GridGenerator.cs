@@ -8,9 +8,10 @@ public class GridGenerator : MonoBehaviour
     public int numColumns = 25;
     public int numHeight = 25;
     public float cellSize = 0.5f;
-    public GameObject BuildBlock(GameObject block, Transform parent, Transform shootingPoint, float cellSize, float range)
+    public GameObject BuildBlock(GameObject block, Transform parent, Transform shootingPoint, float range)
     {
         GameObject targetBlock = new GameObject();
+        GridData gridData = targetBlock.AddComponent<GridData>();
         if (Physics.Raycast(shootingPoint.position, shootingPoint.forward, out RaycastHit hitInfo, range))
         {
             if (hitInfo.transform.CompareTag("Grid"))
@@ -24,11 +25,15 @@ public class GridGenerator : MonoBehaviour
             else
             {
                 Vector3 spawnPosition = CalculateSpawnPosition(hitInfo.point, Vector3.zero, cellSize);
-                if (IsValidPosition(spawnPosition))
-                {
-                    targetBlock = Instantiate(block, spawnPosition, Quaternion.identity, parent);
-                }
+                Vector3 sPointLocation = new Vector3(Mathf.Round(shootingPoint.parent.localPosition.x), Mathf.Round(shootingPoint.parent.localPosition.y), Mathf.Round(shootingPoint.parent.localPosition.z));
+                Debug.Log(spawnPosition + "\n" + spawnPosition + shootingPoint.parent.localPosition);
+                    targetBlock = Instantiate(block, spawnPosition + sPointLocation, Quaternion.identity, parent);
+                    gridData.cellX = (int)(spawnPosition.x / cellSize * 2);
+                    gridData.cellY = (int)(spawnPosition.z / cellSize * 2);
+                    gridData.cellHeight = (int)(spawnPosition.y / cellSize * 2);
+                
             }
+            
         }
         return targetBlock;
     }

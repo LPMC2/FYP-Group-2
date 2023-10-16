@@ -53,6 +53,10 @@ public class InventoryBehaviour : MonoBehaviour
     public GridManager gridManager;
     private ItemSO itemData;
     private BlockSO blockData;
+    [Header("Capture Settings")]
+    [SerializeField] private Camera captureCamera;
+    [SerializeField] private GameObject captureContainer;
+    [SerializeField] private string captureSavePath = "/StructureData/Inventory/Temp";
     private void Awake()
     {
         StartCursorState();
@@ -448,9 +452,23 @@ public class InventoryBehaviour : MonoBehaviour
                         instantiatedUI.AddComponent<Image>();
                     }
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                    RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
+                    float width = rectTransform.rect.width * 2.5f;
+                    float height = rectTransform.rect.height * 2.5f;
+                    rectTransform.sizeDelta = new Vector2(width, height);
                     Image uiImg = instantiatedUI.GetComponent<Image>();
 
-                    uiImg.sprite = ConvertMaterialToSprite(blockData.blockData[inventory.slot[id].getId()].blockTexture);
+                    GameObject gameObject = Instantiate(blockData.blockData[inventory.slot[id].getId()].blockModel);
+                    Debug.Log(gameObject);
+                    float cameraSize = gridManager.captureCamera.orthographicSize;
+                    gameObject.transform.SetParent(gridManager.captureCamera.transform);
+                    gameObject.transform.localPosition = Vector3.forward * 10;
+                    gridManager.captureCamera.orthographicSize = blockData.blockData[inventory.slot[id].getId()].captureOrthographicSize;
+                    Debug.Log(gameObject.transform.position);
+                    ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
+
+                    uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath +"/" + id + ".png");
+                    gridManager.captureCamera.orthographicSize = cameraSize;
                     uiImg.preserveAspect = true;
                 }
             }
