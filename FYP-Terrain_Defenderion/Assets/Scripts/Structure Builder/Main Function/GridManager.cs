@@ -5,9 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SFB;
-
 public class GridManager : MonoBehaviour
 {
+    [Header("Managers")]
+    [SerializeField] private GridGenerator gridGenerator;
+    [SerializeField] private GridUIManager gridUIManager;
+    [SerializeField] private GridInputManager gridInputManager;
     [Header("Input Settings")]
     [SerializeField] private KeyCode openMenuKey = KeyCode.M;
     [Header("User Settings")]
@@ -15,7 +18,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
-    [SerializeField] private Camera captureCamera;
+    public Camera captureCamera;
     [Header("Token Settings")]
     [SerializeField] private GameObject tokenAmountTextDisplay;
     [Header("Menu Settings")]
@@ -32,7 +35,7 @@ public class GridManager : MonoBehaviour
     public int numHeight = 5;
     public float cellSize = 1f;
 
-    [SerializeField] private GameObject gridContainer;
+    public GameObject gridContainer;
     [SerializeField] private GameObject gridBlockObj;
     [SerializeField] private GameObject gridVisualLayer;
     [SerializeField] private GameObject gridVisibleObj;
@@ -179,6 +182,9 @@ public class GridManager : MonoBehaviour
     private void Awake()
     {
         blockData = BlockManager.BlockData;
+        gridInputManager = gameObject.GetComponent<GridInputManager>();
+        gridGenerator = gameObject.GetComponent<GridGenerator>();
+        gridUIManager = gameObject.GetComponent<GridUIManager>();
     }
     private void Start()
     {
@@ -238,7 +244,7 @@ public class GridManager : MonoBehaviour
         cellVisuals = new GameObject[numRows, numColumns];
         int count = 0;
         // Calculate the offset to position the grid at the center of the current holder object
-        Vector3 gridOffset = new Vector3((numRows - 1) * cellSize * 0.5f, -(cellSize/2), (numColumns - 1) * cellSize * 0.5f);
+        Vector3 gridOffset = new Vector3((numRows - 1) * cellSize * 0.5f, -(cellSize / 2), (numColumns - 1) * cellSize * 0.5f);
 
         for (int height = 0; height < numHeight; height++)
         {
@@ -256,11 +262,11 @@ public class GridManager : MonoBehaviour
                     cellInteractable.transform.SetParent(gridContainer.transform);
                     cellVisuals[row, col] = cellInteractable;
 
-                        if (height > -1 && cellInteractable != null)
-                        {
-                            cellInteractable.SetActive(false);
-                        }
-                    
+                    if (height > -1 && cellInteractable != null)
+                    {
+                        cellInteractable.SetActive(false);
+                    }
+
                     count++;
                 }
             }
@@ -328,6 +334,7 @@ public class GridManager : MonoBehaviour
         Physics.RaycastNonAlloc(ray, hits);
         HandlePlaceBlock(hits);
         Debug.DrawRay(cameraObject.transform.position, cameraObject.transform.forward * ContactRange, Color.red, 5f);
+
     }
 
     private void PerformOutlineRaycast()

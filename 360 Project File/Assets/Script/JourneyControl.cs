@@ -45,11 +45,11 @@ public class JourneyControl : MonoBehaviour
     {
         if (is_up)
         {
-            targetPosition.y = rectTransform.anchoredPosition.y - 125;
+            targetPosition.y = rectTransform.anchoredPosition.y - 135;
         }
         else
         {
-            targetPosition.y = rectTransform.anchoredPosition.y + 125;
+            targetPosition.y = rectTransform.anchoredPosition.y + 135;
         }
     }
     private void checkJourney()

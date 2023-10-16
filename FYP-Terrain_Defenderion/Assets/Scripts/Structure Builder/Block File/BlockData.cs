@@ -11,6 +11,7 @@ public class BlockData
     public Material blockTexture;
     public int maxHealth = 1;
     public int tokenCost = 1;
+    public float captureOrthographicSize = 1f;
     public Material getBlockTexture()
     {
         return blockTexture;
