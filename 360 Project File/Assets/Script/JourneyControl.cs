@@ -10,7 +10,7 @@ public class JourneyControl : MonoBehaviour
     [SerializeField] GameObject nextButton;
     [SerializeField] GameObject BackButton;
     [SerializeField] int Max;
-    int Min = 0;
+    int Min = 1;
     [SerializeField]int Journey = 0;
 
     //public Vector2 newPosition;
@@ -34,11 +34,7 @@ public class JourneyControl : MonoBehaviour
     public void Update()
     {
         float step = moveSpeed * Time.deltaTime;
-
-        if (Journey < Max && Journey > Min || Journey == Min && !is_up || Journey == Max && is_up)
-        {
-            rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
-        }
+        rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPosition, step);
 
     }
     public void AddPosition(bool is_up)
