@@ -5,11 +5,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Localization.Settings;
+using System;
 
 public class QuizUIManager : MonoBehaviour
 {
     [Header("Quiz Question")]
-    public string lang = "";
+    public Language lang = Language.zh_HK;
     /*
     For lang variable:
         English - en
@@ -47,6 +48,7 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private GameObject questionNumUI;
     [SerializeField] private GameObject questionsUIObject;
     [SerializeField] private GameObject answerUIObject;
+    public GameObject AnswerUIObject { set { answerUIObject = value; } }
     [SerializeField] private GameObject headerUI;
     [SerializeField] private Slider progressBar;
     [SerializeField] private float progressDuration;
@@ -59,6 +61,22 @@ public class QuizUIManager : MonoBehaviour
     private bool runProgress = false;
     private bool end = false;
     private int timeRemaining = 0;
+    [Header("Answer Type UI")]
+    [SerializeField] private GameObject textUIObject;
+    [SerializeField] private GameObject pictureUIObject;
+    #region UI Getter
+    public GameObject TextUIObject {
+        get { return textUIObject; }
+
+    }
+    public GameObject PictureUIObject
+    {
+        get { return pictureUIObject; }
+
+    }
+
+    #endregion
+
     [Header("Buttons")]
     [SerializeField] private GameObject nextBtn;
     [SerializeField] private GameObject backBtn;
@@ -117,10 +135,11 @@ public class QuizUIManager : MonoBehaviour
             explainationUI.SetActive(false);
             GetQuestionNumber();
             startTime();
-            SetQuestion();
+
             getAnswers();
             backBtn.SetActive(false);
             checkBtn.SetActive(true);
+            SetQuestion();
         } else
         {
             backBtn.SetActive(false);
@@ -134,15 +153,15 @@ public class QuizUIManager : MonoBehaviour
     {
         if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[0])
         {
-            lang = "en";
+            lang = Language.en;
         }
         else if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[1])
         {
-            lang = "zh_HK";
+            lang = Language.zh_HK;
         }
         else if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[2])
         {
-            lang = "zh_CN";
+            lang = Language.zh_CN;
         }
         
     }
@@ -194,7 +213,19 @@ public class QuizUIManager : MonoBehaviour
     }
     public void setLanguage(string type)
     {
-        lang = type;
+        switch (type)
+        {
+            case "en":
+                lang = Language.en;
+            break;
+            case "zh_HK":
+                lang = Language.zh_HK;
+                break;
+            case "zh_CN":
+                lang = Language.zh_CN;
+                break;
+        }
+
         reloadPage();
     }
     private void setExplainationUI()
@@ -208,9 +239,24 @@ public class QuizUIManager : MonoBehaviour
     }
     public void checkAnswer()
     {
-        GameObject targetUI = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer+1).gameObject;
-        GameObject ansUI = currentContentUI.transform.GetChild(quizSO.questions[page].answer + 1).gameObject;
-        
+        Debug.Log("Answer Number: " + (quizSO.questions[page].answer + 1) + "\n" + "Input Number: " + (quizSO.questions[page].inputAnswer + 1));
+        GameObject targetUI;
+        GameObject ansUI;
+        if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer != -1)
+        {
+            if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+            {
+                targetUI = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer + 1).gameObject;
+                ansUI = currentContentUI.transform.GetChild(quizSO.questions[page].answer + 1).gameObject;
+            } else
+            {
+                targetUI = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer).gameObject;
+                ansUI = currentContentUI.transform.GetChild(quizSO.questions[page].answer).gameObject;
+            }
+        } else
+        {
+            return;
+        }
         Animator animatorTarget = targetUI.GetComponent<Animator>();
         Animator animatorAns = ansUI.GetComponent<Animator>();
         if (quizSO.questions[page].inputAnswer != -1)
@@ -286,10 +332,17 @@ public class QuizUIManager : MonoBehaviour
         if(page == -1)
         {
             startTime();
+            qnaPanelMain.SetActive(true);
+
         }
         if (page < pagelimit)
         {
             page++;
+            QuizAnsUIManager quizAnsUIManager = currentContentUI.GetComponent<QuizAnsUIManager>();
+            if (quizAnsUIManager != null)
+            {
+                quizAnsUIManager.AnswerType = quizSO.questions[page].AnswerType;
+            }
             SetupVertical(qnaPanelMain, 2f);
             SetupVertical(qnaPanelContent, 2f);
             //Set Quiz Data(Language Id)
@@ -298,6 +351,7 @@ public class QuizUIManager : MonoBehaviour
             quizSO.questions[page].inputAnswer = -1;
             //Remove All Child Objects inside the content(As the previous page content still exists)
             removeChild(currentContentUI, "Answer");
+
             SetQuestion();
             getAnswers();
             if(explainationUI != null)
@@ -308,6 +362,11 @@ public class QuizUIManager : MonoBehaviour
                 nextBtn.SetActive(false);
             GetQuestionNumber();
             SetupVertical(currentContentUI, 2f);
+            ChangeText changeText = gameObject.GetComponent<ChangeText>();
+            if (changeText != null)
+            {
+                changeText.InitialFont();
+            }
         } else if(page == pagelimit)
         {
             QuizEnd();
@@ -374,17 +433,14 @@ public class QuizUIManager : MonoBehaviour
     public void SetQuestion()
     {
         //Modify UI Text Object to the content
-
-        TMP_Text targettext;
-        if (questionsUIObject.GetComponent<TMP_Text>() != null)
+        GameObject target = GameObjectFinder.GetGameObjectWithTagFromChilds(questionsUIObject, "QuestionText");
+        TMP_Text targettext = target.GetComponent<TMP_Text>();
+        if (targettext != null)
         {
-            targettext = questionsUIObject.GetComponent<TMP_Text>();
-        } else
-        {
-            targettext = questionsUIObject.transform.GetChild(0).GetComponent<TMP_Text>();
-        }
+            
+            targettext.text = quizSO.GetQuestion(page, lang);
+        } 
         //Add text to the UI from the question
-        targettext.text = quizSO.GetQuestion(page, lang);
         
     }
     string[] answers;
@@ -397,8 +453,13 @@ public class QuizUIManager : MonoBehaviour
     {
         //Put Answer Text into the Answers UI
         string[] ans;
+        Sprite[] ansImg = default;
         ans = quizSO.GetAnswers(page,lang);
-        for(int i=0; i<ans.Length; i++)
+        if (quizSO.questions[page].AnswerType == AnsType.Picture)
+        {
+            ansImg = quizSO.GetImgAnswers(page, lang);
+        }
+        for (int i=0; i<ans.Length; i++)
         {
             GameObject target = Instantiate(answerUIObject, contentTransform, Quaternion.identity);
             target.transform.SetParent(currentContentUI.transform);
@@ -410,20 +471,33 @@ public class QuizUIManager : MonoBehaviour
             targetComponent = target.AddComponent<QuizAnsBehaviour>();
 
             //Set Value to QuizAnsBehaviour
-            targetComponent.setAns(i, ans[i], page);
-            TMP_Text targettext;
-            if (target.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>() != null)
+            targetComponent.setAns(i, ans[i], page, quizSO);
+            GameObject ansObj = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsText");
+            if (ansObj != null)
             {
-                targettext = target.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
-                targettext.text = ans[i];
-            }
-            if (target.transform.GetChild(0).GetChild(1).GetChild(0) != null)
-            {
-                TMP_Text alphaText;
-                alphaText = target.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<TMP_Text>();
-                if(alphaText != null)
+                TMP_Text targettext = ansObj.GetComponent<TMP_Text>();
+                if (targettext != null)
                 {
-                    alphaText.text = alphabet[i]; 
+                    targettext.text = ans[i];
+                }
+            }
+            GameObject alphabetObj = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "Alphabet");
+            if (alphabetObj != null)
+            {
+                TMP_Text alphaText = alphabetObj.GetComponent<TMP_Text>();
+                if (alphaText != null)
+                {
+                    alphaText.text = alphabet[i];
+                }
+            }
+            if(quizSO.questions[page].AnswerType == AnsType.Picture)
+            {
+                GameObject targetChild = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsImg");
+                Image targetImg;
+                targetImg = targetChild.GetComponent<Image>();
+                if(targetImg != null)
+                {
+                    targetImg.sprite = ansImg[i];
                 }
             }
         }
@@ -432,45 +506,56 @@ public class QuizUIManager : MonoBehaviour
     {
         string[] ans;
         ans = quizSO.GetAnswers(page, lang);
-
-        for (int i = 1; i < currentContentUI.transform.childCount; i++)
+        Sprite[] ansImg = default;
+        if (quizSO.questions[page].AnswerType == AnsType.Picture)
         {
+            ansImg = quizSO.GetImgAnswers(page, lang);
+        }
+        for (int i = 0; i < currentContentUI.transform.childCount; i++)
+        {
+            if(!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+            {
+                break;
+            }
+            Debug.Log(i);
             GameObject target = currentContentUI.transform.GetChild(i).gameObject;
             QuizAnsBehaviour targetComponent = target.GetComponent<QuizAnsBehaviour>();
             if (ans.Length >= i)
             {
-                targetComponent.setAns(i - 1, ans[i - 1], page);
+                Debug.Log(ans.Length + "/" + i);
+                if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+                    targetComponent.setAns(i - 1, ans[i - 1], page, quizSO);
+                else
+                    targetComponent.setAns(i, ans[i], page, quizSO);
             } else
             {
-                targetComponent.setAns(i - 1, "Null", page);
+                targetComponent.setAns(i - 1, "Null", page, quizSO);
             }
             TMP_Text targettext;
-            if (target.transform.GetChild(0).GetComponent<TMP_Text>() != null)
+            GameObject targetChild = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsText");
+            if (targetChild.GetComponent<TMP_Text>() != null)
             {
-                targettext = target.transform.GetChild(0).GetComponent<TMP_Text>();
+                targettext = targetChild.GetComponent<TMP_Text>();
                 if (ans.Length >= i)
                 {
-                    targettext.text = ans[i - 1];
+                    if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+                        targettext.text = ans[i - 1];
+                    else
+                        targettext.text = ans[i];
                 } else
                 {
                     targettext.text = "";
                 }
             }
-            else if (target.transform.childCount >= 2)
+            if (quizSO.questions[page].AnswerType == AnsType.Picture)
             {
-                if (target.transform.GetChild(1).GetComponent<TMP_Text>() != null)
+                GameObject targetChildObj = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsImg");
+                Image targetImg;
+                targetImg = targetChildObj.GetComponent<Image>();
+                if (targetImg != null)
                 {
-                    targettext = target.transform.GetChild(1).GetComponent<TMP_Text>();
-                    if (ans.Length >= i)
-                    {
-                        targettext.text = ans[i - 1];
-                    }
-                    else
-                    {
-                        targettext.text = "";
-                    }
+                    targetImg.sprite = ansImg[i];
                 }
-
             }
         }
     }
@@ -577,6 +662,11 @@ public class QuizUIManager : MonoBehaviour
             }
         }
         getScore();
+        ChangeText changeText = gameObject.GetComponent<ChangeText>();
+        if (changeText != null)
+        {
+            changeText.InitialFont();
+        }
     }
     private void getScore()
     {
@@ -595,7 +685,7 @@ public class QuizUIManager : MonoBehaviour
         int starCount = 0;
         float scorePercentage = 0;
         scorePercentage = ((float)scoreSO.getScore() / quizSO.fullStarsScoreReq) * 100f;
-        if(scorePercentage < 50 && scorePercentage > 0)
+        if(scorePercentage < 75 && scorePercentage > 0)
         {
             starCount = 1;
         } else if(scorePercentage >= 75 && scorePercentage < 100)

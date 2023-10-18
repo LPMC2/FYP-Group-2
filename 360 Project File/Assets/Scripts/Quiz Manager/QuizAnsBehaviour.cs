@@ -12,11 +12,12 @@ public class QuizAnsBehaviour : MonoBehaviour
     [SerializeField] QuizSO quizSO;
     [SerializeField] ScoreBehaviour scoreSO;
 
-    public void setAns(int id, string targetText, int pg)
+    public void setAns(int id, string targetText, int pg, QuizSO targetQuizSO)
     {
         ansId = id;
         text = targetText;
         page = pg;
+        quizSO = targetQuizSO;
     }
     public void selectAns()
     {

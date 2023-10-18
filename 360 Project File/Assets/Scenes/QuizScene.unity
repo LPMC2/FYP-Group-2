@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 762670080}
   - component: {fileID: 762670079}
   - component: {fileID: 762670078}
+  - component: {fileID: 762670081}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -215,6 +216,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &762670081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762670077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    quality: 3
+    frameInfluence: 0.1
+    jitterScale: 1
+    mipBias: 0
+    varianceClampScale: 0.9
+    contrastAdaptiveSharpening: 0
 --- !u!1 &2082642938
 GameObject:
   m_ObjectHideFlags: 0
@@ -5878,7 +5923,7 @@ GameObject:
   - component: {fileID: 5840993195776309884}
   m_Layer: 5
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: QuestionText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6525,7 +6570,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5B78\u751F\u4F11\u606F\u5BA4\u7684\u623F\u9593\u7DE8\u865F\u662F?"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
   m_sharedMaterial: {fileID: -1491385349116220701, guid: 1559f8119b9273849a786246103ccb47, type: 2}
@@ -7277,7 +7322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d179547ba08a5469f977a17b944e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lang: en
+  lang: 0
   page: -1
   mainQuizCanvas: {fileID: 7864226152875896818}
   currentContentUI: {fileID: 614943514301968436}
@@ -7288,11 +7333,14 @@ MonoBehaviour:
   EndPageUI: {fileID: 3657209354218385341}
   endQuestionPrefab: {fileID: 7919795346341722288, guid: 127c94ef3ac66f34c8d4ddfa91a8f20f, type: 3}
   endQContent: {fileID: 8174583163296307877}
+  ScoreEllipseBar: {fileID: 0}
+  lerpSpeed: 1
   correctCountUI: {fileID: 5409344208092689621}
   correctScoreUI: {fileID: 6923377593092039759}
   timeBonusUI: {fileID: 1920136229498305657}
   timeScoreUI: {fileID: 4995953952257739838}
   totalScoreUI: {fileID: 3513025532496663842}
+  ScoreProportionUI: {fileID: 0}
   starsUI: {fileID: 7128913990968639217}
   grayStar: {fileID: 21300000, guid: 28c21a00212a3e844a9908999fc916d7, type: 3}
   star: {fileID: 21300000, guid: 6651d843999b82a4ab4523f415bf560e, type: 3}
@@ -7304,6 +7352,8 @@ MonoBehaviour:
   progressDuration: 0.4
   remainingTimeUI: {fileID: 1398965062863465250}
   explainationUI: {fileID: 878512932154468411}
+  textUIObject: {fileID: 0}
+  pictureUIObject: {fileID: 0}
   nextBtn: {fileID: 4054322620404754195}
   backBtn: {fileID: 935970554648417944}
   checkBtn: {fileID: 8569078044858902755}
