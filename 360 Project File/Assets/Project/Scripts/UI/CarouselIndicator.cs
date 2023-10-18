@@ -1,0 +1,25 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+[RequireComponent(typeof(Image))]
+public class CarouselIndicator : MonoBehaviour
+{
+    public static Color k_InactiveColor = new Color(0.85f, 0.85f, 0.85f);
+    public static Color k_ActiveColor = new Color(0.33f, 0.33f, 0.33f);
+
+    private bool m_Active;
+    public bool Active
+    {
+        get => m_Active;
+        set
+        {
+            m_Image.color = value ? k_ActiveColor : k_InactiveColor;
+            m_Active = value;
+        }
+    }
+
+    private Image m_Image;
+
+    private void Awake()
+        => m_Image = GetComponent<Image>();
+}
