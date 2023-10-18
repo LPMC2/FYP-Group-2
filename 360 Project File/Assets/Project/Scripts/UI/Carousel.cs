@@ -113,6 +113,7 @@ public class Carousel : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
+        m_ContentRectTransform.anchoredPosition = toPos;
 
         m_ManagedPages[m_CurrentPage].Item2.Active = false;
         m_ManagedPages[index].Item2.Active = true;
