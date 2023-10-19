@@ -1,7 +1,7 @@
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 using TMPro;
-using UnityEngine.Localization;
 
 public class CarouselPage : MonoBehaviour
 {

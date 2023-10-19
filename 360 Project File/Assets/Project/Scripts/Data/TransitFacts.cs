@@ -9,7 +9,7 @@ public class TransitFacts : ScriptableObject
     public Entry[] Entries => m_Entries;
 
     [System.Serializable]
-    public class Entry
+    public struct Entry
     {
         public LocalizedString titleKey;
         public LocalizedString bodyKey;

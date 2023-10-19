@@ -5,12 +5,12 @@ public class CameraControl : MonoBehaviour
 {
     [SerializeField]
     private float m_RotateSensitivity;
+    [SerializeField, Range(0, 89f)]
+    private float m_MaxVerticalAngle;
     [SerializeField]
     private float m_ZoomSensitivity;
     [SerializeField]
-    private float m_FovMin;
-    [SerializeField]
-    private float m_FovMax;
+    private float m_FovMin, m_FovMax;
 
     private Camera m_Camera;
     private bool m_CameraLocked;
@@ -44,12 +44,14 @@ public class CameraControl : MonoBehaviour
         var active = Input.GetMouseButton(1);
         if (active)
         {
-            m_CameraRotation.x += Input.GetAxis("Mouse X") * m_RotateSensitivity;
-            m_CameraRotation.y += Input.GetAxis("Mouse Y") * m_RotateSensitivity;
-            m_Camera.transform.localRotation = Quaternion.Euler(-m_CameraRotation.y, m_CameraRotation.x, 0);
+            m_CameraRotation += m_RotateSensitivity * Time.deltaTime * new Vector2(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"));
+            m_CameraRotation.x = ClampAngle(m_CameraRotation.x, -m_MaxVerticalAngle, m_MaxVerticalAngle);
+            if (m_CameraRotation.y < 0f)
+                m_CameraRotation.y += 360f;
+            else if (m_CameraRotation.y >= 360f)
+                m_CameraRotation.y -= 360f;
+            m_Camera.transform.localEulerAngles = m_CameraRotation;
         }
-        Cursor.visible = !active;
-        Cursor.lockState = active ? CursorLockMode.Locked : CursorLockMode.None;
 
         // Zoom
         if (Input.GetAxis("Mouse ScrollWheel") != 0f)
@@ -63,5 +65,29 @@ public class CameraControl : MonoBehaviour
         => m_CameraLocked = true;
 
     private void OnNavigationFinished()
-        => m_CameraLocked = false;
+    {
+        var newAngle = transform.localEulerAngles;
+        newAngle.x = ClampAngle(newAngle.x, -m_MaxVerticalAngle, m_MaxVerticalAngle);
+        m_CameraRotation = newAngle;
+        m_CameraLocked = false;
+    }
+
+    private static float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < 90 || angle > 270)
+        {
+            if (angle > 180)
+                angle -= 360;
+            if (max > 180)
+                max -= 360;
+            if (min > 180)
+                min -= 360;
+        }
+
+        angle = Mathf.Clamp(angle, min, max);
+        if (angle < 0)
+            angle += 360;
+
+        return angle;
+    }
 }
