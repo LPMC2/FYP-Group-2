@@ -13,16 +13,30 @@ public class QuizSO : ScriptableObject
     [Header("Note: for Language:\n- en -> English\n- zh_HK -> Traditional Chinese\n- zh_CN -> Simplified Chinese")]
     public int correctCount = -1;
     public Question[] questions;
-    public string language;
-    public void setLanguage(string lan)
+    public Language language = Language.zh_HK;
+    public void setLanguage(string languageType)
     {
-        language = lan;
+        switch (languageType)
+        {
+            case "en":
+                language = Language.en;
+                break;
+            case "zh_HK":
+                language = Language.zh_HK;
+                break;
+            case "zh_CN":
+                language = Language.zh_CN;
+                break;
+            default:
+                Debug.LogWarning("Not Found!");
+                break;
+        }
     }
-    public string GetQuestion(int index, string language)
+    public string GetQuestion(int index, Language language)
     {
         return questions[index].question.FirstOrDefault(q => q.language == language)?.text;
     }
-    public string[] GetAnswers(int page, string language)
+    public string[] GetAnswers(int page, Language language)
     {
         //Get the list of answers from specific language
         string[] items = new string[1];
@@ -53,7 +67,38 @@ public class QuizSO : ScriptableObject
         }
         return items;
     }
-
+    public Sprite[] GetImgAnswers(int page, Language language)
+    {
+        //Get the list of answers from specific language
+        Sprite[] items = new Sprite[1];
+        int i = 0;
+        int num = 0;
+        foreach (Question question in questions)
+        {
+            if (page == num)
+            {
+                LocalizableString[] options = question.options;
+                foreach (LocalizableString option in options)
+                {
+                    if (option.language == language)
+                    {
+                        if (i > 0)
+                        {
+                            items = arrayBehaviour.addArray<Sprite>(items);
+                            items[i] = option.Image;
+                        }
+                        else
+                        {
+                            items[i] = option.Image;
+                        }
+                        i++;
+                    }
+                }
+            }
+            num++;
+        }
+        return items;
+    }
     private string[] addArray(string[] arr, string newValue)
     {
         int originalsize = arr.Length;
@@ -77,6 +122,7 @@ public class QuizSO : ScriptableObject
     {
         [Header("Input index of options as the answer.")] public int answer;
         public LocalizableString[] question;
+        public AnsType AnswerType = AnsType.Text;
         public LocalizableString[] options;
         public LocalizableString[] explaination;
         public Score score;
@@ -87,9 +133,12 @@ public class QuizSO : ScriptableObject
     [System.Serializable]
     public class LocalizableString
     {
-        public string language;
+        public Language language = Language.zh_HK;
+        [TextArea]
         public string text;
         public int id;
+        [Header("Only for Quiz UI - Answer Type is Picture")]
+        public Sprite Image;
     }
     public void checkAns()
     {
@@ -112,7 +161,7 @@ public class QuizSO : ScriptableObject
         }
         Debug.Log("Correct Amount: " + correctCount);
     }
-    public string getLanText(LocalizableString[] stringArr, string lang)
+    public string getLanText(LocalizableString[] stringArr, Language lang)
     {
         //Get text from language
         for(int i =0; i<stringArr.Length; i++)
@@ -145,7 +194,7 @@ public class QuizSO : ScriptableObject
         }
         return false;
     }
-    public void GetAns(int page,string lang)
+    public void GetAns(int page, Language lang)
     {
         //Set the answer id to sort from language
         int index = 0;
