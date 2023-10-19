@@ -23,15 +23,10 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
     // This is chack the icon type and set the on click what even will do
     public void Interact()
     {
-        switch (m_NavPoint.NavigationType)
-        {
-            case NavigationPoint.Type.Navigate:
-                NavigationManager.Instance?.NavigateTowards(m_NavPoint.Destination);
-                break;
-            case NavigationPoint.Type.Information:
-                Debug.Log(m_NavPoint.InfoLocalizeKey);
-                break;
-        }
+        if (m_NavPoint.PlayVideo)
+            VideoPlayerHelper.Instance?.PlayOneshot(m_NavPoint.VideoPath, () => PerformAction());
+        else
+            PerformAction();
     }
 
     //show text
@@ -48,5 +43,18 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
         var navUI = NavigationPointUI.Instance;
         if (navUI != null)
             navUI.LocationDisplay = string.Empty;
+    }
+
+    private void PerformAction()
+    {
+        switch (m_NavPoint.NavigationType)
+        {
+            case NavigationPoint.Type.Navigate:
+                NavigationManager.Instance?.NavigateTowards(m_NavPoint.Destination);
+                break;
+            case NavigationPoint.Type.Information:
+                Debug.Log(m_NavPoint.InfoLocalizeKey);
+                break;
+        }
     }
 }

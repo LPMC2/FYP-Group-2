@@ -58,10 +58,6 @@ var config = {
 // the canvas DOM size and WebGL render target sizes yourself.
 // config.matchWebGLToCanvasSize = false;
 
-#if BACKGROUND_FILENAME
-canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
-#endif
-
 var script = document.createElement("script");
 script.src = loaderUrl;
 script.onload = () => {

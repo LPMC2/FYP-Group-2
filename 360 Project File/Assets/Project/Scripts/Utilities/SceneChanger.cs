@@ -1,16 +1,16 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
 
 public class SceneChanger : MonoBehaviour
 {
     private bool m_ChangeSceneTriggered;
 
-    public void ChangeScene(string sceneName)
+    public void ChangeScene(string sceneToLoad)
     {
         if (m_ChangeSceneTriggered)
             return;
 
-        SceneManager.LoadSceneAsync(sceneName);
+        Addressables.LoadSceneAsync(sceneToLoad);
         m_ChangeSceneTriggered = true;
     }
 }
