@@ -715,6 +715,83 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091665159}
   m_CullTransparentMesh: 1
+--- !u!1 &1563885683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1563885684}
+  - component: {fileID: 1563885686}
+  - component: {fileID: 1563885685}
+  m_Layer: 5
+  m_Name: Q&A_Panel - Main Panel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1563885684
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563885683}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8136358017806082673}
+  m_Father: {fileID: 6133081765832982805}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -125.589966, y: -82.01904}
+  m_SizeDelta: {x: 1812.8, y: 996.84}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1563885685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563885683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e12e33048ce5c674db492e01fa726927, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1563885686
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563885683}
+  m_CullTransparentMesh: 1
 --- !u!1 &1755610300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,7 +1459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e616b24004731c42bd78f3e32a60d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset1: {fileID: 11400000, guid: 01ca119b6039aba409ec135c02f8e9d0, type: 2}
+  asset1: {fileID: 11400000, guid: 32fc50eae1230b449bf3b1f04bdeccd6, type: 2}
   id: 1
 --- !u!224 &390551594007168139
 RectTransform:
@@ -1862,7 +1939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e616b24004731c42bd78f3e32a60d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset1: {fileID: 11400000, guid: d880ddd7fca8f5d498ae4750e90115a9, type: 2}
+  asset1: {fileID: 11400000, guid: 352706f47f6e624449e1b36dca79bcff, type: 2}
   id: 2
 --- !u!114 &999829441272557881
 MonoBehaviour:
@@ -1884,7 +1961,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "The quiz is consisted of 10 MC questions, you should complete it within
+  m_text: "The quiz is consisted of 8 MC questions, you should complete it within
     5 minutes (300s). \r\n\r\nAfter the quiz is ended, you will see your score and
     star rating.\r\n\r\nAre you ready?"
   m_isRightToLeft: 0
@@ -2297,7 +2374,7 @@ MonoBehaviour:
   m_text: 1/10
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
-  m_sharedMaterial: {fileID: -1491385349116220701, guid: 1559f8119b9273849a786246103ccb47, type: 2}
+  m_sharedMaterial: {fileID: 370861166043274594, guid: 1559f8119b9273849a786246103ccb47, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4912,7 +4989,7 @@ MonoBehaviour:
   m_text: 'Question '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
-  m_sharedMaterial: {fileID: -1491385349116220701, guid: 1559f8119b9273849a786246103ccb47, type: 2}
+  m_sharedMaterial: {fileID: 370861166043274594, guid: 1559f8119b9273849a786246103ccb47, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7030,7 +7107,7 @@ MonoBehaviour:
   m_text: "\u5B78\u751F\u4F11\u606F\u5BA4\u7684\u623F\u9593\u7DE8\u865F\u662F?"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
-  m_sharedMaterial: {fileID: -1491385349116220701, guid: 1559f8119b9273849a786246103ccb47, type: 2}
+  m_sharedMaterial: {fileID: 370861166043274594, guid: 1559f8119b9273849a786246103ccb47, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7054,15 +7131,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 67.7
+  m_fontSize: 98.05
   m_fontSizeBase: 46.8
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 20
+  m_fontSizeMin: 30
   m_fontSizeMax: 100
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7348,7 +7425,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4313821781349635133}
-  - {fileID: 8136358017806082673}
+  - {fileID: 1563885684}
   - {fileID: 354850776}
   - {fileID: 1755610301}
   - {fileID: 5281816005449076253}
@@ -7744,7 +7821,7 @@ MonoBehaviour:
   currentContentUI: {fileID: 614943514301968436}
   StartPageUI: {fileID: 354850775}
   FailPageUI: {fileID: 316767068023648342}
-  qnaPanelMain: {fileID: 8889820027099884344}
+  qnaPanelMain: {fileID: 1563885683}
   qnaPanelContent: {fileID: 3585992968781613226}
   EndPageUI: {fileID: 1755610300}
   endQuestionPrefab: {fileID: 7919795346341722288, guid: 127c94ef3ac66f34c8d4ddfa91a8f20f, type: 3}
@@ -8975,12 +9052,12 @@ RectTransform:
   - {fileID: 6347878482188475948}
   - {fileID: 7602981380830329667}
   - {fileID: 6970238561014779098}
-  m_Father: {fileID: 6133081765832982805}
+  m_Father: {fileID: 1563885684}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.00012207}
+  m_AnchoredPosition: {x: 125.589966, y: 82.019165}
   m_SizeDelta: {x: 1561.5598, y: 832.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8149718109518357544
@@ -9003,7 +9080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e616b24004731c42bd78f3e32a60d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset1: {fileID: 11400000, guid: 4671022a7831ddf40b6e967baa5ed490, type: 2}
+  asset1: {fileID: 11400000, guid: a2c1e8d035b369243af0ffce796d9c7e, type: 2}
   id: 0
 --- !u!1 &8160582555593767765
 GameObject:
@@ -9246,7 +9323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PictureSpacing: {x: 279.2, y: 251.23}
-  pictureConstraintCount: 2
+  pictureConstraintCount: 1
   TextSpacing: {x: 279.2, y: 16}
   textConstraintCount: 1
   answerType: 0
@@ -9707,7 +9784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &8936642481347523960
 CanvasRenderer:
   m_ObjectHideFlags: 0

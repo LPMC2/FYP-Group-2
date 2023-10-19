@@ -603,7 +603,13 @@ public class QuizUIManager : MonoBehaviour
             qnaPanelMain.gameObject.SetActive(false);
             FailPageUI.gameObject.SetActive(true);
             end = true;
+            ChangeText changeText = gameObject.GetComponent<ChangeText>();
+            if (changeText != null)
+            {
+                changeText.InitialFont();
+            }
         }
+
         StopTimer();
     }
     private void UpdateTimerText(float elapsedTime)

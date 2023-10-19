@@ -16,8 +16,7 @@ public class ChangeText : MonoBehaviour
             if (!textComponent.transform.CompareTag("Unchangeable"))
             {
                 textComponent.font = asset1;
-                textComponent.fontMaterial = asset1.material;
-                Debug.Log(textComponent.text);
+
             }
         }
     }
