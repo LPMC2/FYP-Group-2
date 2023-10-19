@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Journey : MonoBehaviour
 {
+    [Header("Data")]
+    [SerializeField]
+    private JourneyEntries m_DataSource;
+
     [Header("Toggle")]
     [SerializeField]
     private Button m_ToggleButton;
@@ -43,11 +47,12 @@ public class Journey : MonoBehaviour
     private void Awake()
     {
         m_ManagedEntries = new();
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < m_DataSource.Entries.Length; i++)
         {
-            var entry = Instantiate(m_EntryPrefab, m_EntryRoot);
-            entry.Index = i + 1;
-            m_ManagedEntries.Add(entry);
+            var instance = Instantiate(m_EntryPrefab, m_EntryRoot);
+            instance.Index = i + 1;
+            instance.StepKey = m_DataSource.Entries[i];
+            m_ManagedEntries.Add(instance);
         }
     }
 

@@ -51,7 +51,6 @@ public class NavigationManager : Singleton<NavigationManager>
 
         var startTransform = m_StartPoint.transform;
         m_CameraRig.position = startTransform.position;
-        m_Camera.rotation = startTransform.rotation;
         sphericalChanged?.Invoke(null, m_StartPoint);
         m_Current = m_StartPoint;
         StartCoroutine(InitialFadeIn());

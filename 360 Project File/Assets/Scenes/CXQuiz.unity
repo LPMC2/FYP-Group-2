@@ -1103,7 +1103,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1124,7 +1124,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 6506197549301618039}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -1459,7 +1459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e616b24004731c42bd78f3e32a60d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset1: {fileID: 11400000, guid: 32fc50eae1230b449bf3b1f04bdeccd6, type: 2}
+  asset1: {fileID: 11400000, guid: f3d9148cb7d168b468615a90ec0d8ba3, type: 2}
   id: 1
 --- !u!224 &390551594007168139
 RectTransform:
@@ -1770,8 +1770,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 01ca119b6039aba409ec135c02f8e9d0, type: 2}
-  m_sharedMaterial: {fileID: 4873194332901633610, guid: 01ca119b6039aba409ec135c02f8e9d0, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1965,8 +1965,8 @@ MonoBehaviour:
     5 minutes (300s). \r\n\r\nAfter the quiz is ended, you will see your score and
     star rating.\r\n\r\nAre you ready?"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 01ca119b6039aba409ec135c02f8e9d0, type: 2}
-  m_sharedMaterial: {fileID: 4873194332901633610, guid: 01ca119b6039aba409ec135c02f8e9d0, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2696,36 +2696,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1458110324757158628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7769864124377151102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1482702152244903257
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3536,16 +3506,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6189398557553622126}
-        m_TargetAssemblyTypeName: GoTo360WorldOrGoBack, Assembly-CSharp
-        m_MethodName: SwitchScene
+      - m_Target: {fileID: 7922529719798314088}
+        m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
+        m_MethodName: ChangeScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: SchoolRoute
+          m_StringArgument: StartScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!224 &2180676563173460302
@@ -3729,36 +3699,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2474417959606148302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8701888294630678938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2476408179644336124
 GameObject:
   m_ObjectHideFlags: 0
@@ -4143,7 +4083,7 @@ GameObject:
   - component: {fileID: 6738297611751077914}
   - component: {fileID: 2178039289105274794}
   m_Layer: 5
-  m_Name: Go Back to SchoolRoute
+  m_Name: Go Back to StartScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4479,7 +4419,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6189398557553622126}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GoTo360WorldOrGoBack, Assembly-CSharp
         m_MethodName: SwitchScene
         m_Mode: 5
@@ -4776,7 +4716,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -4797,7 +4737,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 2474417959606148302}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -5841,7 +5781,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7922529719798314087}
   - component: {fileID: 6423980892442758979}
-  - component: {fileID: 6189398557553622126}
   - component: {fileID: 7922529719798314088}
   m_Layer: 0
   m_Name: Manager
@@ -6005,8 +5944,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u7E41"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1559f8119b9273849a786246103ccb47, type: 2}
-  m_sharedMaterial: {fileID: 370861166043274594, guid: 1559f8119b9273849a786246103ccb47, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f3d9148cb7d168b468615a90ec0d8ba3, type: 2}
+  m_sharedMaterial: {fileID: -3528510336753907393, guid: f3d9148cb7d168b468615a90ec0d8ba3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6919,7 +6858,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6189398557553622126}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GoTo360WorldOrGoBack, Assembly-CSharp
         m_MethodName: SwitchScene
         m_Mode: 5
@@ -7550,18 +7489,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6189398557553622126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4452015784180372745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0aa792a1c6e8471428270f92ab3a8016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6196978802781907540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7857,36 +7784,6 @@ MonoBehaviour:
   quizSO: {fileID: 11400000, guid: e2ea798e5ecbf1c4397dceaecc1af4cd, type: 2}
   scoreSO: {fileID: 11400000, guid: 284ee713ed09e744c968e4577894f8f3, type: 2}
   dataStorage: {fileID: 11400000, guid: 73574d3321d2eb740a860892edea2ad3, type: 2}
---- !u!114 &6506197549301618039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6721959621334040308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &6550609593304948652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7954,7 +7851,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3603625000038716909}
   - component: {fileID: 6369378562816657868}
-  - component: {fileID: 6506197549301618039}
   - component: {fileID: 55717642588117169}
   - component: {fileID: 347997104446617137}
   - component: {fileID: 4633137005731905366}
@@ -8279,7 +8175,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -8300,7 +8196,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1458110324757158628}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -8650,7 +8546,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6175583944398197005}
   - component: {fileID: 5926472385545707477}
-  - component: {fileID: 1458110324757158628}
   - component: {fileID: 7117531043140436428}
   - component: {fileID: 8157302567348531568}
   - component: {fileID: 4209984049561705835}
@@ -8876,11 +8771,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4452015784180372745}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e616b24004731c42bd78f3e32a60d09, type: 3}
+  m_Script: {fileID: 11500000, guid: 0fa1f793c93a65b4b802ae26ef5390c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset1: {fileID: 0}
-  id: 0
 --- !u!1 &7943141568106185727
 GameObject:
   m_ObjectHideFlags: 0
@@ -9537,7 +9430,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6760735216477096172}
   - component: {fileID: 950963714796082393}
-  - component: {fileID: 2474417959606148302}
   - component: {fileID: 3509670305718780100}
   - component: {fileID: 961916232410837229}
   - component: {fileID: 5540697646729877543}
@@ -9994,8 +9886,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u7B80"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f2d69b4df0ad04b4094f3c00763db484, type: 2}
-  m_sharedMaterial: {fileID: -920346856966200634, guid: f2d69b4df0ad04b4094f3c00763db484, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 352706f47f6e624449e1b36dca79bcff, type: 2}
+  m_sharedMaterial: {fileID: 6990356868929903182, guid: 352706f47f6e624449e1b36dca79bcff, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
