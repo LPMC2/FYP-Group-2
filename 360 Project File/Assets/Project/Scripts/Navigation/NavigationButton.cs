@@ -33,7 +33,7 @@ public class NavigationButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerEnter(PointerEventData eventData)
     {
         var navUI = NavigationPointUI.Instance;
-        if (navUI != null)
+        if (navUI != null && m_NavPoint.NavigationType == NavigationPoint.Type.Information)
             navUI.LocationDisplay = m_NavPoint.name;
     }
 

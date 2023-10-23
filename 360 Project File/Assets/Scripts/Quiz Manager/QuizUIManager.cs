@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using System;
 
@@ -149,6 +150,19 @@ public class QuizUIManager : MonoBehaviour
 
 
     }
+
+    private void OnEnable()
+        => LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+
+    private void OnDisable()
+        => LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+
+    private void OnLocaleChanged(Locale newLocale)
+    {
+        getLanguage();
+        reloadPage();
+    }
+
     public void getLanguage()
     {
         if (LocalizationSettings.SelectedLocale == LocalizationSettings.AvailableLocales.Locales[0])
