@@ -94,7 +94,8 @@ public class GridManager : MonoBehaviour
     private List<GameObject> hitList = new List<GameObject>();
     private BlockSO blockData;
     private TokenManager tokenManager;
-
+    [SerializeField] private GameObject currentHitObject;
+    
     #region Menu UI
     public void SetSaveMenuImg()
     {
@@ -460,6 +461,7 @@ public class GridManager : MonoBehaviour
     }
     private void setOutline(GameObject target, bool state)
     {
+        GridData gridData = target.transform.parent.GetComponent<GridData>();
         Outline outline = target.GetComponent<Outline>();
         if (outline == null)
         {
@@ -475,6 +477,25 @@ public class GridManager : MonoBehaviour
             }
             lastOutlineBlock = target;
             outline.OutlineWidth = 10f;
+            if(gridData.isUtility == true)
+            {
+                switch(gridData.originInteractType)
+                {
+                    case InteractType.Body:
+                        if(gridData.originGameObjectId == -1 && gridData.id >= 0)
+                        {
+                            outline.OutlineColor = Color.cyan;
+                        } else
+                        outline.OutlineColor = Color.green;
+                        break;
+                    case InteractType.Head:
+                        if (gridData.originGameObjectId == -1 && gridData.id >= 0)
+                            outline.OutlineColor = Color.red;
+                        else
+                            outline.OutlineColor = Color.magenta;
+                        break;
+                }
+            } 
         } else
         {
             outline.OutlineWidth = 0f;
@@ -482,6 +503,7 @@ public class GridManager : MonoBehaviour
     }
     private void HandlePlaceBlock(RaycastHit[] hits)
     {
+        currentHitObject = null;
         bool stopLoop = false;
         if (hitList != null && hitList.Count > 0) 
         {
@@ -506,6 +528,7 @@ public class GridManager : MonoBehaviour
                             if (hits[i].collider.transform.GetChild(0) != null && hitList.Count > 0)
                             {
                                 stopLoop = true;
+                                currentHitObject = hits[i].collider.gameObject;
                                 HandleBlockPlace(hitList[hitList.Count - 1]);
                                 return;
 
@@ -519,6 +542,7 @@ public class GridManager : MonoBehaviour
                 GridData gridData = hitList[hitList.Count - 1].GetComponent<GridData>();
                 if (gridData.cellHeight == 0)
                 {
+                    currentHitObject = hitList[hitList.Count - 1];
                     HandleBlockPlace(hitList[hitList.Count - 1]);
                 }
             }
@@ -608,13 +632,41 @@ public class GridManager : MonoBehaviour
         // Example: Call a function on the collided object
         if (isAffordable)
         {
-            if (PlaceBlockObject == null)
+            if (blockData.blockData[currentBlockId].isUtility == false)
             {
-                CreateCube(hitObject);
+                if (PlaceBlockObject == null)
+                {
+                    //If block not a Utility & No model, create a cube object instead
+                    if (blockData.blockData[currentBlockId].isUtility == false)
+                    {
+                        CreateCube(hitObject);
+                    }
+                    //Utility Condition and function
+                }
+                else
+                {
+                    CreateBlock(hitObject);
+                    if (currentHitObject != null)
+                    {
+                        GridData gridDataTarget = currentHitObject.GetComponent<GridData>();
+
+                        if (gridDataTarget.isUtility == true)
+                        {
+                            InteractBlock(hitObject, gridDataTarget.originInteractType);
+                        }
+                    }
+                }
             }
-            else
+            if (blockData.blockData[currentBlockId].isUtility == true)
             {
-                CreateBlock(hitObject);
+                if (gridData.originInteractType != InteractType.Body && blockData.blockData[currentBlockId].utilityType == InteractType.Body)
+                {
+                    InteractBlock(currentHitObject, InteractType.Body, true);
+                }
+                if (gridData.originInteractType != InteractType.Head && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
+                {
+                    InteractBlock(currentHitObject, InteractType.Head, true);
+                }
             }
             UpdateBlockState(hitObject, true);
         }
@@ -670,6 +722,30 @@ public class GridManager : MonoBehaviour
     //    // Example: Apply damage to the collided object
     //    hitObject.GetComponent<Health>().TakeDamage(10);
     //}
+    private void InteractBlock(GameObject target, InteractType interactType, bool isOrigin = false)
+    {
+        GridData gridData = target.GetComponent<GridData>();
+        GridData originGridData = currentHitObject.GetComponent<GridData>();
+        switch(interactType)
+        {
+            case InteractType.Body:
+            case InteractType.Head:
+                if (isOrigin == true)
+                {
+                    gridData.id = blockData.GetId();
+                    gridData.originInteractType = interactType;
+                    gridData.isUtility = true;
+                } else 
+                {
+                    gridData.originGameObjectId = originGridData.id;
+                    gridData.originInteractType = originGridData.originInteractType;
+                    gridData.isUtility = true;
+                }
+                break;
+
+
+        }
+    }
     public void ResetGrid()
     {
         foreach (Transform child in gridContainer.transform)
@@ -778,8 +854,19 @@ public class GridManager : MonoBehaviour
             gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
             gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
         }
+        CombineGameObjects(structure);
+
+
         Debug.Log("Count: " + count);
         return structure;
+    }
+    private void CombineGameObjects(GameObject parentObject)
+    {
+        MeshCombiner meshCombiner = parentObject.AddComponent<MeshCombiner>();
+        meshCombiner.CreateMultiMaterialMesh = true;
+        meshCombiner.DestroyCombinedChildren = true;
+        meshCombiner.CombineMeshes(true);
+        Destroy(meshCombiner);
     }
     public void GenerateStructureWithGrid(string filePath = default)
     {

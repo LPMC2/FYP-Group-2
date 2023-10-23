@@ -6,5 +6,11 @@ using UnityEngine;
 public class BlockSO : ScriptableObject
 {
     public BlockData[] blockData;
+    public int id = 0;
 
+    public int GetId()
+    {
+        id++;
+        return id;
+    }
 }

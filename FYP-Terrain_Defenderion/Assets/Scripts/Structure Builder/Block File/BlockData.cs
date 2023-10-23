@@ -12,6 +12,9 @@ public class BlockData
     public int maxHealth = 1;
     public int tokenCost = 1;
     public float captureOrthographicSize = 1f;
+    [Header("Utility Type Selection")]
+    public bool isUtility = false;
+    public InteractType utilityType = default;
     public Material getBlockTexture()
     {
         return blockTexture;

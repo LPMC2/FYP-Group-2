@@ -384,22 +384,47 @@ public class InventoryBehaviour : MonoBehaviour
         {
             selectedSlot = slotId;
         }
-        if (inventory.slot[slotId].getId() >= 0 && inventory.slot[slotId].getId() < inventory.slot.Length)
+        if (inventory.slot[slotId].getId() >= 0 && slotId < inventory.slot.Length)
         {
             //Debug.Log(inventory.slot[slotId].getId());
             GameObject targetItem = null;
+            int invId = inventory.slot[slotId].getId();
             switch (inventoryType)
             {
                 case InventoryType.item:
-                    targetItem = Instantiate(itemData.item[inventory.slot[slotId].getId()].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+                    targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
                 break;
                 case InventoryType.block:
-                    GameObject gameObject = blockData.blockData[inventory.slot[slotId].getId()].blockModel;
-                    targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
-                    targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                    gridManager.PlaceBlockObject = gameObject;
+                    if (blockData.blockData[invId].isUtility == false)
+                    {
+                        Debug.Log(" Not Utility");
+                        GameObject gameObject = blockData.blockData[invId].blockModel;
+                        targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
+                        targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                        gridManager.PlaceBlockObject = gameObject;
+                    }
+                    if(blockData.blockData[invId].isUtility == true)
+                    {
+                        Debug.Log("Block!");
+                        if (blockData.blockData[invId].blockModel != null)
+                        {
+                            GameObject gameObject = blockData.blockData[invId].blockModel;
+                            targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
+                        }
+                        else
+                        {
+                            targetItem = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                            targetItem.transform.position = placeItemLocation.transform.position;
+                            targetItem.transform.rotation = Quaternion.identity;
+
+                            Renderer targetRender = targetItem.GetComponent<Renderer>();
+                            targetRender.material = blockData.blockData[invId].blockTexture;
+                        }
+                        targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                        gridManager.PlaceBlockObject = null;
+                    }
                     gridManager.CurrentBlockId = inventory.slot[slotId].getId();
-                break;
+                 break;
             }
             targetItem.transform.SetParent(placeItemLocation.transform);
             Collider itemCollider = targetItem.GetComponent<Collider>();
@@ -445,6 +470,7 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < blockData.blockData.Length)
                 {
+                    int invId = inventory.slot[id].getId();
                     GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
                     instantiatedUI.transform.SetParent(targetUI.transform);
                     if (instantiatedUI.GetComponent<Image>() == null)
@@ -453,22 +479,30 @@ public class InventoryBehaviour : MonoBehaviour
                     }
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                     RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
-                    float width = rectTransform.rect.width * 2.5f;
-                    float height = rectTransform.rect.height * 2.5f;
-                    rectTransform.sizeDelta = new Vector2(width, height);
                     Image uiImg = instantiatedUI.GetComponent<Image>();
+                    if (blockData.blockData[inventory.slot[id].getId()].isUtility == false)
+                    {
+                        float width = rectTransform.rect.width * 2.5f;
+                        float height = rectTransform.rect.height * 2.5f;
+                        rectTransform.sizeDelta = new Vector2(width, height);
+                        GameObject gameObject = Instantiate(blockData.blockData[invId].blockModel);
+                        Debug.Log(gameObject);
+                        float cameraSize = gridManager.captureCamera.orthographicSize;
+                        gameObject.transform.SetParent(gridManager.captureCamera.transform);
+                        gameObject.transform.localPosition = Vector3.forward * 10;
+                        gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
+                        Debug.Log(gameObject.transform.position);
+                        ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
 
-                    GameObject gameObject = Instantiate(blockData.blockData[inventory.slot[id].getId()].blockModel);
-                    Debug.Log(gameObject);
-                    float cameraSize = gridManager.captureCamera.orthographicSize;
-                    gameObject.transform.SetParent(gridManager.captureCamera.transform);
-                    gameObject.transform.localPosition = Vector3.forward * 10;
-                    gridManager.captureCamera.orthographicSize = blockData.blockData[inventory.slot[id].getId()].captureOrthographicSize;
-                    Debug.Log(gameObject.transform.position);
-                    ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
-
-                    uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath +"/" + id + ".png");
-                    gridManager.captureCamera.orthographicSize = cameraSize;
+                        uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
+                        gridManager.captureCamera.orthographicSize = cameraSize;
+                    } else
+                    {
+                        float width = rectTransform.rect.width * 1.5f;
+                        float height = rectTransform.rect.height * 1.5f;
+                        rectTransform.sizeDelta = new Vector2(width, height);
+                        uiImg.sprite = ConvertMaterialToSprite(blockData.blockData[invId].blockTexture);
+                    }
                     uiImg.preserveAspect = true;
                 }
             }
@@ -504,6 +538,7 @@ public class InventoryBehaviour : MonoBehaviour
     #region Text Display
     public void StartFadeInText(int itemId, Color color = default(Color))
     {
+        int invId = inventory.slot[itemId].getId();
         if (color == default(Color))
         {
             color = Color.white;
@@ -516,16 +551,21 @@ public class InventoryBehaviour : MonoBehaviour
 
         // Get the item name from the item data using the provided item ID
         string itemName = "";
-        if (inventory.slot[itemId].getId() != -1)
+        if (invId != -1)
         {
             switch (inventoryType)
             {
                 case InventoryType.item:
-                    itemName = itemData.item[inventory.slot[itemId].getId()].itemName;
+                    itemName = itemData.item[invId].itemName;
                 break;
 
                 case InventoryType.block:
-                    itemName = blockData.blockData[inventory.slot[itemId].getId()].blockModel.name;
+                    if (blockData.blockData[invId].blockModel != null)
+                        itemName = blockData.blockData[invId].blockModel.name;
+                    else
+                    {
+                        itemName = blockData.blockData[invId].blockTexture.name;
+                    }
                 break;
             }
         }
