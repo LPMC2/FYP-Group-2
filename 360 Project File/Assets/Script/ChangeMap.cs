@@ -10,7 +10,9 @@ public class ChangeMap : MonoBehaviour
     public Camera maincamera;
     private void Start()
     {
-            SaveMapPos = obj.transform.position;
+        SaveMapPos = obj.transform.position;
+        F1MapRectTransform = Map1.GetComponent<RectTransform>();
+        F2MapRectTransform = Map2.GetComponent<RectTransform>();    
     }
 
     private float rotateSpeed = 1.5f;
@@ -37,8 +39,8 @@ public class ChangeMap : MonoBehaviour
     public GameObject Map1;
     public GameObject Map2;
 
-    public RectTransform F1MapRectTransform;
-    public RectTransform F2MapRectTransform;
+    private RectTransform F1MapRectTransform;
+    private RectTransform F2MapRectTransform;
 
     [SerializeField] private Vector3 mapPos;
     [SerializeField] private Vector3 SaveMapPos;
