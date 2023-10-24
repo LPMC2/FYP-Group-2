@@ -172,10 +172,11 @@ public static class StructureSerializer
         }
         return result;
     }
-    public static string SetStructureNameFromFile(string path)
+    public static string SetStructureNameFromFile(string path, bool includeUnderline = false)
     {
         path = path.Replace("/StructureData/StructureFile\\", "");
         path = path.Replace(".json", "");
+        if(includeUnderline == false)
         path = path.Replace("_", " ");
         return path;
     }
