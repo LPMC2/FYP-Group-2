@@ -57,6 +57,34 @@ public class arrayBehaviour
         }
         return newArray;
     }
+    public static T[,] Add2DArray<T>(T[,] arr, ArrayType arrayType = default)
+    {
+        int originalRowsize = arr.Length;
+        int originalColsize = arr.GetLength(1);
+        T[,] newArray = default;
+        switch(arrayType)
+        {
+            case ArrayType.row:
+                newArray = new T[originalRowsize + 1, originalColsize];
+                break;
+            case ArrayType.column:
+                newArray = new T[originalRowsize, originalColsize + 1];
+                break;
+        }
+        for (int i = 0; i < originalRowsize + 1; i++)
+        {
+            for (int j = 0; j < originalColsize + 1; i++)
+            {
+                if (i < originalRowsize && j< originalColsize)
+                {
+
+                    newArray[i,j] = arr[i,j];
+                }
+            }
+
+        }
+        return newArray;
+    }
     public static T[] ResetArray<T>(T[] originalArray)
     {
         T[] newArray = new T[1];
@@ -83,4 +111,10 @@ public class arrayBehaviour
 
         return newArray;
     }
+}
+public enum ArrayType
+{
+    row,
+    column
+
 }

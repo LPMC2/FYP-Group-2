@@ -631,6 +631,7 @@ public class GridManager : MonoBehaviour
             {
                 isAffordable = isTokenAffordable(tokenManager.GetTokenCost(currentBlockId), gridData);
             }
+            if(blockData.blockData[currentBlockId].isUtility != true)
             gridData.blockId = CurrentBlockId;
         }
         // Handle the trigger collider hit object
@@ -661,6 +662,7 @@ public class GridManager : MonoBehaviour
                         }
                     }
                 }
+                count++;
             }
             if (blockData.blockData[currentBlockId].isUtility == true)
             {
@@ -677,7 +679,7 @@ public class GridManager : MonoBehaviour
             }
             UpdateBlockState(hitObject, true);
         }
-        count++;
+        
         Debug.Log("Placed blocks: " + count);
     }
     private void UtilityIssueDetection(GridData gridData)
@@ -855,6 +857,45 @@ public class GridManager : MonoBehaviour
             gameObject.name = structureName;
         }
     }
+    public static StructureStorage[] GetOriginBodyFromId(StructureStorage[] structureStorages, InteractType type)
+    {
+        BlockSO blockData = BlockManager.BlockData;
+        //Find Origin of Body Objects
+        StructureStorage[] bodyStructure = new StructureStorage[0];
+        StructureStorage[] headStructure = new StructureStorage[0];
+        int count = 0;
+        if (type == InteractType.Body)
+        {
+            //Find Origin of Body Objects
+            foreach (StructureStorage structureStorage in structureStorages)
+            {
+                if (structureStorage.id > -1 && structureStorage.originInteractType == InteractType.Body)
+                {
+                    bodyStructure = arrayBehaviour.AddArray<StructureStorage>(bodyStructure);
+                    bodyStructure[count] = structureStorage;
+                    count++;
+                }
+            }
+            return bodyStructure;
+        }
+        count = 0;
+        if (type == InteractType.Head)
+        {
+            foreach (StructureStorage structureStorage in structureStorages)
+            {
+                if (structureStorage.id > -1 && structureStorage.originInteractType == InteractType.Head)
+                {
+                    headStructure = arrayBehaviour.AddArray<StructureStorage>(headStructure);
+                    headStructure[count] = structureStorage;
+                    count++;
+                }
+            }
+            return headStructure;
+        }
+
+        return null;
+    }
+   
     public GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3))
     {
         if (position == default(Vector3))
@@ -866,6 +907,7 @@ public class GridManager : MonoBehaviour
         structure.transform.localPosition = position;
         for(int i=0; i< structureStorage.Length; i++)
         {
+            Debug.Log(structureStorage[i].structureId);
             GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
             block.transform.SetParent(structure.transform);
             count++;
@@ -943,6 +985,10 @@ public class GridManager : MonoBehaviour
                     gridData.Rotation = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
                     gridData.Scale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
                     gridData.tokenCost = structureStorage.tokenCost;
+                    gridData.isUtility = structureStorage.isUtility;
+                    gridData.id = structureStorage.id;
+                    gridData.originGameObjectId = structureStorage.originGameObjectId;
+                    gridData.originInteractType = structureStorage.originInteractType;
                     cost += structureStorage.tokenCost;
                 }
                

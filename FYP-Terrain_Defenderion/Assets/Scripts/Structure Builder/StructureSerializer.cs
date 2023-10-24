@@ -43,6 +43,7 @@ public static class StructureSerializer
                 {
                     if (gridData.blockId >= 0)
                     {
+                        Debug.Log(gridData.blockId + ": " + gridCell.gameObject);
                         StructureStorage structureStorage = new StructureStorage();
 
                         structureStorage.structureId = gridData.blockId;
@@ -88,8 +89,8 @@ public static class StructureSerializer
         {
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
-
-            StructureStorage[] structureStorages = formatter.Deserialize(stream) as StructureStorage[];
+            StructureStorage[] structureStorages = default;
+            structureStorages = formatter.Deserialize(stream) as StructureStorage[];
             stream.Close();
             Debug.Log("Count: " + structureStorages.Length);
             return structureStorages;
