@@ -664,13 +664,14 @@ public class GridManager : MonoBehaviour
             }
             if (blockData.blockData[currentBlockId].isUtility == true)
             {
+                UtilityIssueDetection(hitObjectData);
                 if (hitObjectData.originInteractType != InteractType.Body && blockData.blockData[currentBlockId].utilityType == InteractType.Body)
                 {
                     InteractBlock(currentHitObject, InteractType.Body, true);
                 }
                 if (hitObjectData.originInteractType == InteractType.Body && hitObjectData.id == -1 && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
                 {
-                    Debug.Log(gridData.originInteractType);
+                    
                     InteractBlock(currentHitObject, InteractType.Head, true);
                 }
             }
@@ -678,6 +679,26 @@ public class GridManager : MonoBehaviour
         }
         count++;
         Debug.Log("Placed blocks: " + count);
+    }
+    private void UtilityIssueDetection(GridData gridData)
+    {
+        InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
+        if(gridData.originInteractType == InteractType.none && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to set block to Head. Reason: Not a secondary body block.", Color.red, 2f);
+        }
+        if (gridData.originInteractType == InteractType.Body && gridData.id != -1 && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to set block to Head. Reason: The Block has a main body type.", Color.red, 2f);
+        }
+        if (gridData.originInteractType == InteractType.Head && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to set block to Head. Reason: Already a Head type Block.", Color.red, 2f);
+        }
+        if (gridData.originInteractType == InteractType.Body && blockData.blockData[currentBlockId].utilityType == InteractType.Body)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to set block to Body. Reason: Already a Body type Block.", Color.red, 2f);
+        }
     }
     private void HandleBlockBreak(GameObject hitObject)
     {

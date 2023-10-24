@@ -57,6 +57,10 @@ public static class StructureSerializer
                         structureStorage.Scale[1] = gridData.Scale.y;
                         structureStorage.Scale[2] = gridData.Scale.z;
                         structureStorage.tokenCost = gridData.tokenCost;
+                        structureStorage.id = gridData.id;
+                        structureStorage.isUtility = gridData.isUtility;
+                        structureStorage.originGameObjectId = gridData.originGameObjectId;
+                        structureStorage.originInteractType = gridData.originInteractType;
                         structureStorages.Add(structureStorage);
                     }
                 }
@@ -255,6 +259,10 @@ public static class StructureSerializer
             gridData.blockId = structureStorage[i].structureId;
             gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
             gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
+            gridData.isUtility = structureStorage[i].isUtility;
+            gridData.id = structureStorage[i].id;
+            gridData.originGameObjectId = structureStorage[i].originGameObjectId;
+            gridData.originInteractType = structureStorage[i].originInteractType;
         }
         Debug.Log("Count: " + count);
         return structure;

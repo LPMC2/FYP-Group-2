@@ -10,8 +10,10 @@ public class Structure : MonoBehaviour
     public float[] Scale { get; private set; }
     public bool isAutoRotatable { get; private set; }
     public int tokenCost { get; private set; }
-    public int neckGameObjectId { get; private set; }
-    public int bodyGameObjectId { get; private set; }
+    public int id { get; private set; }
+    public InteractType originInteractType { get; private set; }
+    public int originGameObjectId { get; private set; }
+    public bool isUtility { get; private set; }
 }
 [System.Serializable]
 public class StructureStorage
@@ -23,8 +25,10 @@ public class StructureStorage
     public float[] Scale = new float[3];
     public bool isAutoRotatable = true;
     public int tokenCost = 0;
-    public int neckGameObjectId;
-    public int bodyGameObjectId;
+    public int id = -1;
+    public InteractType originInteractType = default;
+    public int originGameObjectId = -1;
+    public bool isUtility = false;
     public StructureStorage ()
     {
         //structureId = structure.structureId;

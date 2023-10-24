@@ -573,7 +573,7 @@ public class InventoryBehaviour : MonoBehaviour
         // Start the fade coroutine
         fadeCoroutine = StartCoroutine(FadeText(itemName, color));
     }
-    public void StartFadeInText(string text, Color color = default(Color))
+    public void StartFadeInText(string text, Color color = default(Color), float duration = default)
     {
         if(color == default(Color))
         {
@@ -587,10 +587,14 @@ public class InventoryBehaviour : MonoBehaviour
 
         // Get the item name from the item data using the provided item ID
         // Start the fade coroutine
-        fadeCoroutine = StartCoroutine(FadeText(text, color));
+        fadeCoroutine = StartCoroutine(FadeText(text, color, duration));
     }
-    private IEnumerator FadeText(string text, Color color)
+    private IEnumerator FadeText(string text, Color color, float duration = default)
     {
+        if(duration == default)
+        {
+            duration = displayDuration;
+        }
         // Set the initial text and alpha value
         DisplayText.text = text;
         DisplayText.alpha = 0f;
@@ -606,7 +610,7 @@ public class InventoryBehaviour : MonoBehaviour
         }
 
         // Display the text for a duration
-        yield return new WaitForSeconds(displayDuration);
+        yield return new WaitForSeconds(duration);
 
         // Fade out animation
         float fadeOutTimer = 0f;
