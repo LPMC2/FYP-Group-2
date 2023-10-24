@@ -489,7 +489,7 @@ public class GridManager : MonoBehaviour
                         outline.OutlineColor = Color.green;
                         break;
                     case InteractType.Head:
-                        if (gridData.originGameObjectId == -1 && gridData.id >= 0)
+                        if (gridData.id >= 0)
                             outline.OutlineColor = Color.red;
                         else
                             outline.OutlineColor = Color.magenta;
@@ -542,8 +542,12 @@ public class GridManager : MonoBehaviour
                 GridData gridData = hitList[hitList.Count - 1].GetComponent<GridData>();
                 if (gridData.cellHeight == 0)
                 {
-                    currentHitObject = hitList[hitList.Count - 1];
-                    HandleBlockPlace(hitList[hitList.Count - 1]);
+
+                    if (placeBlockObject != null)
+                    {
+                        currentHitObject = hitList[hitList.Count - 1];
+                        HandleBlockPlace(hitList[hitList.Count - 1]);
+                    }
                 }
             }
         }
@@ -619,6 +623,7 @@ public class GridManager : MonoBehaviour
     {
         bool isAffordable = true;
         GridData gridData = hitObject.GetComponent<GridData>();
+        GridData hitObjectData = currentHitObject.GetComponent<GridData>();
         if(gridData != null)
         {
             
@@ -659,12 +664,13 @@ public class GridManager : MonoBehaviour
             }
             if (blockData.blockData[currentBlockId].isUtility == true)
             {
-                if (gridData.originInteractType != InteractType.Body && blockData.blockData[currentBlockId].utilityType == InteractType.Body)
+                if (hitObjectData.originInteractType != InteractType.Body && blockData.blockData[currentBlockId].utilityType == InteractType.Body)
                 {
                     InteractBlock(currentHitObject, InteractType.Body, true);
                 }
-                if (gridData.originInteractType != InteractType.Head && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
+                if (hitObjectData.originInteractType == InteractType.Body && hitObjectData.id == -1 && blockData.blockData[currentBlockId].utilityType == InteractType.Head)
                 {
+                    Debug.Log(gridData.originInteractType);
                     InteractBlock(currentHitObject, InteractType.Head, true);
                 }
             }
@@ -745,6 +751,7 @@ public class GridManager : MonoBehaviour
 
 
         }
+        setOutline(target.transform.GetChild(0).gameObject, true);
     }
     public void ResetGrid()
     {
@@ -867,6 +874,10 @@ public class GridManager : MonoBehaviour
         meshCombiner.DestroyCombinedChildren = true;
         meshCombiner.CombineMeshes(true);
         Destroy(meshCombiner);
+        MeshCollider meshCollider = parentObject.AddComponent<MeshCollider>();
+        MeshFilter meshFilter = parentObject.GetComponent<MeshFilter>();
+        meshCollider.sharedMesh = meshFilter.sharedMesh;
+        meshCollider.convex = true;
     }
     public void GenerateStructureWithGrid(string filePath = default)
     {
@@ -936,7 +947,7 @@ public class GridManager : MonoBehaviour
     }
     public void SetNameFromPath()
     {
-        name = StructureSerializer.SetStructureNameFromFile(path);
+        name = StructureSerializer.SetStructureNameFromFile(path, true);
     }
     public void SaveStructureImg()
     {
