@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SFB;
+using System.Linq;
+
 public class GridManager : MonoBehaviour
 {
     [Header("Managers")]
@@ -766,7 +768,14 @@ public class GridManager : MonoBehaviour
                     gridData.isUtility = true;
                 } else 
                 {
-                    gridData.originGameObjectId = originGridData.id;
+                    if (originGridData.id > -1)
+                    {
+                        gridData.originGameObjectId = originGridData.id;
+                    } else
+                    {
+                        gridData.originGameObjectId = originGridData.originGameObjectId;
+                    }
+                    Debug.Log(gridData.originGameObjectId + " - " + originGridData.id);
                     gridData.originInteractType = originGridData.originInteractType;
                     gridData.isUtility = true;
                 }
@@ -823,11 +832,14 @@ public class GridManager : MonoBehaviour
             }
             Debug.Log("cost: " + cost);
             string structureName = StructureSerializer.GetFileName(path);
+            GameObject gameObject = default;
             if (isTokenAffordable(cost, default, structureName))
             {
-                GameObject gameObject = GenerateStructure(structureStorages);
+                gameObject = GenerateStructure(structureStorages);
                 gameObject.name = structureName;
             }
+
+           
         }
     }
     public void LoadStructure(string filePath = default)
@@ -850,50 +862,14 @@ public class GridManager : MonoBehaviour
 
         }
         Debug.Log("cost: " + cost);
+        GameObject gameObject = default;
         string structureName = StructureSerializer.GetFileName(path);
         if (isTokenAffordable(cost, default, structureName))
         {
-            GameObject gameObject = GenerateStructure(structureStorages);
+            gameObject = GenerateStructure(structureStorages);
             gameObject.name = structureName;
         }
-    }
-    public static StructureStorage[] GetOriginBodyFromId(StructureStorage[] structureStorages, InteractType type)
-    {
-        BlockSO blockData = BlockManager.BlockData;
-        //Find Origin of Body Objects
-        StructureStorage[] bodyStructure = new StructureStorage[0];
-        StructureStorage[] headStructure = new StructureStorage[0];
-        int count = 0;
-        if (type == InteractType.Body)
-        {
-            //Find Origin of Body Objects
-            foreach (StructureStorage structureStorage in structureStorages)
-            {
-                if (structureStorage.id > -1 && structureStorage.originInteractType == InteractType.Body)
-                {
-                    bodyStructure = arrayBehaviour.AddArray<StructureStorage>(bodyStructure);
-                    bodyStructure[count] = structureStorage;
-                    count++;
-                }
-            }
-            return bodyStructure;
-        }
-        count = 0;
-        if (type == InteractType.Head)
-        {
-            foreach (StructureStorage structureStorage in structureStorages)
-            {
-                if (structureStorage.id > -1 && structureStorage.originInteractType == InteractType.Head)
-                {
-                    headStructure = arrayBehaviour.AddArray<StructureStorage>(headStructure);
-                    headStructure[count] = structureStorage;
-                    count++;
-                }
-            }
-            return headStructure;
-        }
-
-        return null;
+      
     }
    
     public GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3))
@@ -905,9 +881,17 @@ public class GridManager : MonoBehaviour
         int count = 0;
         GameObject structure = new GameObject();
         structure.transform.localPosition = position;
-        for(int i=0; i< structureStorage.Length; i++)
+        GameObject structureRemains = new GameObject();
+        GridData gridDataRemainContent = structureRemains.AddComponent<GridData>();
+        gridDataRemainContent.originInteractType = InteractType.none;
+        GameObject[] utilityList = new GameObject[0];
+        int[] utilityIdList = new int[0];
+        structureRemains.transform.position = structure.transform.position;
+        structureRemains.transform.SetParent(structure.transform);
+        int utilityCount = 0;
+        for (int i=0; i< structureStorage.Length; i++)
         {
-            Debug.Log(structureStorage[i].structureId);
+            
             GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
             block.transform.SetParent(structure.transform);
             count++;
@@ -916,15 +900,98 @@ public class GridManager : MonoBehaviour
             block.transform.localScale = new Vector3(structureStorage[i].Scale[0] * cellSize, structureStorage[i].Scale[1] * cellSize, structureStorage[i].Scale[2] * cellSize);
 
             GridData gridData = block.AddComponent<GridData>();
-            gridData.isAutoRotatable = structureStorage[i].isAutoRotatable;
-            gridData.cellX = (int)structureStorage[i].cellPos[0];
-            gridData.cellY = (int)structureStorage[i].cellPos[2];
-            gridData.cellHeight = (int)structureStorage[i].cellPos[1];
-            gridData.blockId = structureStorage[i].structureId;
-            gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
-            gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
+            gridData.SetData(structureStorage[i]);
+            if(gridData.id > -1)
+            {
+                bool haveId = false;
+                
+                for (int j = 0; j < utilityIdList.Length; j++)
+                {
+                    if (utilityIdList[j] == gridData.id)
+                    {
+                        utilityList[j].transform.SetParent(block.transform);
+                        haveId = true;
+                    }
+                   
+                }
+                if(!haveId)
+                {
+                    GameObject structureContent = new GameObject();
+                    structureContent.transform.position = structure.transform.position;
+                    structureContent.transform.SetParent(block.transform);
+                    utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
+                    utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
+                    utilityList[utilityCount] = structureContent;
+                    utilityIdList[utilityCount] = gridData.id;
+                    utilityCount++;
+                }
+            } else if(gridData.originInteractType != InteractType.none)
+            {
+                bool haveId = false;
+                for(int j = 0; j < utilityIdList.Length; j++)
+                {
+                    Debug.Log(utilityIdList[j] + " : " + gridData.originGameObjectId);
+                    if(utilityIdList[j] == gridData.originGameObjectId)
+                    {
+                        block.transform.SetParent(utilityList[j].transform);
+                        haveId = true;
+                        
+                    }
+                    
+                }
+                if(!haveId)
+                {
+                    GameObject structureContent = new GameObject();
+                    structureContent.transform.position = structure.transform.position;
+                    structureContent.transform.SetParent(structure.transform);
+                    utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
+                    utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
+                    utilityList[utilityCount] = structureContent;
+                    utilityIdList[utilityCount] = gridData.originGameObjectId;
+                    utilityCount++;
+                }
+
+            } else
+            {
+                block.transform.SetParent(structureRemains.transform);
+            }
+
         }
-        CombineGameObjects(structure);
+
+        //Ensure all objects are in correct parent object
+        foreach(Transform childTransform in structure.transform)
+        {
+            GridData childGridData = childTransform.GetComponent<GridData>();
+            if(childTransform.childCount == 0 && childGridData.id == -1)
+            {
+                for(int i=0; i< utilityIdList.Length; i++)
+                {
+                    if(utilityIdList[i] == childGridData.originGameObjectId)
+                    {
+                        childTransform.SetParent(utilityList[i].transform);
+                    }
+                }
+            }
+            if(childGridData.id > -1 && childGridData.originInteractType == InteractType.Head)
+            {
+                for (int i = 0; i < utilityIdList.Length; i++)
+                {
+                    if (utilityIdList[i] == childGridData.originGameObjectId && utilityList[i].GetComponentInParent<GridData>().originInteractType == InteractType.Body)
+                    {
+                        childTransform.SetParent(utilityList[i].transform.parent);
+                    }
+                }
+            }
+            foreach (Transform childContent in childTransform) {
+                CombineGameObjects(childContent.gameObject);
+            }
+        }
+        arrayBehaviour.DebugArray<int>(utilityIdList);
+        arrayBehaviour.DebugArray<GameObject>(utilityList);
+        //StructureStorage.SetParentFromStructureId(structureStorage, structure, InteractType.Body);
+        //StructureStorage.SetParentFromStructureId(structureStorage, structure, InteractType.Head);
+        
+        
 
 
         Debug.Log("Count: " + count);
@@ -987,6 +1054,7 @@ public class GridManager : MonoBehaviour
                     gridData.tokenCost = structureStorage.tokenCost;
                     gridData.isUtility = structureStorage.isUtility;
                     gridData.id = structureStorage.id;
+                    
                     gridData.originGameObjectId = structureStorage.originGameObjectId;
                     gridData.originInteractType = structureStorage.originInteractType;
                     cost += structureStorage.tokenCost;

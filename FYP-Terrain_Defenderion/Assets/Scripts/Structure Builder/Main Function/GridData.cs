@@ -29,6 +29,20 @@ public class GridData : MonoBehaviour
         
         isUtility = false;
     }
+    public void SetData(StructureStorage structureStorage)
+    {
+        cellX = (int)structureStorage.cellPos[0];
+        cellY = (int)structureStorage.cellPos[2];
+        cellHeight = (int)structureStorage.cellPos[1];
+        Rotation = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
+        Scale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
+        tokenCost = structureStorage.tokenCost;
+        isAutoRotatable = structureStorage.isAutoRotatable;
+        id = structureStorage.id;
+        originInteractType = structureStorage.originInteractType;
+        originGameObjectId = structureStorage.originGameObjectId;
+        isUtility = structureStorage.isUtility;
+    }
 }
 public enum InteractType
 {

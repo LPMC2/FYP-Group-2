@@ -61,6 +61,7 @@ public static class StructureSerializer
                         structureStorage.id = gridData.id;
                         structureStorage.isUtility = gridData.isUtility;
                         structureStorage.originGameObjectId = gridData.originGameObjectId;
+                        Debug.Log(structureStorage.originGameObjectId +" / " +gridData.originGameObjectId);
                         structureStorage.originInteractType = gridData.originInteractType;
                         structureStorages.Add(structureStorage);
                     }

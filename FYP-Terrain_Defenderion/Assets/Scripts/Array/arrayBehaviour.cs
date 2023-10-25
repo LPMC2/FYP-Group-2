@@ -42,11 +42,11 @@ public class arrayBehaviour
         }
         return newArray;
     }
-    public static T[] AddArray<T>(T[] arr)
+    public static T[] AddArray<T>(T[] arr, int amount = 1)
     {
         int originalsize = arr.Length;
-        T[] newArray = new T[originalsize + 1];
-        for (int i = 0; i < originalsize + 1; i++)
+        T[] newArray = new T[originalsize + amount];
+        for (int i = 0; i < originalsize + amount; i++)
         {
             if (i < originalsize)
             {
@@ -56,6 +56,21 @@ public class arrayBehaviour
 
         }
         return newArray;
+    }
+    public static void DebugArray<T>(T[] arr)
+    {
+        string Content = "Content List: \n";
+        int count = 1;
+        foreach(T content in arr)
+        {
+            Content += " " + count + " > " + content + "\n";
+            count++;
+        }
+        if(count <= 1)
+        {
+            Content += "None!";
+        }
+        Debug.Log(Content);
     }
     public static T[,] Add2DArray<T>(T[,] arr, ArrayType arrayType = default)
     {
@@ -92,25 +107,25 @@ public class arrayBehaviour
 
         return newArray;
     }
-    public static string[,] Add2DArray(string[,] originalArray, string newValue)
-    {
-        int rows = originalArray.GetLength(0);
-        int columns = originalArray.GetLength(1) + 1;
+    //public static string[,] Add2DArray(string[,] originalArray, string newValue)
+    //{
+    //    int rows = originalArray.GetLength(0);
+    //    int columns = originalArray.GetLength(1) + 1;
 
-        string[,] newArray = new string[rows, columns];
+    //    string[,] newArray = new string[rows, columns];
 
-        for (int row = 0; row < rows; row++)
-        {
-            for (int col = 0; col < columns - 1; col++)
-            {
-                newArray[row, col] = originalArray[row, col];
-            }
+    //    for (int row = 0; row < rows; row++)
+    //    {
+    //        for (int col = 0; col < columns - 1; col++)
+    //        {
+    //            newArray[row, col] = originalArray[row, col];
+    //        }
 
-            newArray[row, columns - 1] = newValue;
-        }
+    //        newArray[row, columns - 1] = newValue;
+    //    }
 
-        return newArray;
-    }
+    //    return newArray;
+    //}
 }
 public enum ArrayType
 {
