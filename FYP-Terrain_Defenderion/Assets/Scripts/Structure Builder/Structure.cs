@@ -157,6 +157,7 @@ public class StructureStorage
                 continue;
             }
             //Find childs of body/head object
+
             if (gridData != null && gridData.id == -1 && gridData.originGameObjectId > -1)
             {
                 GameObject parent = default;
@@ -164,16 +165,16 @@ public class StructureStorage
                 {
                     case InteractType.Body:
                         arrayBehaviour.Add2DArray(bodyList, ArrayType.column);
-                        
+                        int targetId = FindParentId(bodyList, gridData.originGameObjectId);
+                        bodyList[targetId, arrayBehaviour.FindIndexFromEmpty2DArray(bodyList, targetId)] = child.gameObject;
                         break;
                     case InteractType.Head:
                         arrayBehaviour.Add2DArray(headList, ArrayType.column);
+                        int targetId1 = FindParentId(headList, gridData.originGameObjectId);
+                        bodyList[targetId1, arrayBehaviour.FindIndexFromEmpty2DArray(headList, targetId1)] = child.gameObject;
                         break;
                 }
-                if (parent != null && parent != default)
-                {
-                    child.SetParent(parent.transform);
-                }
+
             }
 
 
@@ -213,5 +214,17 @@ public class StructureStorage
             }
         }
         return null;
+    }
+    private static int FindParentId(GameObject[,] target, int originGameObjectId)
+    {
+        int targetId = default;
+        for(int i=0; i< target.Length; i++)
+        {
+            if(target[i,0].GetComponent<GridData>().id == originGameObjectId)
+            {
+                targetId = i;
+            }
+        }
+        return targetId;
     }
 }

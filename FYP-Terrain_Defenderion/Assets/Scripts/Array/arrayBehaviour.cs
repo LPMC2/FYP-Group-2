@@ -126,6 +126,18 @@ public class arrayBehaviour
 
     //    return newArray;
     //}
+    public static int FindIndexFromEmpty2DArray<T>(T[,] arr, int row)
+    {
+        int targetInt = -1;
+        for(int i=0; i< arr.GetLength(1); i++)
+        {
+            if(arr[row,i] == null)
+            {
+                targetInt = i;
+            }
+        }
+        return targetInt;
+    }
 }
 public enum ArrayType
 {
