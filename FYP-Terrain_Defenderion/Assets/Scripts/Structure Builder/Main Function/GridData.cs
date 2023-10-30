@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Reflection;
 public class GridData : MonoBehaviour
 {
     public int cellX = 0;
@@ -43,10 +43,29 @@ public class GridData : MonoBehaviour
         originGameObjectId = structureStorage.originGameObjectId;
         isUtility = structureStorage.isUtility;
     }
+
 }
 public enum InteractType
 {
     none,
     Body,
     Head
+}
+
+public class DebugScript
+{
+    public static void DebugVariables<T>(T component)
+        where T : Component
+    {
+        string debugLog = component.name + ": \n";
+        FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach(FieldInfo field in fields)
+        {
+            string fieldName = field.Name;
+            object value = field.GetValue(component);
+            debugLog += fieldName + ":" + value + "\n";
+        }
+        Debug.Log(debugLog, component.gameObject);
+
+    }
 }

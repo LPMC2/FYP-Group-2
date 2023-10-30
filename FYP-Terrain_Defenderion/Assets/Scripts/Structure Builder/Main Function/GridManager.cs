@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using SFB;
 using System.Linq;
-
+using NaughtyAttributes;
 public class GridManager : MonoBehaviour
 {
     [Header("Managers")]
@@ -901,91 +901,92 @@ public class GridManager : MonoBehaviour
 
             GridData gridData = block.AddComponent<GridData>();
             gridData.SetData(structureStorage[i]);
-            if(gridData.id > -1)
-            {
-                bool haveId = false;
-                
-                for (int j = 0; j < utilityIdList.Length; j++)
-                {
-                    if (utilityIdList[j] == gridData.id)
-                    {
-                        utilityList[j].transform.SetParent(block.transform);
-                        haveId = true;
-                    }
-                   
-                }
-                if(!haveId)
-                {
-                    GameObject structureContent = new GameObject();
-                    structureContent.transform.position = structure.transform.position;
-                    structureContent.transform.SetParent(block.transform);
-                    utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
-                    utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
-                    utilityList[utilityCount] = structureContent;
-                    utilityIdList[utilityCount] = gridData.id;
-                    utilityCount++;
-                }
-            } else if(gridData.originInteractType != InteractType.none)
-            {
-                bool haveId = false;
-                for(int j = 0; j < utilityIdList.Length; j++)
-                {
-                    Debug.Log(utilityIdList[j] + " : " + gridData.originGameObjectId);
-                    if(utilityIdList[j] == gridData.originGameObjectId)
-                    {
-                        block.transform.SetParent(utilityList[j].transform);
-                        haveId = true;
-                        
-                    }
-                    
-                }
-                if(!haveId)
-                {
-                    GameObject structureContent = new GameObject();
-                    structureContent.transform.position = structure.transform.position;
-                    structureContent.transform.SetParent(structure.transform);
-                    utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
-                    utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
-                    utilityList[utilityCount] = structureContent;
-                    utilityIdList[utilityCount] = gridData.originGameObjectId;
-                    utilityCount++;
-                }
+            //if(gridData.id > -1)
+            //{
+            //    bool haveId = false;
 
-            } else
-            {
-                block.transform.SetParent(structureRemains.transform);
-            }
+            //    for (int j = 0; j < utilityIdList.Length; j++)
+            //    {
+            //        if (utilityIdList[j] == gridData.id)
+            //        {
+            //            utilityList[j].transform.SetParent(block.transform);
+            //            haveId = true;
+            //        }
+
+            //    }
+            //    if(!haveId)
+            //    {
+            //        GameObject structureContent = new GameObject();
+            //        structureContent.transform.position = structure.transform.position;
+            //        structureContent.transform.SetParent(block.transform);
+            //        utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
+            //        utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
+            //        utilityList[utilityCount] = structureContent;
+            //        utilityIdList[utilityCount] = gridData.id;
+            //        utilityCount++;
+            //    }
+            //} else if(gridData.originInteractType != InteractType.none)
+            //{
+            //    bool haveId = false;
+            //    for(int j = 0; j < utilityIdList.Length; j++)
+            //    {
+            //        Debug.Log(utilityIdList[j] + " : " + gridData.originGameObjectId);
+            //        if(utilityIdList[j] == gridData.originGameObjectId)
+            //        {
+            //            block.transform.SetParent(utilityList[j].transform);
+            //            haveId = true;
+
+            //        }
+
+            //    }
+            //    if(!haveId)
+            //    {
+            //        GameObject structureContent = new GameObject();
+            //        structureContent.transform.position = structure.transform.position;
+            //        structureContent.transform.SetParent(structure.transform);
+            //        utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
+            //        utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
+            //        utilityList[utilityCount] = structureContent;
+            //        utilityIdList[utilityCount] = gridData.originGameObjectId;
+            //        utilityCount++;
+            //    }
+
+            //} else
+            //{
+            //    block.transform.SetParent(structureRemains.transform);
+            //}
 
         }
 
         //Ensure all objects are in correct parent object
-        foreach(Transform childTransform in structure.transform)
-        {
-            GridData childGridData = childTransform.GetComponent<GridData>();
-            if(childTransform.childCount == 0 && childGridData.id == -1)
-            {
-                for(int i=0; i< utilityIdList.Length; i++)
-                {
-                    if(utilityIdList[i] == childGridData.originGameObjectId)
-                    {
-                        childTransform.SetParent(utilityList[i].transform);
-                    }
-                }
-            }
-            if(childGridData.id > -1 && childGridData.originInteractType == InteractType.Head)
-            {
-                for (int i = 0; i < utilityIdList.Length; i++)
-                {
-                    if (utilityIdList[i] == childGridData.originGameObjectId && utilityList[i].GetComponentInParent<GridData>().originInteractType == InteractType.Body)
-                    {
-                        childTransform.SetParent(utilityList[i].transform.parent);
-                    }
-                }
-            }
-            foreach (Transform childContent in childTransform) {
-                CombineGameObjects(childContent.gameObject);
-            }
-        }
+        //foreach(Transform childTransform in structure.transform)
+        //{
+        //    GridData childGridData = childTransform.GetComponent<GridData>();
+        //    if(childTransform.childCount == 0 && childGridData.id == -1)
+        //    {
+        //        for(int i=0; i< utilityIdList.Length; i++)
+        //        {
+        //            if(utilityIdList[i] == childGridData.originGameObjectId)
+        //            {
+        //                childTransform.SetParent(utilityList[i].transform);
+        //            }
+        //        }
+        //    }
+        //    if(childGridData.id > -1 && childGridData.originInteractType == InteractType.Head)
+        //    {
+        //        for (int i = 0; i < utilityIdList.Length; i++)
+        //        {
+        //            if (utilityIdList[i] == childGridData.originGameObjectId && utilityList[i].GetComponentInParent<GridData>().originInteractType == InteractType.Body)
+        //            {
+        //                childTransform.SetParent(utilityList[i].transform.parent);
+        //            }
+        //        }
+        //    }
+        //    foreach (Transform childContent in childTransform) {
+        //        CombineGameObjects(childContent.gameObject);
+        //    }
+        //}
+        StructureStorage.ProcessChildObjects(structure.transform);
         arrayBehaviour.DebugArray<int>(utilityIdList);
         arrayBehaviour.DebugArray<GameObject>(utilityList);
         //StructureStorage.SetParentFromStructureId(structureStorage, structure, InteractType.Body);

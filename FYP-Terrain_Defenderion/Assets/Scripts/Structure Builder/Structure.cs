@@ -117,4 +117,101 @@ public class StructureStorage
             }
         }
     }
+    public static void ProcessChildObjects(Transform parentObject)
+    {
+        GameObject[,] bodyList = new GameObject[0, 0];
+        GameObject[,] headList = new GameObject[0, 0];
+        GameObject other = null;
+        int count = 0;
+        foreach (Transform target in parentObject)
+        {
+            GridData gridData = target.GetComponent<GridData>();
+
+            if(gridData.id > -1)
+            {
+
+                switch(gridData.originInteractType) 
+                {
+                    case InteractType.Body:
+                        arrayBehaviour.Add2DArray(bodyList, ArrayType.row);
+                        bodyList[count, 0] = target.gameObject;
+                        break;
+                    case InteractType.Head:
+                        arrayBehaviour.Add2DArray(bodyList, ArrayType.row);
+                        headList[count, 0] = target.gameObject;
+                        break;
+                }
+                count++;
+            }
+        }
+        Debug.Log(count);
+         count = 0;
+        foreach (Transform child in parentObject)
+        {
+            count++;
+            GridData gridData = child.GetComponent<GridData>();
+            DebugScript.DebugVariables(gridData);
+            if (gridData != null && gridData.id > -1 && gridData.originGameObjectId == -1)
+            {
+                // Skip this child object
+                continue;
+            }
+            //Find childs of body/head object
+            if (gridData != null && gridData.id == -1 && gridData.originGameObjectId > -1)
+            {
+                GameObject parent = default;
+                switch (gridData.originInteractType)
+                {
+                    case InteractType.Body:
+                        arrayBehaviour.Add2DArray(bodyList, ArrayType.column);
+                        
+                        break;
+                    case InteractType.Head:
+                        arrayBehaviour.Add2DArray(headList, ArrayType.column);
+                        break;
+                }
+                if (parent != null && parent != default)
+                {
+                    child.SetParent(parent.transform);
+                }
+            }
+
+
+            if (gridData != null && gridData.id == -1 && gridData.originInteractType == InteractType.Head && gridData.originGameObjectId > -1)
+            {
+                //GameObject parent = FindParentObject(bodyList, gridData.originGameObjectId);
+                //if (parent != null)
+                //{
+                //    child.SetParent(parent.transform);
+
+                //}
+            }
+
+            if (other == null && gridData.originInteractType == default || gridData.isUtility == false)
+            {
+                if (other == null)
+                {
+                    other = new GameObject("other");
+                    other.transform.SetParent(parentObject);
+                }
+                child.SetParent(other.transform);
+            }
+
+
+        }
+        Debug.Log("Number: " + count);
+    }
+
+    private static GameObject FindParentObject(List<GameObject> objects, int originGameObjectId)
+    {
+        foreach (GameObject obj in objects)
+        {
+            GridData gridData = obj.GetComponent<GridData>();
+            if (gridData != null && gridData.id == originGameObjectId)
+            {
+                return obj;
+            }
+        }
+        return null;
+    }
 }
