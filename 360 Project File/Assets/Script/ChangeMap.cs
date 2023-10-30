@@ -38,7 +38,7 @@ public class ChangeMap : MonoBehaviour
 
     public GameObject Map1;
     public GameObject Map2;
-
+    public GameObject[] Map;
     private RectTransform F1MapRectTransform;
     private RectTransform F2MapRectTransform;
 
@@ -61,7 +61,10 @@ public class ChangeMap : MonoBehaviour
             //Map1.SetActive(false);
             //Map2.SetActive(true);
         }
-        
+        for (int i = 0; i < Map.Length; i++)
+        {
+
+        }
         changeMap(ve);
         SaveMapPos = maincamera.transform.position;
     }
