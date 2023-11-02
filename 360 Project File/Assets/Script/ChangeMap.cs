@@ -8,11 +8,17 @@ public class ChangeMap : MonoBehaviour
 
     public Vector2 newPosition;
     public Camera maincamera;
+    public RectTransform[] MapRect = new RectTransform[5];
     private void Start()
     {
-        SaveMapPos = obj.transform.position;
         F1MapRectTransform = Map1.GetComponent<RectTransform>();
-        F2MapRectTransform = Map2.GetComponent<RectTransform>();    
+        F2MapRectTransform = Map2.GetComponent<RectTransform>(); 
+        SaveMapPos = obj.transform.position;
+        //for (int i = 0; i<Map.Length;i++)
+        //{
+        //    MapRect[i] = Map[i].GetComponent<RectTransform>();
+        //}
+    
     }
 
     private float rotateSpeed = 1.5f;
@@ -51,18 +57,16 @@ public class ChangeMap : MonoBehaviour
         mapPos = maincamera.transform.position;
         Vector2 ve = new Vector2(-(mapPos.x - SaveMapPos.x) * 100, -(mapPos.z - SaveMapPos.z) * 100);
 
-        if (mapPos.y == 0)
+        for (int i=0; i>-Map.Length;i--)
         {
-            //Map1.SetActive(true);
-            //Map2.SetActive(false);
-        }
-        else
-        {
-            //Map1.SetActive(false);
-            //Map2.SetActive(true);
-        }
-        for (int i = 0; i < Map.Length; i++)
-        {
+            if(i == mapPos.y)
+            {
+                Map[-i].SetActive(true);
+            }
+            else
+            {
+                Map[-i].SetActive(false);
+            }
 
         }
         changeMap(ve);
@@ -70,13 +74,14 @@ public class ChangeMap : MonoBehaviour
     }
     public void changeMap(Vector2 pos)
     {
-        Vector2 M1;
-        Vector2 M2;
+        RectTransform Rect1;
+        for (int i = 0; i < Map.Length; i++)
+        {
+            Rect1 = Map[i].GetComponent<RectTransform>();
+            Rect1.anchoredPosition = pos + Rect1.anchoredPosition;
 
-        M1 = pos + F1MapRectTransform.anchoredPosition;
-        M2 = pos + F2MapRectTransform.anchoredPosition;
-
-        F1MapRectTransform.anchoredPosition = M1;
-        F2MapRectTransform.anchoredPosition = M2;
+        }
+        
+        
     }
 }
