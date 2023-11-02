@@ -38,18 +38,18 @@ public class ChangeMap : MonoBehaviour
         mapPos = maincamera.transform.position;
         Vector2 ve = new Vector2(-(mapPos.x - SaveMapPos.x) * 100, -(mapPos.z - SaveMapPos.z) * 100);
 
-        for (int i=0; i>-Map.Length;i--)
-        {
-            if(i == mapPos.y)
-            {
-                Map[-i].SetActive(true);
-            }
-            else
-            {
-                Map[-i].SetActive(false);
-            }
+        //for (int i=0; i>-Map.Length;i--)
+        //{
+        //    if(i == mapPos.y)
+        //    {
+        //        Map[-i].SetActive(true);
+        //    }
+        //    else
+        //    {
+        //        Map[-i].SetActive(false);
+        //    }
 
-        }
+        //}
         changeMap(ve);
         SaveMapPos = maincamera.transform.position;
     }
