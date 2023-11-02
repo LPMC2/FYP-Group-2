@@ -6,34 +6,20 @@ public class ChangeMap : MonoBehaviour
 {
 
 
-    public Vector2 newPosition;
     public Camera maincamera;
-    public RectTransform[] MapRect = new RectTransform[5];
+
     private void Start()
     {
-        F1MapRectTransform = Map1.GetComponent<RectTransform>();
-        F2MapRectTransform = Map2.GetComponent<RectTransform>(); 
-        SaveMapPos = obj.transform.position;
-        //for (int i = 0; i<Map.Length;i++)
-        //{
-        //    MapRect[i] = Map[i].GetComponent<RectTransform>();
-        //}
-    
+        SaveMapPos = maincamera.transform.position;
     }
 
-    private float rotateSpeed = 1.5f;
-    private float zoomSpeed = 15f;
-    private float zoomAmount = 60f;
-
-    private GameObject gameObjectValue;
-
-    [SerializeField] GameObject obj;
     // Update is called once per frame
     private void Update()
     {
             ViewAreaController();
             changeposition();
     }
+
     private Quaternion cameraRotation;
     private void ViewAreaController()
     {
@@ -42,16 +28,11 @@ public class ChangeMap : MonoBehaviour
 
     }
 
-    public GameObject Map1;
-    public GameObject Map2;
     public GameObject[] Map;
-    private RectTransform F1MapRectTransform;
-    private RectTransform F2MapRectTransform;
 
     [SerializeField] private Vector3 mapPos;
     [SerializeField] private Vector3 SaveMapPos;
-    [SerializeField] private Vector3 mapPos1;
-    [SerializeField] private Vector3 SaveMapPos1;
+
     public void changeposition()
     {
         mapPos = maincamera.transform.position;
