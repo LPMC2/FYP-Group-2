@@ -29,6 +29,7 @@ public class StructureStorage
     public InteractType originInteractType = default;
     public int originGameObjectId = -1;
     public bool isUtility = false;
+    
     public StructureStorage ()
     {
         //structureId = structure.structureId;
@@ -178,15 +179,18 @@ public class StructureStorage
             }
 
 
-            if (gridData != null && gridData.id == -1 && gridData.originInteractType == InteractType.Head && gridData.originGameObjectId > -1)
-            {
-                //GameObject parent = FindParentObject(bodyList, gridData.originGameObjectId);
-                //if (parent != null)
-                //{
-                //    child.SetParent(parent.transform);
+            //if (gridData != null && gridData.id == -1 && gridData.originGameObjectId > -1)
+            //{
+            //    switch (gridData.originInteractType)
+            //    {
+            //        case InteractType.Body:
 
-                //}
-            }
+            //            break;
+            //        case InteractType.Head:
+
+            //            break;
+            //    }
+            //}
 
             if (other == null && gridData.originInteractType == default || gridData.isUtility == false)
             {
@@ -197,10 +201,23 @@ public class StructureStorage
                 }
                 child.SetParent(other.transform);
             }
-
+            SetParentFromType(headList);
+            SetParentFromType(bodyList);
 
         }
         Debug.Log("Number: " + count);
+    }
+    private static void SetParentFromType(GameObject[,] list)
+    {
+       for(int i=0; i< list.Length; i++)
+        {
+            for (int j= 1;j<list.GetLength(1); j++)
+            {
+                list[i, 0].transform.SetParent(list[i, j].transform);
+
+            }
+        }
+
     }
 
     private static GameObject FindParentObject(List<GameObject> objects, int originGameObjectId)

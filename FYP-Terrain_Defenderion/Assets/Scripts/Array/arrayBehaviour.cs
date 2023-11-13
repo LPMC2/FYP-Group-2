@@ -76,7 +76,7 @@ public class arrayBehaviour
     {
         int originalRowsize = arr.Length;
         int originalColsize = arr.GetLength(1);
-        T[,] newArray = default;
+        T[,] newArray = new T[originalRowsize, originalColsize];
         switch(arrayType)
         {
             case ArrayType.row:
@@ -86,18 +86,21 @@ public class arrayBehaviour
                 newArray = new T[originalRowsize, originalColsize + 1];
                 break;
         }
-        for (int i = 0; i < originalRowsize + 1; i++)
+        string debug = "List of array:\n";
+        for (int i = 0; i < newArray.Length; i++)
         {
-            for (int j = 0; j < originalColsize + 1; i++)
+            for (int j = 0; j < newArray.GetLength(1); i++)
             {
                 if (i < originalRowsize && j< originalColsize)
                 {
 
                     newArray[i,j] = arr[i,j];
                 }
+                debug += newArray[i, j];
             }
 
         }
+        Debug.Log(debug);
         return newArray;
     }
     public static T[] ResetArray<T>(T[] originalArray)
