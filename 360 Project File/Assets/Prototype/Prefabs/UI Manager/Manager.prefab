@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8906240054810615201
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4253067411230663145}
+  - component: {fileID: 7892769700947550908}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4253067411230663145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8906240054810615201}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7892769700947550908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8906240054810615201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d179547ba08a5469f977a17b944e8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  quizScriptableObject: {fileID: 11400000, guid: c38df8eb54d341342ab498452964e240, type: 2}
+  lang: en
+  contentQuestions: {fileID: 0}
+  questionsUIObject: {fileID: 1012983690367472974, guid: b96b3defe846214418c8e7162b3e1a73, type: 3}
+  answerUIObject: {fileID: 1847582886407492675, guid: a117c79379501c54aa1973062d82c9dd, type: 3}
+  nextBtn: {fileID: 0}
+  backBtn: {fileID: 0}
+  checkBtn: {fileID: 0}
+  quizSO: {fileID: 11400000, guid: c38df8eb54d341342ab498452964e240, type: 2}
+  scoreSO: {fileID: 11400000, guid: 284ee713ed09e744c968e4577894f8f3, type: 2}
+  page: 0
