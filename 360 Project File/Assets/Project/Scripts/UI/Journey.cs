@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Journey : MonoBehaviour
+public class Journey : CollapsiblePanel
 {
     [Header("Data")]
     [SerializeField]
     private JourneyEntries m_DataSource;
-
-    [Header("Toggle")]
-    [SerializeField]
-    private Button m_ToggleButton;
-    [SerializeField]
-    private RectTransform m_ContentRectTransform;
 
     [Header("Entry")]
     [SerializeField]
@@ -33,19 +27,23 @@ public class Journey : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField]
-    private float m_VisibilityTime;
-    [SerializeField]
-    private float m_NavigateTime;
+    private AnimationCurve m_NavigateAnim = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
-    private bool m_Visible;
+    protected override float ContentHeight => m_EntryHeight * 3f;
 
     private List<JourneyEntry> m_ManagedEntries;
     private int m_CurrentEntry;
 
-    private Coroutine m_Visibility, m_Navigate;
+    private Coroutine m_Navigate;
 
-    private void Awake()
+    private void Start()
     {
+        if (m_DataSource == null)
+        {
+            Debug.LogWarning("[Journey] No data source.");
+            return;
+        }
+
         m_ManagedEntries = new();
         for (int i = 0; i < m_DataSource.Entries.Length; i++)
         {
@@ -54,53 +52,29 @@ public class Journey : MonoBehaviour
             instance.StepKey = m_DataSource.Entries[i];
             m_ManagedEntries.Add(instance);
         }
-    }
-
-    private void Start()
-    {
         RefeshPosition();
         m_PrevButton.gameObject.SetActive(false);
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        m_ToggleButton.onClick.AddListener(ToggleVisibility);
+        base.OnEnable();
         m_PrevButton.onClick.AddListener(PrevItem);
         m_NextButton.onClick.AddListener(NextItem);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        m_ToggleButton.onClick.RemoveListener(ToggleVisibility);
+        base.OnDisable();
         m_PrevButton.onClick.RemoveListener(PrevItem);
         m_NextButton.onClick.RemoveListener(NextItem);
     }
 
-    private void SetVisibility(bool newState)
-    {
-        if (m_Visible == newState || m_Visibility != null)
-            return;
+    public void PrevItem()
+        => NavigateTo(m_CurrentEntry - 1);
 
-        m_Visibility = StartCoroutine(PerformVisibility(newState));
-    }
-
-    private IEnumerator PerformVisibility(bool newState)
-    {
-        var from = newState ? 0f : m_EntryHeight * 3f;
-        var to = newState ? m_EntryHeight * 3f : 0f;
-        float time = 0f;
-        while (time < m_VisibilityTime)
-        {
-            var value = Mathf.Lerp(from, to, time / m_VisibilityTime);
-            m_ContentRectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0f, value);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        m_ContentRectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0f, to);
-    
-        m_Visible = newState;
-        m_Visibility = null;
-    }
+    public void NextItem()
+        => NavigateTo(m_CurrentEntry + 1);
 
     private void NavigateTo(int index)
     {
@@ -121,9 +95,9 @@ public class Journey : MonoBehaviour
         var fromPos = m_ViewportRectTransform.anchoredPosition;
         var toPos = new Vector2(m_ViewportRectTransform.anchoredPosition.x, CalculateOffset(index));
         float time = 0f;
-        while (time < m_NavigateTime)
+        while (time < m_NavigateAnim.GetLastKeyTime())
         {
-            m_ViewportRectTransform.anchoredPosition = Vector2.Lerp(fromPos, toPos, time / m_NavigateTime);
+            m_ViewportRectTransform.anchoredPosition = Vector2.Lerp(fromPos, toPos, m_NavigateAnim.Evaluate(time));
             time += Time.deltaTime;
             yield return null;
         }
@@ -146,13 +120,4 @@ public class Journey : MonoBehaviour
             result = m_EntryHeight * (index - 1);
         return result;
     }
-
-    public void ToggleVisibility()
-        => SetVisibility(!m_Visible);
-
-    public void PrevItem()
-        => NavigateTo(m_CurrentEntry - 1);
-
-    public void NextItem()
-        => NavigateTo(m_CurrentEntry + 1);
 }

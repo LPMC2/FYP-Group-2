@@ -14,15 +14,4 @@ public class MapLandmark : ScriptableObject
     [SerializeField]
     private Texture2D m_Texture;
     public Texture2D Texture => m_Texture;
-
-    [SerializeField]
-    private MapLandmarkFlags m_Flags;
-    public MapLandmarkFlags Flags => m_Flags;
-
-    [System.Flags]
-    public enum MapLandmarkFlags
-    {
-        None = 0,
-        Locked = 1 << 0
-    }
 }

@@ -4,27 +4,23 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class NavigationPoint : MonoBehaviour
 {
-    [SerializeField]
-    private Type m_Type;
-    public Type NavigationType => m_Type;
+    public Type NavigationType { get; set; }
+    public Map.MapConnectionFlags Flags { get; set; }
 
-    [SerializeField]
-    private SphericalHelper m_Destination;
-    public SphericalHelper Destination => m_Destination;
+    // Navigate
+    public SphericalHelper Destination { get; set; }
+    
+    // Information
+    public string InfoLocalizeKey { get; set; }
 
-    [SerializeField]
-    private string m_InfoLocalizeKey;
-    public string InfoLocalizeKey => m_InfoLocalizeKey;
+    // Video
+    public bool PlayVideo { get; set; }
+    public string VideoPath { get; set; }
+    public string FullVideoPath => Path.Combine(Application.streamingAssetsPath, VideoPath);
 
+    // Detection
     private Collider m_Collider;
     public Bounds Bounds => m_Collider.bounds;
-
-    [SerializeField]
-    private bool m_PlayVideo;
-    public bool PlayVideo => m_PlayVideo;
-    [SerializeField]
-    private string m_StreamingAssetPath;
-    public string VideoPath => Path.Combine(Application.streamingAssetsPath, m_StreamingAssetPath);
 
     private void Awake()
         => m_Collider = GetComponent<Collider>();

@@ -14,7 +14,7 @@ public class VideoPlayerHelper : Singleton<VideoPlayerHelper>
     [SerializeField]
     private GameObject m_Container;
     [SerializeField]
-    private Image m_Renderer;
+    private RawImage m_Renderer;
 
     private Material m_VideoMaterial;
     private VideoPlayer m_VideoPlayer;
