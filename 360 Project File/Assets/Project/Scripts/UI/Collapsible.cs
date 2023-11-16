@@ -8,7 +8,7 @@ public abstract class CollapsiblePanel : MonoBehaviour
     [SerializeField]
     private Button m_ToggleButton;
     [SerializeField]
-    private RectTransform m_ContentRectTransform;
+    protected RectTransform m_ContentRectTransform;
     [SerializeField]
     private AnimationCurve m_AnimationCurve = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
