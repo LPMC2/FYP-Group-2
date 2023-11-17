@@ -22,6 +22,10 @@ public class NavigationManager : Singleton<NavigationManager>
     private AnimationCurve m_RotationAnim;
     [SerializeField]
     private AnimationCurve m_PositionAnim;
+    [SerializeField]
+    private float m_RotationSpeed = 1f;
+    [SerializeField]
+    private float m_PositionSpeed = 1f;
 
     [Header("Map Floor")]
     [SerializeField]
@@ -191,7 +195,7 @@ public class NavigationManager : Singleton<NavigationManager>
         while (time < m_RotationAnim.GetLastKeyTime())
         {
             cameraTransform.rotation = Quaternion.Lerp(fromRotation, toRotation, m_RotationAnim.Evaluate(time));
-            time += Time.deltaTime;
+            time += Time.deltaTime * m_RotationSpeed;
             yield return null;
         }
         cameraTransform.rotation = toRotation;
@@ -211,7 +215,7 @@ public class NavigationManager : Singleton<NavigationManager>
             m_CurrentSpherical.transform.localScale = Vector3.Lerp(toScale, fromScale, time / m_PositionAnim.GetLastKeyTime());
             target.Alpha = Mathf.Lerp(0f, 1f, progress);
             target.transform.localScale = Vector3.Lerp(fromScale, toScale, time / m_PositionAnim.GetLastKeyTime());
-            time += Time.deltaTime;
+            time += Time.deltaTime * m_PositionSpeed;
             yield return null;
         }
         m_CameraRig.position = toPosition;
