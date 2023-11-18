@@ -120,13 +120,13 @@ public class QuizSO : ScriptableObject
     [System.Serializable]
     public class Question
     {
-        [Header("Input index of options as the answer.")] public int answer;
+        [Header("Input index of options as the answer.")] public int[] answer;
         public LocalizableString[] question;
         public AnsType AnswerType = AnsType.Text;
         public LocalizableString[] options;
         public LocalizableString[] explaination;
         public Score score;
-        public int inputAnswer;
+        public int[] inputAnswer;
         //CorrectCount = -1 -> Answer Unselected, CorrectCount >= 0 -> Answer Selected
     }
 
@@ -149,7 +149,7 @@ public class QuizSO : ScriptableObject
 
             for (int j = 0; j < questions[i].options.Length; j++)
             {
-                if (questions[i].options[j].language == language && questions[i].options[j].id == questions[i].inputAnswer)
+                if (questions[i].options[j].language == language && questions[i].options[j].id == questions[i].inputAnswer[0])
                 {
                     if (questions[i].answer == questions[i].inputAnswer)
                     {
@@ -175,23 +175,34 @@ public class QuizSO : ScriptableObject
     }
     public bool checkSingleAns(int page)
     {
+        float correctAnswer = 0;
         //Check if the answer is correct
         for (int j = 0; j < questions[page].options.Length; j++)
         {
-            if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer)
+            //Foreach input answer to check
+            for (int i = 0; i < questions[page].inputAnswer.Length; i++)
             {
-                if (questions[page].answer == questions[page].inputAnswer)
+                if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer[i])
                 {
-                    correctCount++;
-                    return true;
-                } else
-                {
-                    return false;
+                    for (int a = 0; a < questions[page].answer.Length; a++)
+                    {
+                        if (questions[page].answer[a] == questions[page].inputAnswer[i])
+                        {
+                            correctCount++;
+                            correctAnswer++;
+                            break;
+                        }
+                       
+                    }
+
                 }
-                
             }
 
         }
+        if(correctAnswer == questions[page].answer.Length)
+        {
+            return true;
+        } else
         return false;
     }
     public void GetAns(int page, Language lang)

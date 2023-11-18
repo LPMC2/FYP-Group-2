@@ -10,6 +10,8 @@ public class QuizAnsUIManager : MonoBehaviour
     [SerializeField]
     private Vector2 TextSpacing = new Vector2(279.2f, 16.0f);
     [SerializeField] private int textConstraintCount = 1;
+    private Vector2 multipleChoiceSpacing = new Vector2(432.91f, 16.0f);
+    [SerializeField] private int multipleChoiceConstraintCount = 1;
     private GridLayoutGroup gridLayout;
     private QuizUIManager uiManager;
     private void Awake()
@@ -70,7 +72,15 @@ public class QuizAnsUIManager : MonoBehaviour
                     uiManager.AnswerUIObject = uiManager.PictureUIObject;
                 }
                 break;
-
+            case AnsType.Multiple_Choice:
+                gridLayout.spacing = multipleChoiceSpacing;
+                gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                gridLayout.constraintCount = multipleChoiceConstraintCount;
+                if (uiManager != null)
+                {
+                    uiManager.AnswerUIObject = uiManager.TextUIObject;
+                }
+                break;
             default:
                 Debug.LogWarning("Type: " + answerType + "Not Yet Developed / Not Exist");
                 break;
@@ -81,5 +91,6 @@ public enum AnsType
 {
     Text,
     Picture,
-    Interactive
+    Interactive,
+    Multiple_Choice
 }

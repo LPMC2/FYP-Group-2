@@ -61,6 +61,23 @@ public class arrayBehaviour
         }
         return newArray;
     }
+    public static T[] RemoveArray<T>(T[] arr, int element)
+    {
+        int originalsize = arr.Length;
+        T[] newArray = new T[originalsize - 1];
+        int numArray = 0;
+        for (int i = 0; i < originalsize; i++)
+        {
+            if (i != element)
+            {
+
+                newArray[numArray] = arr[i];
+                numArray++;
+            }
+           
+        }
+        return newArray;
+    }
     public static T[] ResetArray<T>(T[] originalArray)
     {
         T[] newArray = new T[1];
