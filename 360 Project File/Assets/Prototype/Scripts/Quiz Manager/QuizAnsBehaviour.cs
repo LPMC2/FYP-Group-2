@@ -13,25 +13,45 @@ public class QuizAnsBehaviour : MonoBehaviour
     [SerializeField] ScoreBehaviour scoreSO;
     [SerializeField] private Sprite selectedSprite;
     [SerializeField] private Sprite normalSprite;
-    private Toggle toggle;
+    [SerializeField] private bool isPressed = false;
+    public Toggle toggle;
     private Image toggleTargetImage;
-
+    private Button btn;
     private void Start()
     {
+        if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
+        {
+            quizSO.questions[page].inputAnswer = new int[1];
+            quizSO.questions[page].inputAnswer[quizSO.questions[page].inputAnswer.Length - 1] = -1;
+        } else
+        {
+            quizSO.questions[page].inputAnswer = new int[0];
+        }
         // Get the Toggle component attached to this object
         toggle = GetComponent<Toggle>();
+        btn = GetComponent<Button>();
+        if(btn != null)
+        {
+            toggleTargetImage = btn.targetGraphic.GetComponent<Image>();
+        }
+        if (toggle == null)
+            return;
         toggleTargetImage = toggle.targetGraphic.GetComponent<Image>();
         normalSprite = toggleTargetImage.sprite;
         // Subscribe to the onValueChanged event
         toggle.onValueChanged.AddListener(OnToggleValueChanged);
+
     }
     private void Update()
     {
         if (quizSO.questions[page].AnswerType == AnsType.Multiple_Choice)
         {
-            if (toggle.isOn == false)
+            if (isPressed == true)
             {
                 toggleTargetImage.sprite = selectedSprite;
+            } else if(isPressed == false)
+            {
+                toggleTargetImage.sprite = normalSprite;
             }
 
         }
@@ -45,6 +65,7 @@ public class QuizAnsBehaviour : MonoBehaviour
     }
     public void selectAns()
     {
+        
         if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
         {
             DisSelect();
@@ -52,7 +73,10 @@ public class QuizAnsBehaviour : MonoBehaviour
 
         } else
         {
-            if (toggle.interactable == true && toggle.isOn == true)
+            isPressed = !isPressed;
+            Button btn = gameObject.GetComponent<Button>();
+            if (btn == null) return;
+            if (btn.interactable == true && isPressed == false)
             {
                 // The toggle has been untoggled
                 for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
@@ -70,18 +94,19 @@ public class QuizAnsBehaviour : MonoBehaviour
             }
         }
 
-        
-        quizSO.questions[page].inputAnswer = arrayBehaviour.addArray(quizSO.questions[page].inputAnswer);
-        quizSO.questions[page].inputAnswer[quizSO.questions[page].inputAnswer.Length-1] = ansId;
+        if (toggle != null || isPressed == true)
+        {
+            if(quizSO.questions[page].AnswerType == AnsType.Multiple_Choice)
+
+            quizSO.questions[page].inputAnswer = arrayBehaviour.addArray(quizSO.questions[page].inputAnswer);
+            quizSO.questions[page].inputAnswer[quizSO.questions[page].inputAnswer.Length - 1] = ansId;
+        }
         if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
         {
-            quizSO.questions[page].inputAnswer = arrayBehaviour.RemoveArray(quizSO.questions[page].inputAnswer, 0);
+            
             toggle.interactable = false;
             
-        } else 
-        {
-            
-        }
+        } 
     }
     public void checkSelect()
     {
@@ -103,7 +128,10 @@ public class QuizAnsBehaviour : MonoBehaviour
     }
     private void OnToggleValueChanged(bool isOn)
     {
-        
+        if (isOn == true)
+        {
+            isOn = false;
+        }
     }
     private void DisSelect()
     {

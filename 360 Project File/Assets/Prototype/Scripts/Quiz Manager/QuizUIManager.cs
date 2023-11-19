@@ -49,6 +49,7 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private GameObject questionNumUI;
     [SerializeField] private GameObject questionsUIObject;
     [SerializeField] private GameObject answerUIObject;
+    [SerializeField] private GameObject multiAnswerUIObject;
     public GameObject AnswerUIObject { set { answerUIObject = value; } }
     [SerializeField] private GameObject headerUI;
     [SerializeField] private Slider progressBar;
@@ -496,7 +497,14 @@ public class QuizUIManager : MonoBehaviour
         }
         for (int i=0; i<ans.Length; i++)
         {
-            GameObject target = Instantiate(answerUIObject, contentTransform, Quaternion.identity);
+            GameObject target = default;
+            if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
+            {
+                target = Instantiate(answerUIObject, contentTransform, Quaternion.identity);
+            } else
+            {
+                target = Instantiate(multiAnswerUIObject, contentTransform, Quaternion.identity);
+            }
             target.transform.SetParent(currentContentUI.transform);
             QuizAnsBehaviour targetComponent;
             if (target.GetComponent<QuizAnsBehaviour>() != null)
@@ -504,7 +512,15 @@ public class QuizUIManager : MonoBehaviour
                 targetComponent = target.GetComponent<QuizAnsBehaviour>();
             } else
             targetComponent = target.AddComponent<QuizAnsBehaviour>();
-
+            Toggle toggle = target.GetComponent<Toggle>();
+            if (toggle != null)
+            {
+                ToggleGroup toggleGroup = currentContentUI.GetComponent<ToggleGroup>();
+                targetComponent.toggle = toggle;
+                toggle.group = toggleGroup;
+                toggle.isOn = true;
+                toggle.interactable = true;
+            }
             //Set Value to QuizAnsBehaviour
             targetComponent.setAns(i, ans[i], page, quizSO);
             GameObject ansObj = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsText");
