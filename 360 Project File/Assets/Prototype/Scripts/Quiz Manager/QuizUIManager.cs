@@ -301,10 +301,11 @@ public class QuizUIManager : MonoBehaviour
         }
 
         //Sort Input Data
+        if(quizSO.questions[page].inputAnswer.Length > 1)
         quizSO.questions[page].inputAnswer = arrayBehaviour.BubbleSortArray(quizSO.questions[page].inputAnswer);
 
         //Check Correct Answer
-        int[,] result;
+        int[] result = new int[10];
         quizSO.checkSingleAns(page);
         //Get result data
         for(int r=0; r< currentContentUI.transform.childCount; r++)
@@ -314,26 +315,25 @@ public class QuizUIManager : MonoBehaviour
         }
 
 
-        for (int a = 0; a < result.Length; a++)
+        for (int a = 0; a < quizSO.questions[page].inputAnswer.Length; a++)
         {
-           
-                Animator animatorTarget = resultUI[a].GetComponent<Animator>();
+            bool isCorrect = false;
+                Animator animatorTarget = resultUI[quizSO.questions[page].inputAnswer[a]].GetComponent<Animator>();
                
-
-                if (result[a,1] == 0)
+            for(int b=0; b< quizSO.questions[page].answer.Length; b++)
+            {
+                if(quizSO.questions[page].inputAnswer == quizSO.questions[page].answer)
                 {
-                    
-                    animatorTarget.Play("incorrect");
-                    setExplainationUI();
+                    isCorrect = true;
                 }
-                if (result[a,1] == 1)
-                {
-                    animatorTarget.Play("correct");
-                    
-                }
-
-            
-            
+            }
+            if(isCorrect)
+            {
+                animatorTarget.Play("correct");
+            } else
+            {
+                animatorTarget.Play("incorrect");
+            }
         }
         if (quizSO.questions[page].inputAnswer[0] != -1)
         {
