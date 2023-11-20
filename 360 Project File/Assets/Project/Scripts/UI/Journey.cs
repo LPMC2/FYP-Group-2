@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class Journey : CollapsiblePanel
 {
-    [Header("Data")]
-    [SerializeField]
-    private JourneyEntries m_DataSource;
-
     [Header("Entry")]
     [SerializeField]
     private float m_EntryHeight;
@@ -29,36 +25,22 @@ public class Journey : CollapsiblePanel
     [SerializeField]
     private AnimationCurve m_NavigateAnim = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private JourneyEventChannelSO m_JourneyEventChannel;
+
     protected override float ContentHeight => m_EntryHeight * 3f;
 
-    private List<JourneyEntry> m_ManagedEntries;
+    private Dictionary<JourneyEntrySO, JourneyEntry> m_ManagedEntries;
     private int m_CurrentEntry;
 
     private Coroutine m_Navigate;
 
-    private void Start()
-    {
-        if (m_DataSource == null)
-        {
-            Debug.LogWarning("[Journey] No data source.");
-            return;
-        }
-
-        m_ManagedEntries = new();
-        for (int i = 0; i < m_DataSource.Entries.Length; i++)
-        {
-            var instance = Instantiate(m_EntryPrefab, m_EntryRoot);
-            instance.Index = i + 1;
-            instance.StepKey = m_DataSource.Entries[i];
-            m_ManagedEntries.Add(instance);
-        }
-        RefeshPosition();
-        m_PrevButton.gameObject.SetActive(false);
-    }
-
     protected override void OnEnable()
     {
         base.OnEnable();
+        m_JourneyEventChannel.OnEntryCompleted += OnEntryCompleted;
+        m_JourneyEventChannel.OnLoadEntries += OnLoadEntries;
         m_PrevButton.onClick.AddListener(PrevItem);
         m_NextButton.onClick.AddListener(NextItem);
     }
@@ -66,8 +48,29 @@ public class Journey : CollapsiblePanel
     protected override void OnDisable()
     {
         base.OnDisable();
+        m_JourneyEventChannel.OnEntryCompleted -= OnEntryCompleted;
+        m_JourneyEventChannel.OnLoadEntries -= OnLoadEntries;
         m_PrevButton.onClick.RemoveListener(PrevItem);
         m_NextButton.onClick.RemoveListener(NextItem);
+    }
+
+    private void OnEntryCompleted(JourneyEntrySO entry)
+    {
+        Debug.Log($"[Journey] '{entry.name}' completed");
+    }
+
+    private void OnLoadEntries(JourneyEntrySO[] entries)
+    {
+        m_ManagedEntries = new();
+        for (int i = 0; i < entries.Length; i++)
+        {
+            var instance = Instantiate(m_EntryPrefab, m_EntryRoot);
+            instance.Index = i + 1;
+            instance.StepKey = entries[i].StepKey;
+            m_ManagedEntries.Add(entries[i], instance);
+        }
+        RefeshPosition();
+        m_PrevButton.gameObject.SetActive(false);
     }
 
     public void PrevItem()

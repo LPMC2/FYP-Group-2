@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 public class SceneChanger : MonoBehaviour
 {
@@ -10,7 +9,16 @@ public class SceneChanger : MonoBehaviour
         if (m_ChangeSceneTriggered)
             return;
 
-        Addressables.LoadSceneAsync(sceneToLoad);
+        //SceneLoader.Instance.LoadScene(sceneToLoad);
+        m_ChangeSceneTriggered = true;
+    }
+
+    public void StartJourney(string journeyToLoad)
+    {
+        if (m_ChangeSceneTriggered)
+            return;
+
+        //SceneLoader.Instance.StartJourney(journeyToLoad);
         m_ChangeSceneTriggered = true;
     }
 }

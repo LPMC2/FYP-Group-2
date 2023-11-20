@@ -1,16 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class NavigationManager : Singleton<NavigationManager>
+public class NavigationManager : MonoBehaviour
 {
-    public static event UnityAction navigationStarted;
-    public static event UnityAction navigationFinished;
-    public static event UnityAction<MapFloor> mapFloorAdded;
-    public static event UnityAction<MapFloor, MapFloor> mapFloorChanged;
-    public static event UnityAction<SphericalHelper, SphericalHelper> sphericalChanged;
-
     [Header("Camera")]
     [SerializeField]
     private Transform m_CameraRig;
@@ -22,10 +15,6 @@ public class NavigationManager : Singleton<NavigationManager>
     private AnimationCurve m_RotationAnim;
     [SerializeField]
     private AnimationCurve m_PositionAnim;
-    [SerializeField]
-    private float m_RotationSpeed = 1f;
-    [SerializeField]
-    private float m_PositionSpeed = 1f;
 
     [Header("Map Floor")]
     [SerializeField]
@@ -37,28 +26,43 @@ public class NavigationManager : Singleton<NavigationManager>
     [SerializeField]
     private NavigationPoint m_NavigationPointPrefab;
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private NavigationEventChannelSO m_NavigationEventChannel;
+
     private static int s_MapFloorLayer;
     private Dictionary<MapFloor, Dictionary<MapLandmark, SphericalHelper>> m_MapDict;
     private MapFloor m_CurrentMapFloor;
     private SphericalHelper m_CurrentSpherical;
-    private Coroutine m_Animation;
+    private Coroutine m_Move;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         if (s_MapFloorLayer == 0)
             s_MapFloorLayer = LayerMask.NameToLayer("MapFloor");
-        m_MapDict = new();
     }
 
-    public void LoadMap(Map map)
+    private void OnEnable()
     {
+        m_NavigationEventChannel.OnLoadMap += OnLoadMap;
+        m_NavigationEventChannel.OnNavigate += OnNavigate;
+    }
+
+    private void OnDisable()
+    {
+        m_NavigationEventChannel.OnLoadMap -= OnLoadMap;
+        m_NavigationEventChannel.OnNavigate -= OnNavigate;
+    }
+
+    private void OnLoadMap(Map map, MapLandmark startPoint)
+    {
+        m_MapDict = new();
         for (int i = 0; i < map.Floors.Length; i++)
         {
             var floor = map.Floors[i];
             if (!m_MapDict.ContainsKey(floor))
             {
-                mapFloorAdded?.Invoke(floor);
+                m_NavigationEventChannel.OnMapFloorAdded?.Invoke(floor);
                 m_MapDict[floor] = new();
             }
 
@@ -95,6 +99,12 @@ public class NavigationManager : Singleton<NavigationManager>
         for (int i = 0; i < map.Connections.Length; i++)
         {
             var connection = map.Connections[i];
+            if (connection.from == connection.to)
+            {
+                Debug.LogWarning($"[NavManager] Self connection at #{i} ignored!");
+                continue;
+            }
+
             var from = GetSphericalHelper(connection.from);
             var to = GetSphericalHelper(connection.to);
             if (from == null || to == null)
@@ -102,17 +112,11 @@ public class NavigationManager : Singleton<NavigationManager>
                 Debug.LogWarning($"[NavManager] Connection {connection.from.name} to {connection.to.name} is missing spherical reference(s)");
                 continue;
             }
-            else if (from == to)
-            {
-                Debug.LogWarning($"[NavManager] Self connection at #{i} ignored!");
-                continue;
-            }
 
             var fromPoint = Instantiate(m_NavigationPointPrefab);
             fromPoint.gameObject.name = $"NavPoint (#{i}: {connection.to.name})";
-            fromPoint.NavigationType = NavigationPoint.Type.Navigate;
-            fromPoint.Flags = connection.flags;
             fromPoint.Destination = to;
+            fromPoint.Flags = connection.flags;
             from.AddNavigationPoint(fromPoint);
 
             if (connection.flags.HasFlag(Map.MapConnectionFlags.OneWayOnly))
@@ -120,38 +124,28 @@ public class NavigationManager : Singleton<NavigationManager>
 
             var toPoint = Instantiate(m_NavigationPointPrefab);
             toPoint.gameObject.name = $"NavPoint (#{i}: {connection.from.name})";
-            toPoint.NavigationType = NavigationPoint.Type.Navigate;
-            toPoint.Flags = connection.flags;
             toPoint.Destination = from;
+            toPoint.Flags = connection.flags;
             to.AddNavigationPoint(toPoint);
         }
+
+        OnNavigate(GetSphericalHelper(startPoint), NavigationMode.Teleport);
     }
 
-    public void TeleportTowards(SphericalHelper target)
+    private void OnNavigate(SphericalHelper destination, NavigationMode mode)
     {
-        if (m_Animation != null)
+        switch (mode)
         {
-            StopCoroutine(m_Animation);
-            m_Animation = null;
+            case NavigationMode.Move:
+                MoveTowards(destination);
+                break;
+            case NavigationMode.Teleport:
+                TeleportTowards(destination);
+                break;
         }
-
-        m_CameraRig.position = target.transform.position;
-        var targetFloor = GetMapFloor(target);
-        mapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor);
-        m_CurrentMapFloor = targetFloor;
-        sphericalChanged?.Invoke(m_CurrentSpherical, target);
-        m_CurrentSpherical = target;
     }
 
-    public void NavigateTowards(SphericalHelper target)
-    {
-        if (m_Animation != null)
-            StopCoroutine(m_Animation);
-
-        m_Animation = StartCoroutine(PerformCameraMove(target));
-    }
-
-    public MapFloor GetMapFloor(SphericalHelper sphericalHelper)
+    private MapFloor GetMapFloor(SphericalHelper sphericalHelper)
     {
         foreach (var mapEntry in m_MapDict)
         {
@@ -163,7 +157,7 @@ public class NavigationManager : Singleton<NavigationManager>
         return null;
     }
 
-    public SphericalHelper GetSphericalHelper(MapLandmark mapLandmark)
+    private SphericalHelper GetSphericalHelper(MapLandmark mapLandmark)
     {
         foreach (var mapEntry in m_MapDict)
         {
@@ -175,14 +169,33 @@ public class NavigationManager : Singleton<NavigationManager>
         return null;
     }
 
-    private IEnumerator PerformCameraMove(SphericalHelper target)
+    private void MoveTowards(SphericalHelper target)
     {
-        navigationStarted?.Invoke();
+        if (m_Move != null)
+            StopCoroutine(m_Move);
 
-        // Floor
+        m_Move = StartCoroutine(PerformMove(target));
+    }
+
+    private void TeleportTowards(SphericalHelper target)
+    {
+        if (m_Move != null)
+        {
+            StopCoroutine(m_Move);
+            m_Move = null;
+        }
+
+        m_CameraRig.position = target.transform.position;
         var targetFloor = GetMapFloor(target);
-        mapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor);
+        m_NavigationEventChannel.OnMapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor, NavigationMode.Teleport);
         m_CurrentMapFloor = targetFloor;
+        m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Teleport);
+        m_CurrentSpherical = target;
+    }
+
+    private IEnumerator PerformMove(SphericalHelper target)
+    {
+        m_NavigationEventChannel.OnNavigationStarted.Invoke();
 
         // Camera rotation
         var cameraTransform = m_Camera.transform;
@@ -195,10 +208,18 @@ public class NavigationManager : Singleton<NavigationManager>
         while (time < m_RotationAnim.GetLastKeyTime())
         {
             cameraTransform.rotation = Quaternion.Lerp(fromRotation, toRotation, m_RotationAnim.Evaluate(time));
-            time += Time.deltaTime * m_RotationSpeed;
+            time += Time.deltaTime;
             yield return null;
         }
         cameraTransform.rotation = toRotation;
+
+        // Floor
+        var targetFloor = GetMapFloor(target);
+        if (m_CurrentMapFloor != targetFloor)
+        {
+            m_NavigationEventChannel.OnMapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor, NavigationMode.Move);
+            m_CurrentMapFloor = targetFloor;
+        }
 
         // Movement + Scaling
         var dist = Vector3.Distance(m_CurrentSpherical.transform.position, target.transform.position) + 1f;
@@ -215,7 +236,7 @@ public class NavigationManager : Singleton<NavigationManager>
             m_CurrentSpherical.transform.localScale = Vector3.Lerp(toScale, fromScale, time / m_PositionAnim.GetLastKeyTime());
             target.Alpha = Mathf.Lerp(0f, 1f, progress);
             target.transform.localScale = Vector3.Lerp(fromScale, toScale, time / m_PositionAnim.GetLastKeyTime());
-            time += Time.deltaTime * m_PositionSpeed;
+            time += Time.deltaTime;
             yield return null;
         }
         m_CameraRig.position = toPosition;
@@ -223,10 +244,10 @@ public class NavigationManager : Singleton<NavigationManager>
         m_CurrentSpherical.Alpha = target.Alpha = 1f;
         m_CurrentSpherical.transform.localScale = target.transform.localScale = Vector3.one;
 
-        sphericalChanged?.Invoke(m_CurrentSpherical, target);
-        navigationFinished?.Invoke();
+        m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Move);
+        m_NavigationEventChannel.OnNavigationFinished.Invoke();
 
-        m_Animation = null;
+        m_Move = null;
         m_CurrentSpherical = target;
     }
 
@@ -261,5 +282,11 @@ public class NavigationManager : Singleton<NavigationManager>
                 new Vector2(1, 1)
             }
         };
+    }
+
+    public enum NavigationMode
+    {
+        Move,
+        Teleport
     }
 }

@@ -1,9 +1,10 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class ResolutionHelper : MonoBehaviour
 {
-    public static event UnityAction resolutionChanged;
+    [Header("Event Channels")]
+    [SerializeField]
+    private VoidEventChannelSO m_ScreenResolutionChanged;
 
     private int m_CurrentWidth;
     private int m_CurrentHeight;
@@ -19,7 +20,7 @@ public class ResolutionHelper : MonoBehaviour
         if (Screen.width == m_CurrentWidth && Screen.height == m_CurrentHeight)
             return;
 
-        resolutionChanged?.Invoke();
+        m_ScreenResolutionChanged.RaiseEvent();
         m_CurrentWidth = Screen.width;
         m_CurrentHeight = Screen.height;
     }

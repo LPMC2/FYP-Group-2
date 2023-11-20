@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
-public class NavigationPointUI : Singleton<NavigationPointUI>
+public class NavigationPointUI : MonoBehaviour
 {
     [SerializeField]
     private NavigationButton m_ButtonPrefab;
@@ -16,8 +16,13 @@ public class NavigationPointUI : Singleton<NavigationPointUI>
         set => m_LocationDisplay.text = value;
     }
 
+    [Header("Animation")]
     [SerializeField]
-    private float m_FadeDuration;
+    private AnimationCurve m_FadeAnimation = AnimationCurve.EaseInOut(0f, 0f, 0.5f, 1f);
+
+    [Header("Event Channels")]
+    [SerializeField]
+    private NavigationEventChannelSO m_NavigationEventChannel;
 
     private RectTransform m_CanvasRect;
     private CanvasGroup m_CanvasGroup;
@@ -25,9 +30,8 @@ public class NavigationPointUI : Singleton<NavigationPointUI>
     private SphericalHelper m_Current;
     private NavigationButton[] m_Buttons;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         m_CanvasRect = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         m_CanvasGroup = GetComponent<CanvasGroup>();
         m_Buttons = new NavigationButton[10];
@@ -46,16 +50,16 @@ public class NavigationPointUI : Singleton<NavigationPointUI>
 
     private void OnEnable()
     {
-        NavigationManager.navigationStarted += OnNavigationStarted;
-        NavigationManager.navigationFinished += OnNavigationFinished;
-        NavigationManager.sphericalChanged += OnSphericalChanged;
+        m_NavigationEventChannel.OnNavigationStarted += OnNavigationStarted;
+        m_NavigationEventChannel.OnNavigationFinished += OnNavigationFinished;
+        m_NavigationEventChannel.OnSphericalChanged += OnSphericalChanged;
     }
 
     private void OnDisable()
     {
-        NavigationManager.navigationStarted -= OnNavigationStarted;
-        NavigationManager.navigationFinished -= OnNavigationFinished;
-        NavigationManager.sphericalChanged -= OnSphericalChanged;
+        m_NavigationEventChannel.OnNavigationStarted -= OnNavigationStarted;
+        m_NavigationEventChannel.OnNavigationFinished -= OnNavigationFinished;
+        m_NavigationEventChannel.OnSphericalChanged -= OnSphericalChanged;
     }
 
     private void Update()
@@ -94,8 +98,8 @@ public class NavigationPointUI : Singleton<NavigationPointUI>
     private void OnNavigationFinished()
         => Fade(true);
 
-    private void OnSphericalChanged(SphericalHelper _, SphericalHelper newSpherical)
-        => m_Current = newSpherical;
+    private void OnSphericalChanged(SphericalHelper from, SphericalHelper to, NavigationManager.NavigationMode mode)
+        => m_Current = to;
 
     private void Fade(bool fadeIn = false)
     {
@@ -114,9 +118,9 @@ public class NavigationPointUI : Singleton<NavigationPointUI>
             m_CanvasGroup.blocksRaycasts = true;
 
         float time = 0f;
-        while (time < m_FadeDuration)
+        while (time < m_FadeAnimation.GetLastKeyTime())
         {
-            m_CanvasGroup.alpha = Mathf.Lerp(from, to, time / m_FadeDuration);
+            m_CanvasGroup.alpha = Mathf.Lerp(from, to, m_FadeAnimation.Evaluate(time));
             time += Time.deltaTime;
             yield return null;
         }

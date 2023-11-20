@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Video;
 
 [RequireComponent(typeof(VideoPlayer))]
-public class VideoPlayerHelper : Singleton<VideoPlayerHelper>
+public class VideoPlayerHelper : MonoBehaviour
 {
     [Header("Material")]
     [SerializeField]
@@ -20,9 +20,8 @@ public class VideoPlayerHelper : Singleton<VideoPlayerHelper>
     private VideoPlayer m_VideoPlayer;
     private UnityAction m_CompleteAction;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         m_VideoMaterial = Instantiate(m_VideoMaterialRef);
         m_Renderer.material = m_VideoMaterial;
         m_VideoPlayer = GetComponent<VideoPlayer>();

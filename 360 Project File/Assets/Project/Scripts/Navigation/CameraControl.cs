@@ -12,6 +12,10 @@ public class CameraControl : MonoBehaviour
     [SerializeField]
     private float m_FovMin, m_FovMax;
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private NavigationEventChannelSO m_NavigationEventChannel;
+
     private Camera m_Camera;
     private bool m_CameraLocked;
     private Vector2 m_CameraRotation;
@@ -25,14 +29,14 @@ public class CameraControl : MonoBehaviour
 
     private void OnEnable()
     {
-        NavigationManager.navigationStarted += OnNavigationStarted;
-        NavigationManager.navigationFinished += OnNavigationFinished;
+        m_NavigationEventChannel.OnNavigationStarted += OnNavigationStarted;
+        m_NavigationEventChannel.OnNavigationFinished += OnNavigationFinished;
     }
 
     private void OnDisable()
     {
-        NavigationManager.navigationStarted -= OnNavigationStarted;
-        NavigationManager.navigationFinished -= OnNavigationFinished;
+        m_NavigationEventChannel.OnNavigationStarted -= OnNavigationStarted;
+        m_NavigationEventChannel.OnNavigationFinished -= OnNavigationFinished;
     }
 
     private void Update()

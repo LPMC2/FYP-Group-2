@@ -2,9 +2,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Localization.Settings;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
-using UnityEngine.SceneManagement;
 
 public class Bootstrap : MonoBehaviour
 {
@@ -13,12 +10,12 @@ public class Bootstrap : MonoBehaviour
 
     private IEnumerator Start()
     {
-        yield return LocalizationSettings.InitializationOperation;
-        m_SceneToLoad.LoadSceneAsync(LoadSceneMode.Additive).Completed += OnSceneLoadComplete;
-    }
+        var addressables = Addressables.InitializeAsync();
+        yield return addressables;
 
-    private void OnSceneLoadComplete(AsyncOperationHandle<SceneInstance> scene)
-    {
-        SceneManager.UnloadSceneAsync(0);
+        var localization = LocalizationSettings.InitializationOperation;
+        yield return localization;
+
+        //SceneLoader.Instance.LoadScene(m_SceneToLoad);
     }
 }

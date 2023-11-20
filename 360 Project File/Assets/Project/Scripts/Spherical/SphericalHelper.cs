@@ -55,12 +55,9 @@ public class SphericalHelper : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
         foreach (var navPoint in m_NavPoints)
         {
-            if (navPoint.NavigationType != NavigationPoint.Type.Navigate)
-                continue;
-
+            Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, navPoint.Destination.transform.position);
         }
     }

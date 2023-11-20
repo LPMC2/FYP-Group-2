@@ -39,8 +39,12 @@ public class Carousel : MonoBehaviour
     [SerializeField]
     private float m_NavigateTime;
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private VoidEventChannelSO m_ScreenResolutionChanged;
+
     private RectTransform m_ContentRectTransform;
-    
+
     private List<(CarouselPage, CarouselIndicator)> m_ManagedPages;
     private int m_CurrentPage;
 
@@ -48,7 +52,7 @@ public class Carousel : MonoBehaviour
     private float m_LeftPadding, m_PageSpacing;
 
     private Coroutine m_Navigate;
-    
+
     private void Awake()
     {
         m_ContentRectTransform = m_ContentLayoutGroup.GetComponent<RectTransform>();
@@ -76,14 +80,14 @@ public class Carousel : MonoBehaviour
 
     private void OnEnable()
     {
-        ResolutionHelper.resolutionChanged += OnResolutionChanged;
+        m_ScreenResolutionChanged.OnEventRaised += OnResolutionChanged;
         m_PrevButton.onClick.AddListener(PrevItem);
         m_NextButton.onClick.AddListener(NextItem);
     }
 
     private void OnDisable()
     {
-        ResolutionHelper.resolutionChanged -= OnResolutionChanged;
+        m_ScreenResolutionChanged.OnEventRaised -= OnResolutionChanged;
         m_PrevButton.onClick.RemoveListener(PrevItem);
         m_NextButton.onClick.RemoveListener(NextItem);
     }
@@ -166,7 +170,7 @@ public class Carousel : MonoBehaviour
             result = -(m_PageSize.x * index) + 77f / 2f - (m_PageSpacing * (index - 1));
         return result;
     }
-    
+
     public void PrevItem()
         => NavigateTo(m_CurrentPage - 1);
 
