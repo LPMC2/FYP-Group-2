@@ -305,7 +305,7 @@ public class QuizUIManager : MonoBehaviour
 
         //Check Correct Answer
         int[,] result;
-        result = quizSO.checkSingleAns(page);
+        quizSO.checkSingleAns(page);
         //Get result data
         for(int r=0; r< currentContentUI.transform.childCount; r++)
         {
