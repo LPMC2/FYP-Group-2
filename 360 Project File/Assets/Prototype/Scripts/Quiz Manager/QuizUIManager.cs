@@ -260,8 +260,7 @@ public class QuizUIManager : MonoBehaviour
         //Debug.Log("Answer Number: " + (quizSO.questions[page].answer + 1) + "\n" + "Input Number: " + (quizSO.questions[page].inputAnswer + 1));
         GameObject[] targetUI = new GameObject[0];
         GameObject[] ansUI = new GameObject[0];
-        GameObject[] resultUI = new GameObject[0];
-        //Input Answer
+
         for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
         {
             if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer[i] != -1)
@@ -269,82 +268,53 @@ public class QuizUIManager : MonoBehaviour
                 if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
                 {
                     targetUI = arrayBehaviour.addArray(targetUI);
-                    
+                    ansUI = arrayBehaviour.addArray(ansUI);
                     targetUI[targetUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i] + 1).gameObject;
-                    
+                    ansUI[ansUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i] + 1).gameObject;
                 }
                 else
                 {
                     targetUI = arrayBehaviour.addArray(targetUI);
-                    
+                    ansUI = arrayBehaviour.addArray(ansUI);
                     targetUI[targetUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i]).gameObject;
-                    
+                    ansUI[ansUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i]).gameObject;
                 }
             }
            
-        }
-        //Answer
-        for(int i=0; i< quizSO.questions[page].answer.Length; i++)
-        {
-            ansUI = arrayBehaviour.addArray(ansUI);
-            if (currentContentUI.transform.GetChild(0).CompareTag("Answer"))
-                ansUI[ansUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i]).gameObject;
         }
         if(targetUI.Length == 0 || ansUI.Length == 0)
         {
             return;
         }
-        if (quizSO.questions[page].inputAnswer[0] == -1) 
-        {
-            checkBtn.GetComponent<Animator>().Play("unavailable");
-            return; 
-        }
-
-        //Sort Input Data
-        if(quizSO.questions[page].inputAnswer.Length > 1)
-        quizSO.questions[page].inputAnswer = arrayBehaviour.BubbleSortArray(quizSO.questions[page].inputAnswer);
-
-        //Check Correct Answer
-        int[] result = new int[10];
-        quizSO.checkSingleAns(page);
-        //Get result data
-        for(int r=0; r< currentContentUI.transform.childCount; r++)
-        {
-            resultUI = arrayBehaviour.addArray(resultUI);
-            resultUI[r] = currentContentUI.transform.GetChild(r).gameObject;
-        }
-
-
         for (int a = 0; a < quizSO.questions[page].inputAnswer.Length; a++)
         {
-            bool isCorrect = false;
-                Animator animatorTarget = resultUI[quizSO.questions[page].inputAnswer[a]].GetComponent<Animator>();
-               
-            for(int b=0; b< quizSO.questions[page].answer.Length; b++)
+            Animator animatorTarget = targetUI[a].GetComponent<Animator>();
+            Animator animatorAns = ansUI[a].GetComponent<Animator>();
+            if (quizSO.questions[page].inputAnswer[a] != -1)
             {
-                if(quizSO.questions[page].inputAnswer == quizSO.questions[page].answer)
+                switch (quizSO.checkSingleAns(page))
                 {
-                    isCorrect = true;
-                }
-            }
-            if(isCorrect)
-            {
-                animatorTarget.Play("correct");
-            } else
-            {
-                animatorTarget.Play("incorrect");
-            }
-        }
-        if (quizSO.questions[page].inputAnswer[0] != -1)
-        {
+                    case true:
+                        animatorTarget.Play("correct");
 
-            nextBtn.SetActive(true);
-            checkBtn.SetActive(false);
-            currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
-            startProgress();
-            resetOptions();
+                        break;
+                    case false:
+                        animatorTarget.Play("incorrect");
+                        animatorAns.Play("correct");
+                        setExplainationUI();
+                        break;
+                }
+                nextBtn.SetActive(true);
+                checkBtn.SetActive(false);
+                currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                startProgress();
+                resetOptions();
+            }
+            else
+            {
+                checkBtn.GetComponent<Animator>().Play("unavailable");
+            }
         }
-       
     }
 
     private void removeChild(GameObject parentObject, string specificTag)
