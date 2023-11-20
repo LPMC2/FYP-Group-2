@@ -58,19 +58,19 @@ public class DataStorage : ScriptableObject
                     optionsStr += " - " + quizSO.questions[i].options[j].text + "\n";
                     options = arrayBehaviour.addArray(options, quizSO.questions[i].options[j].text);
                     optionsNumber++;
-                    if (quizSO.questions[i].options[j].id == quizSO.questions[i].inputAnswer)
+                    if (quizSO.questions[i].options[j].id == quizSO.questions[i].inputAnswer[0])
                     {
                         optionStr = quizSO.questions[i].options[j].text;
                         userInput = arrayBehaviour.addArray(userInput, quizSO.questions[i].options[j].text);
                     }
-                    if (quizSO.questions[i].options[j].id == quizSO.questions[i].answer)
+                    if (quizSO.questions[i].options[j].id == quizSO.questions[i].answer[0])
                     {
                         answers = arrayBehaviour.addArray(answers, quizSO.questions[i].options[j].text);
                     }
                 }
             }
             optionsNum = arrayBehaviour.addIntArray(optionsNum, optionsNumber);
-            if (quizSO.questions[i].inputAnswer != -1)
+            if (quizSO.questions[i].inputAnswer[0] != -1)
             {
                 //Store into the main data string
                 data += "> Question " + (i + 1) + ": " + questionStr + "\nAvailable answers: \n" + optionsStr + "\nUser Answered: " + optionStr + "(" + boolCorrect + ")\n";

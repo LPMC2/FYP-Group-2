@@ -49,6 +49,7 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private GameObject questionNumUI;
     [SerializeField] private GameObject questionsUIObject;
     [SerializeField] private GameObject answerUIObject;
+    [SerializeField] private GameObject multiAnswerUIObject;
     public GameObject AnswerUIObject { set { answerUIObject = value; } }
     [SerializeField] private GameObject headerUI;
     [SerializeField] private Slider progressBar;
@@ -129,7 +130,10 @@ public class QuizUIManager : MonoBehaviour
                 scoreSO.setScore(0);
             for (int i = 0; i < quizSO.questions.Length; i++)
             {
-                quizSO.questions[i].inputAnswer = -1;
+                for (int j = 0; j < quizSO.questions[i].inputAnswer.Length; j++)
+                {
+                    quizSO.questions[i].inputAnswer[j] = -1;
+                }
                 quizSO.GetAns(i, lang);
             }
             if(explainationUI != null)
@@ -253,48 +257,63 @@ public class QuizUIManager : MonoBehaviour
     }
     public void checkAnswer()
     {
-        Debug.Log("Answer Number: " + (quizSO.questions[page].answer + 1) + "\n" + "Input Number: " + (quizSO.questions[page].inputAnswer + 1));
-        GameObject targetUI;
-        GameObject ansUI;
-        if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer != -1)
+        //Debug.Log("Answer Number: " + (quizSO.questions[page].answer + 1) + "\n" + "Input Number: " + (quizSO.questions[page].inputAnswer + 1));
+        GameObject[] targetUI = new GameObject[0];
+        GameObject[] ansUI = new GameObject[0];
+
+        for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
         {
-            if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+            if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer[i] != -1)
             {
-                targetUI = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer + 1).gameObject;
-                ansUI = currentContentUI.transform.GetChild(quizSO.questions[page].answer + 1).gameObject;
-            } else
-            {
-                targetUI = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer).gameObject;
-                ansUI = currentContentUI.transform.GetChild(quizSO.questions[page].answer).gameObject;
+                if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
+                {
+                    targetUI = arrayBehaviour.addArray(targetUI);
+                    ansUI = arrayBehaviour.addArray(ansUI);
+                    targetUI[targetUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i] + 1).gameObject;
+                    ansUI[ansUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i] + 1).gameObject;
+                }
+                else
+                {
+                    targetUI = arrayBehaviour.addArray(targetUI);
+                    ansUI = arrayBehaviour.addArray(ansUI);
+                    targetUI[targetUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i]).gameObject;
+                    ansUI[ansUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i]).gameObject;
+                }
             }
-        } else
+           
+        }
+        if(targetUI.Length == 0 || ansUI.Length == 0)
         {
             return;
         }
-        Animator animatorTarget = targetUI.GetComponent<Animator>();
-        Animator animatorAns = ansUI.GetComponent<Animator>();
-        if (quizSO.questions[page].inputAnswer != -1)
+        for (int a = 0; a < quizSO.questions[page].inputAnswer.Length; a++)
         {
-            switch (quizSO.checkSingleAns(page))
+            Animator animatorTarget = targetUI[a].GetComponent<Animator>();
+            Animator animatorAns = ansUI[a].GetComponent<Animator>();
+            if (quizSO.questions[page].inputAnswer[a] != -1)
             {
-                case true:
-                    animatorTarget.Play("correct");
+                switch (quizSO.checkSingleAns(page))
+                {
+                    case true:
+                        animatorTarget.Play("correct");
 
-                    break;
-                case false:
-                    animatorTarget.Play("incorrect");
-                    animatorAns.Play("correct");
-                    setExplainationUI();
-                    break;
+                        break;
+                    case false:
+                        animatorTarget.Play("incorrect");
+                        animatorAns.Play("correct");
+                        setExplainationUI();
+                        break;
+                }
+                nextBtn.SetActive(true);
+                checkBtn.SetActive(false);
+                currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                startProgress();
+                resetOptions();
             }
-            nextBtn.SetActive(true);
-            checkBtn.SetActive(false);
-            currentContentUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
-            startProgress();
-            resetOptions();
-        } else
-        {
-            checkBtn.GetComponent<Animator>().Play("unavailable");
+            else
+            {
+                checkBtn.GetComponent<Animator>().Play("unavailable");
+            }
         }
     }
 
@@ -362,7 +381,10 @@ public class QuizUIManager : MonoBehaviour
             //Set Quiz Data(Language Id)
             quizSO.GetAns(page, lang);
             //Reset Input Answer
-            quizSO.questions[page].inputAnswer = -1;
+            for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
+            {
+                quizSO.questions[page].inputAnswer[i] = -1;
+            }
             //Remove All Child Objects inside the content(As the previous page content still exists)
             removeChild(currentContentUI, "Answer");
 
@@ -475,7 +497,14 @@ public class QuizUIManager : MonoBehaviour
         }
         for (int i=0; i<ans.Length; i++)
         {
-            GameObject target = Instantiate(answerUIObject, contentTransform, Quaternion.identity);
+            GameObject target = default;
+            if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
+            {
+                target = Instantiate(answerUIObject, contentTransform, Quaternion.identity);
+            } else
+            {
+                target = Instantiate(multiAnswerUIObject, contentTransform, Quaternion.identity);
+            }
             target.transform.SetParent(currentContentUI.transform);
             QuizAnsBehaviour targetComponent;
             if (target.GetComponent<QuizAnsBehaviour>() != null)
@@ -483,7 +512,15 @@ public class QuizUIManager : MonoBehaviour
                 targetComponent = target.GetComponent<QuizAnsBehaviour>();
             } else
             targetComponent = target.AddComponent<QuizAnsBehaviour>();
-
+            Toggle toggle = target.GetComponent<Toggle>();
+            if (toggle != null)
+            {
+                ToggleGroup toggleGroup = currentContentUI.GetComponent<ToggleGroup>();
+                targetComponent.toggle = toggle;
+                toggle.group = toggleGroup;
+                toggle.isOn = true;
+                toggle.interactable = true;
+            }
             //Set Value to QuizAnsBehaviour
             targetComponent.setAns(i, ans[i], page, quizSO);
             GameObject ansObj = GameObjectFinder.GetGameObjectWithTagFromChilds(target, "AnsText");

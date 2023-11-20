@@ -5182,7 +5182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!222 &3490630968476811496
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7984,6 +7984,7 @@ MonoBehaviour:
   questionNumUI: {fileID: 4984866881119324390}
   questionsUIObject: {fileID: 5915607944678402027}
   answerUIObject: {fileID: 2621957715730822101, guid: 896966047cd23d04eb7b43e9809e3fd8, type: 3}
+  multiAnswerUIObject: {fileID: 5680754350211229368, guid: 267ed5055cc75014e825e47da0b19abc, type: 3}
   headerUI: {fileID: 4496681983220955433}
   progressBar: {fileID: 3703046691392012903}
   progressDuration: 0.4
@@ -7998,7 +7999,7 @@ MonoBehaviour:
   clonedQuizPanel: {fileID: 3585992968781613226}
   baseQuizPanel: {fileID: 2275189616630555502, guid: eabd359b2be2f9347a6f1519fde875aa, type: 3}
   offset: {x: 1670, y: 0}
-  quizSO: {fileID: 11400000, guid: e2ea798e5ecbf1c4397dceaecc1af4cd, type: 2}
+  quizSO: {fileID: 11400000, guid: e56e518d74a129c4a8f5502c38507608, type: 2}
   scoreSO: {fileID: 11400000, guid: 284ee713ed09e744c968e4577894f8f3, type: 2}
   dataStorage: {fileID: 11400000, guid: 73574d3321d2eb740a860892edea2ad3, type: 2}
 --- !u!114 &6550609593304948652
@@ -9271,15 +9272,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: -69
     m_Right: 0
-    m_Top: -41
+    m_Top: 24
     m_Bottom: 0
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 100, y: 100}
-  m_Spacing: {x: 279.2, y: 16}
+  m_Spacing: {x: 437.66, y: 16}
   m_Constraint: 1
   m_ConstraintCount: 1
 --- !u!114 &8358674552992306268
@@ -9298,6 +9299,7 @@ MonoBehaviour:
   pictureConstraintCount: 1
   TextSpacing: {x: 279.2, y: 16}
   textConstraintCount: 1
+  multipleChoiceConstraintCount: 2
   answerType: 0
 --- !u!1818360610 &8385446653178861923
 ScaleConstraint:

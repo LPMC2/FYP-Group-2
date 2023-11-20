@@ -61,6 +61,54 @@ public class arrayBehaviour
         }
         return newArray;
     }
+    public static T[,] Add2DArray<T>(T[,] arr, ArrayType arrayType = default)
+    {
+        int originalRowsize = arr.Length;
+        int originalColsize = arr.GetLength(1);
+        T[,] newArray = new T[originalRowsize, originalColsize];
+        switch (arrayType)
+        {
+            case ArrayType.row:
+                newArray = new T[originalRowsize + 1, originalColsize];
+                break;
+            case ArrayType.column:
+                newArray = new T[originalRowsize, originalColsize + 1];
+                break;
+        }
+        string debug = "List of array:\n";
+        for (int i = 0; i < newArray.Length; i++)
+        {
+            for (int j = 0; j < newArray.GetLength(1); i++)
+            {
+                if (i < originalRowsize && j < originalColsize)
+                {
+
+                    newArray[i, j] = arr[i, j];
+                }
+                
+            }
+
+        }
+        Debug.Log(debug);
+        return newArray;
+    }
+    public static T[] RemoveArray<T>(T[] arr, int element)
+    {
+        int originalsize = arr.Length;
+        T[] newArray = new T[originalsize - 1];
+        int numArray = 0;
+        for (int i = 0; i < originalsize; i++)
+        {
+            if (i != element)
+            {
+
+                newArray[numArray] = arr[i];
+                numArray++;
+            }
+           
+        }
+        return newArray;
+    }
     public static T[] ResetArray<T>(T[] originalArray)
     {
         T[] newArray = new T[1];
@@ -106,4 +154,35 @@ public class arrayBehaviour
 
         return newArray;
     }
+    public static int[] BubbleSortArray(int[] originalArray)
+    {
+        int n = originalArray.Length;
+        int[] newArray = new int[n];
+        bool swapped;
+        for(int i=0; i<n-1; i++)
+        {
+            swapped = false;
+            for(int j=0; j<n-i-1; j++)
+            {
+                if(newArray[j] > newArray[j+1])
+                {
+                    int temp = newArray[j];
+                    newArray[j] = newArray[j + 1];
+                    newArray[j + 1] = temp;
+
+                    swapped = true;
+                }
+            }
+            if (!swapped)
+                break;
+        }
+
+        return newArray;
+    }
+}
+public enum ArrayType
+{
+    row,
+    column
+
 }
