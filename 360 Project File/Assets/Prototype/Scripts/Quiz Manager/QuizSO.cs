@@ -175,6 +175,7 @@ public class QuizSO : ScriptableObject
     }
     public bool checkSingleAns(int page)
     {
+        int[,] ans = new int[0,2];
         float correctAnswer = 0;
         //Check if the answer is correct
         for (int j = 0; j < questions[page].options.Length; j++)
@@ -184,16 +185,20 @@ public class QuizSO : ScriptableObject
             {
                 if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer[i])
                 {
+
                     for (int a = 0; a < questions[page].answer.Length; a++)
                     {
                         if (questions[page].answer[a] == questions[page].inputAnswer[i])
                         {
-                            correctCount++;
+                            
+
                             correctAnswer++;
+
                             break;
                         }
                        
                     }
+
 
                 }
             }
@@ -201,6 +206,7 @@ public class QuizSO : ScriptableObject
         }
         if(correctAnswer == questions[page].answer.Length)
         {
+            correctCount++;
             return true;
         } else
         return false;
