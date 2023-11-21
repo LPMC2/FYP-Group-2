@@ -173,11 +173,11 @@ public class QuizSO : ScriptableObject
         }
         return "";
     }
-    public bool checkSingleAns(int page)
+    public bool checkSingleAns(int page, bool isAddScore = true)
     {
-        int[,] ans = new int[0,2];
+        
         float correctAnswer = 0;
-        //Check if the answer is correct
+        //Find all options that have the corresponding language
         for (int j = 0; j < questions[page].options.Length; j++)
         {
             //Foreach input answer to check
@@ -185,28 +185,42 @@ public class QuizSO : ScriptableObject
             {
                 if (questions[page].options[j].language == language && questions[page].options[j].id == questions[page].inputAnswer[i])
                 {
-
+                    bool answerCorrect = false;
                     for (int a = 0; a < questions[page].answer.Length; a++)
                     {
                         if (questions[page].answer[a] == questions[page].inputAnswer[i])
                         {
-                            
 
+                            answerCorrect = true;
                             correctAnswer++;
 
                             break;
                         }
                        
                     }
-
+                    if(!answerCorrect)
+                    {
+                        correctAnswer--;
+                       
+                    }
 
                 }
             }
 
         }
-        if(correctAnswer == questions[page].answer.Length)
+        //Prevent correct Answer Count from having negative number
+        correctAnswer = Mathf.Clamp(correctAnswer, 0, questions[page].inputAnswer.Length);
+        //Detect if correctAnswer equals the answer count to count towards score
+        if (correctAnswer == questions[page].answer.Length)
         {
-            correctCount++;
+            if (isAddScore)
+            {
+                if(correctCount == -1)
+                {
+                    correctCount = 0;
+                }
+                correctCount++;
+            }
             return true;
         } else
         return false;

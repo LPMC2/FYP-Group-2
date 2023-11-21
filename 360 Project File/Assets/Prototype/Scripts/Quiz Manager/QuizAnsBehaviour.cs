@@ -140,7 +140,7 @@ public class QuizAnsBehaviour : MonoBehaviour
         foreach (Transform child in parentContent.transform)
         {
             Toggle toggle1 = child.GetComponent<Toggle>();
-            if (toggle != null)
+            if (toggle1 != null)
             {
                 toggle1.isOn = false;
                 toggle1.interactable = true;

@@ -157,7 +157,7 @@ public class arrayBehaviour
     public static int[] BubbleSortArray(int[] originalArray)
     {
         int n = originalArray.Length;
-        int[] newArray = new int[n];
+        int[] newArray = originalArray;
         bool swapped;
         for(int i=0; i<n-1; i++)
         {
