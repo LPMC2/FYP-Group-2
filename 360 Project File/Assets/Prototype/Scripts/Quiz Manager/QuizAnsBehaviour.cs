@@ -89,7 +89,7 @@ public class QuizAnsBehaviour : MonoBehaviour
                     }
                 }
                 
-                Debug.Log("Toggle untoggled!");
+                //Debug.Log("Toggle untoggled!");
                 return;
             }
         }
