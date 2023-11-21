@@ -60,7 +60,7 @@ public class QuizUIManager : MonoBehaviour
     private string timeUIText;
     private float targetProgress = 0.0f;
     private float currentProgress = 0.0f;
-    private bool runProgress = false;
+   
     private bool end = false;
     private int timeRemaining = 0;
     [Header("Answer Type UI")]
@@ -260,49 +260,59 @@ public class QuizUIManager : MonoBehaviour
         //Debug.Log("Answer Number: " + (quizSO.questions[page].answer + 1) + "\n" + "Input Number: " + (quizSO.questions[page].inputAnswer + 1));
         GameObject[] targetUI = new GameObject[0];
         GameObject[] ansUI = new GameObject[0];
-
-        for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
+        if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
         {
-            if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer[i] != -1)
+#if UNITY_EDITOR
+            Debug.LogError("First GameObject in " + currentContentUI + " doesn't include Answer Tag!");
+#endif
+            return;
+        }
+            //Get Input Answer Objects into targetUI
+            for (int i = 0; i < quizSO.questions[page].inputAnswer.Length; i++)
             {
-                if (!currentContentUI.transform.GetChild(0).CompareTag("Answer"))
-                {
-                    targetUI = arrayBehaviour.addArray(targetUI);
-                    ansUI = arrayBehaviour.addArray(ansUI);
-                    targetUI[targetUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i] + 1).gameObject;
-                    ansUI[ansUI.Length-1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i] + 1).gameObject;
-                }
-                else
-                {
-                    targetUI = arrayBehaviour.addArray(targetUI);
-                    ansUI = arrayBehaviour.addArray(ansUI);
-                    targetUI[targetUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i]).gameObject;
-                    ansUI[ansUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[i]).gameObject;
-                }
-            }
+              if (currentContentUI.transform.childCount >= 1 && quizSO.questions[page].inputAnswer[i] != -1)
+              {
+                      targetUI = arrayBehaviour.addArray(targetUI);
+                      targetUI[targetUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].inputAnswer[i]).gameObject;
+             }
            
+             }
+            //Get Answer Objects into ansUI
+        for(int j=0; j< quizSO.questions[page].answer.Length; j++)
+        {
+            ansUI = arrayBehaviour.addArray(ansUI);
+            ansUI[ansUI.Length - 1] = currentContentUI.transform.GetChild(quizSO.questions[page].answer[j]).gameObject;
         }
         if(targetUI.Length == 0 || ansUI.Length == 0)
         {
             return;
         }
+        //Sort Input Answer
+        if(quizSO.questions[page].inputAnswer.Length > 1)
+        quizSO.questions[page].inputAnswer = arrayBehaviour.BubbleSortArray(quizSO.questions[page].inputAnswer);
+        //Calculate Score
+        quizSO.checkSingleAns(page);
         for (int a = 0; a < quizSO.questions[page].inputAnswer.Length; a++)
         {
             Animator animatorTarget = targetUI[a].GetComponent<Animator>();
-            Animator animatorAns = ansUI[a].GetComponent<Animator>();
+            
             if (quizSO.questions[page].inputAnswer[a] != -1)
             {
-                switch (quizSO.checkSingleAns(page))
-                {
-                    case true:
-                        animatorTarget.Play("correct");
+                //Show and animate all incorrect / correct answers
+                        for (int c = 0; c < quizSO.questions[page].inputAnswer.Length; c++)
+                        {
+                            Animator animatorTarget1 = targetUI[c].GetComponent<Animator>();
+                            animatorTarget1.Play("incorrect");
+                        }
+                        for (int b = 0; b < quizSO.questions[page].answer.Length; b++)
+                        {
+                            Animator animatorAns = ansUI[b].GetComponent<Animator>();
+                            animatorAns.Play("correct");
+                        }
 
-                        break;
-                    case false:
-                        animatorTarget.Play("incorrect");
-                        animatorAns.Play("correct");
-                        setExplainationUI();
-                        break;
+                if(!quizSO.checkSingleAns(page,false))
+                {
+                    setExplainationUI();
                 }
                 nextBtn.SetActive(true);
                 checkBtn.SetActive(false);
@@ -314,6 +324,11 @@ public class QuizUIManager : MonoBehaviour
             {
                 checkBtn.GetComponent<Animator>().Play("unavailable");
             }
+        }
+        //Stop the timer if on last question (After checked answer)
+        if(page == pagelimit)
+        {
+            StopAllCoroutines();
         }
     }
 
@@ -355,7 +370,7 @@ public class QuizUIManager : MonoBehaviour
     {
         foreach(Transform child in currentContentUI.transform)
         {
-            if(child.CompareTag("Answer")) {
+            if(child.CompareTag("Answer") && child.GetComponent<Toggle>()!= null) {
                 child.gameObject.GetComponent<Toggle>().interactable = true;
             }
         }
@@ -413,7 +428,7 @@ public class QuizUIManager : MonoBehaviour
     {
         end = true;
         page++;
-        quizSO.checkAns();
+        
         StopTimer();
         remainingTimeUI.gameObject.SetActive(false);
         EndPageUI.gameObject.SetActive(true);
@@ -673,7 +688,7 @@ public class QuizUIManager : MonoBehaviour
         if (timerCoroutine != null)
         {
             StopCoroutine(timerCoroutine);
-            Debug.Log("Stopped");
+            //Debug.Log("Stopped");
         }
     }
     public void TryAgain()
@@ -727,6 +742,7 @@ public class QuizUIManager : MonoBehaviour
     }
     private void getScore()
     {
+        quizSO.correctCount = Mathf.Clamp(quizSO.correctCount, 0, quizSO.questions.Length);
         scoreSO.calculateScore(quizSO.correctCount, timeRemaining, quizSO.timeLimit);
         correctCountUI.text = quizSO.correctCount.ToString();
         correctScoreUI.text = scoreSO.getCorrectScore().ToString();
@@ -736,6 +752,7 @@ public class QuizUIManager : MonoBehaviour
         getStars();
         LerpEllipseValue();
         GetProportionUI();
+        quizSO.correctCount = 0;
     }
     private void getStars()
     {
