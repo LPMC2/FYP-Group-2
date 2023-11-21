@@ -29,6 +29,8 @@ public class NavigationManager : MonoBehaviour
     [Header("Event Channels")]
     [SerializeField]
     private NavigationEventChannelSO m_NavigationEventChannel;
+    [SerializeField]
+    private CameraEventChannelSO m_CameraEventChannel;
 
     private static int s_MapFloorLayer;
     private Dictionary<MapFloor, Dictionary<MapLandmark, SphericalHelper>> m_MapDict;
@@ -54,7 +56,7 @@ public class NavigationManager : MonoBehaviour
         m_NavigationEventChannel.OnNavigate -= OnNavigate;
     }
 
-    private void OnLoadMap(Map map, MapLandmark startPoint)
+    private void OnLoadMap(Map map, MapLandmark startPoint, Vector3 startRotation)
     {
         m_MapDict = new();
         for (int i = 0; i < map.Floors.Length; i++)
@@ -130,6 +132,7 @@ public class NavigationManager : MonoBehaviour
         }
 
         OnNavigate(GetSphericalHelper(startPoint), NavigationMode.Teleport);
+        m_CameraEventChannel.OnRotationSnap?.Invoke(startRotation);
     }
 
     private void OnNavigate(SphericalHelper destination, NavigationMode mode)

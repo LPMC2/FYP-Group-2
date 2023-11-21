@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Events;
 
 public class SceneLoader : MonoBehaviour
 {
-    public static event UnityAction<float> loadProgressUpdated;
+    [Header("Event Channels")]
+    [SerializeField]
+    private SceneLoaderEventChannelSO m_SceneLoaderEventChannel;
 
     private Coroutine m_Load;
 
@@ -14,39 +15,51 @@ public class SceneLoader : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void LoadScene(AssetReference sceneToLoad, bool skipFadeIn = false)
+    private void OnEnable()
+    {
+        m_SceneLoaderEventChannel.OnChangeScene += LoadScene;
+        m_SceneLoaderEventChannel.OnStartJourney += StartJourney;
+    }
+
+    private void OnDisable()
+    {
+        m_SceneLoaderEventChannel.OnChangeScene -= LoadScene;
+        m_SceneLoaderEventChannel.OnStartJourney -= StartJourney;
+    }
+
+    public void LoadScene(AssetReference sceneToLoad)
     {
         if (m_Load != null)
             return;
 
-        m_Load = StartCoroutine(PerformLoad((string)sceneToLoad.RuntimeKey, skipFadeIn));
+        m_Load = StartCoroutine(PerformLoad((string)sceneToLoad.RuntimeKey));
     }
 
-    public void LoadScene(string sceneToLoad, bool skipFadeIn = false)
+    public void LoadScene(string sceneToLoad)
     {
         if (m_Load != null)
             return;
 
-        m_Load = StartCoroutine(PerformLoad(sceneToLoad, skipFadeIn));
+        m_Load = StartCoroutine(PerformLoad(sceneToLoad));
     }
 
-    private IEnumerator PerformLoad(string sceneToLoad, bool skipFadeIn)
+    private IEnumerator PerformLoad(string sceneToLoad)
     {
         LoadingProgress loadingProgress = null;
-        if (loadingProgress != null && !skipFadeIn)
+        if (loadingProgress != null)
         {
             loadingProgress.Fade();
             yield return new WaitUntil(() => !loadingProgress.Animating);
         }
 
-        loadProgressUpdated?.Invoke(0f);
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0f);
         var load = Addressables.LoadSceneAsync(sceneToLoad);
         while (!load.IsDone)
         {
-            loadProgressUpdated?.Invoke(load.PercentComplete);
+            m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(load.PercentComplete);
             yield return null;
         }
-        loadProgressUpdated?.Invoke(1f);
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(1f);
 
         if (loadingProgress != null)
         {
@@ -59,5 +72,6 @@ public class SceneLoader : MonoBehaviour
 
     public void StartJourney(string journeyToLoad)
     {
+        Debug.Log($"StartJournet: {journeyToLoad}");
     }
 }

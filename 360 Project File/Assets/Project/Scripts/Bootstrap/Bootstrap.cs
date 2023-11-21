@@ -8,6 +8,10 @@ public class Bootstrap : MonoBehaviour
     [SerializeField]
     private AssetReference m_SceneToLoad;
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private SceneLoaderEventChannelSO m_SceneLoaderEventChannel;
+
     private IEnumerator Start()
     {
         var addressables = Addressables.InitializeAsync();
@@ -16,6 +20,6 @@ public class Bootstrap : MonoBehaviour
         var localization = LocalizationSettings.InitializationOperation;
         yield return localization;
 
-        //SceneLoader.Instance.LoadScene(m_SceneToLoad);
+        m_SceneLoaderEventChannel.OnChangeScene?.Invoke((string)m_SceneToLoad.RuntimeKey);
     }
 }

@@ -14,6 +14,8 @@ public class CameraControl : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField]
+    private CameraEventChannelSO m_CameraEventChannel;
+    [SerializeField]
     private NavigationEventChannelSO m_NavigationEventChannel;
 
     private Camera m_Camera;
@@ -29,12 +31,14 @@ public class CameraControl : MonoBehaviour
 
     private void OnEnable()
     {
+        m_CameraEventChannel.OnRotationSnap += OverrideCameraRotation;
         m_NavigationEventChannel.OnNavigationStarted += OnNavigationStarted;
         m_NavigationEventChannel.OnNavigationFinished += OnNavigationFinished;
     }
 
     private void OnDisable()
     {
+        m_CameraEventChannel.OnRotationSnap -= OverrideCameraRotation;
         m_NavigationEventChannel.OnNavigationStarted -= OnNavigationStarted;
         m_NavigationEventChannel.OnNavigationFinished -= OnNavigationFinished;
     }
@@ -70,10 +74,15 @@ public class CameraControl : MonoBehaviour
 
     private void OnNavigationFinished()
     {
-        var newAngle = transform.localEulerAngles;
-        newAngle.x = ClampAngle(newAngle.x, -m_MaxVerticalAngle, m_MaxVerticalAngle);
-        m_CameraRotation = newAngle;
+        OverrideCameraRotation(transform.localEulerAngles);
         m_CameraLocked = false;
+    }
+
+    private void OverrideCameraRotation(Vector3 eulerAngles)
+    {
+        eulerAngles.x = ClampAngle(eulerAngles.x, -m_MaxVerticalAngle, m_MaxVerticalAngle);
+        m_CameraRotation = eulerAngles;
+        m_Camera.transform.localEulerAngles = m_CameraRotation;
     }
 
     private static float ClampAngle(float angle, float min, float max)

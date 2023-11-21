@@ -123,45 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!21 &173950104
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/RoundedCorners/RoundedCorners
-  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_LockedProperties: 
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _ColorMask: 15
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _UseUIAlphaClip: 0
-    m_Colors:
-    - _WidthHeightRadius: {r: 24, g: 24, b: 24, a: 0}
-  m_BuildTextureStacks: []
 --- !u!1 &1603913374
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 173950104}
+  m_Material: {fileID: 1964709491}
   m_Color: {r: 0.5019608, g: 0.50980395, b: 0.52156866, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -253,6 +214,45 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603913374}
   m_CullTransparentMesh: 1
+--- !u!21 &1964709491
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/RoundedCorners/RoundedCorners
+  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _WidthHeightRadius: {r: 24, g: 24, b: 24, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1 &184516246000619648
 GameObject:
   m_ObjectHideFlags: 0
@@ -1765,6 +1765,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa1f793c93a65b4b802ae26ef5390c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SceneLoaderEventChannel: {fileID: 11400000, guid: 38e70edc5d622034d8d5cb5f9962c00c, type: 2}
 --- !u!224 &3471160785136059408
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2595,12 +2596,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_RotationSpeed: 1
-  m_PositionSpeed: 0.9
   m_PlaneMaterial: {fileID: 2100000, guid: 1896bdc880363fb499b64f33ba584c46, type: 2}
   m_SphericalPrefab: {fileID: 2568811268899392943, guid: 2d4069bebf100d143adca2bed26b3934, type: 3}
   m_NavigationPointPrefab: {fileID: 7307512191999254217, guid: b13b0ba632d2e1c4188500adf4370e6b, type: 3}
   m_NavigationEventChannel: {fileID: 11400000, guid: 63d3446625c11f245a08b163ec91e055, type: 2}
+  m_CameraEventChannel: {fileID: 11400000, guid: acc035d7b58003944bb7e8b0ea3e609e, type: 2}
 --- !u!224 &4548531242263186084
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2654,6 +2654,7 @@ MonoBehaviour:
   m_ZoomSensitivity: 15
   m_FovMin: 30
   m_FovMax: 90
+  m_CameraEventChannel: {fileID: 11400000, guid: acc035d7b58003944bb7e8b0ea3e609e, type: 2}
   m_NavigationEventChannel: {fileID: 11400000, guid: 63d3446625c11f245a08b163ec91e055, type: 2}
 --- !u!224 &4599428883384549530
 RectTransform:

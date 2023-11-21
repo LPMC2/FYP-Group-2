@@ -13,7 +13,7 @@ public class NavigationDebug : MonoBehaviour
 
     private void Start()
     {
-        m_NavigationEventChannel.OnLoadMap(m_Journey.Map, m_Journey.StartPoint);
+        m_NavigationEventChannel.OnLoadMap(m_Journey.Map, m_Journey.StartPoint, m_Journey.StartRotation);
         m_JourneyEventChannel.OnLoadEntries(m_Journey.Entries);
         Destroy(this);
     }

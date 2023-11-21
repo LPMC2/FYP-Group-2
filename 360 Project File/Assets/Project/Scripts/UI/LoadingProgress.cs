@@ -13,6 +13,10 @@ public class LoadingProgress : MonoBehaviour
     [SerializeField]
     private AnimationCurve m_FadeAnim = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
+    [Header("Event Channels")]
+    [SerializeField]
+    private SceneLoaderEventChannelSO m_SceneLoaderEventChannel;
+
     private float m_IndicatorWidth;
     private Coroutine m_Fade;
     public bool Animating => m_Fade != null;
@@ -31,20 +35,21 @@ public class LoadingProgress : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneLoader.loadProgressUpdated += OnLoadingProgressUpdated;
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated += OnLoadingProgressUpdated;
     }
 
     private void OnDisable()
     {
-        SceneLoader.loadProgressUpdated -= OnLoadingProgressUpdated;
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated -= OnLoadingProgressUpdated;
     }
 
-    public void Fade(bool fadeOut = false)
+    public float Fade(bool fadeOut = false)
     {
         if (m_Fade != null)
-            return;
+            return 0f;
 
         m_Fade = StartCoroutine(PerformFade(fadeOut));
+        return m_FadeAnim.GetLastKeyTime();
     }
 
     private IEnumerator PerformFade(bool fadeOut)
