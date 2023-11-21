@@ -12,6 +12,7 @@ public abstract class CollapsiblePanel : MonoBehaviour
     [SerializeField]
     private AnimationCurve m_AnimationCurve = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
+    protected abstract RectTransform.Edge ExpandEdge { get; }
     protected abstract float ContentHeight { get; }
 
     private bool m_Visible;
@@ -42,11 +43,11 @@ public abstract class CollapsiblePanel : MonoBehaviour
         while (time < m_AnimationCurve.GetLastKeyTime())
         {
             var value = Mathf.Lerp(from, to, m_AnimationCurve.Evaluate(time));
-            m_ContentRectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0f, value);
+            m_ContentRectTransform.SetInsetAndSizeFromParentEdge(ExpandEdge, 0f, value);
             time += Time.deltaTime;
             yield return null;
         }
-        m_ContentRectTransform.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0f, to);
+        m_ContentRectTransform.SetInsetAndSizeFromParentEdge(ExpandEdge, 0f, to);
 
         m_Visible = newState;
         m_Animation = null;

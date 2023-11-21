@@ -29,6 +29,7 @@ public class Journey : CollapsiblePanel
     [SerializeField]
     private JourneyEventChannelSO m_JourneyEventChannel;
 
+    protected override RectTransform.Edge ExpandEdge => RectTransform.Edge.Top;
     protected override float ContentHeight => m_EntryHeight * 3f;
 
     private Dictionary<JourneyEntrySO, JourneyEntry> m_ManagedEntries;

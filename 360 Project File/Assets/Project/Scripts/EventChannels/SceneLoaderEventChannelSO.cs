@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(menuName = "Events/Scene Loader")]
 public class SceneLoaderEventChannelSO : ScriptableObject
@@ -11,5 +12,5 @@ public class SceneLoaderEventChannelSO : ScriptableObject
 
 public delegate void LoadingProgressUpdatedAction(float percentage);
 
-public delegate void ChangeSceneAction(string sceneToLoad);
-public delegate void StartJourneyAction(string journeyToLoad);
+public delegate void ChangeSceneAction(AssetReference sceneToLoad);
+public delegate void StartJourneyAction(AssetReference journeyToLoad);

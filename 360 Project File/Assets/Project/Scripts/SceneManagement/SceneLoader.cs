@@ -1,18 +1,35 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
+    [SerializeField]
+    private AssetReference m_ViewerScene;
+
     [Header("Event Channels")]
     [SerializeField]
     private SceneLoaderEventChannelSO m_SceneLoaderEventChannel;
+    [SerializeField]
+    private LoadingProgressEventChannelSO m_LoadingProgressEventChannel;
+    [SerializeField]
+    private NavigationEventChannelSO m_NavigationEventChannel;
+    [SerializeField]
+    private JourneyEventChannelSO m_JourneyEventChannel;
 
-    private Coroutine m_Load;
+    private bool m_IsLoading;
+    private AssetReference m_SceneToLoad;
+    private AssetReference m_JourneyToLoad;
+    private AsyncOperationHandle<SceneInstance> m_CurrentSceneHandle;
+    private AsyncOperationHandle<JourneySO> m_CurrentJourneyHandle;
+    private SceneInstance m_CurrentSceneInstance;
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        m_CurrentSceneInstance = new();
     }
 
     private void OnEnable()
@@ -27,51 +44,75 @@ public class SceneLoader : MonoBehaviour
         m_SceneLoaderEventChannel.OnStartJourney -= StartJourney;
     }
 
-    public void LoadScene(AssetReference sceneToLoad)
+    private void LoadScene(AssetReference sceneToLoad)
     {
-        if (m_Load != null)
+        if (m_IsLoading)
             return;
 
-        m_Load = StartCoroutine(PerformLoad((string)sceneToLoad.RuntimeKey));
+        m_SceneToLoad = sceneToLoad;
+        m_IsLoading = true;
+
+        StartCoroutine(UnloadPreviousScene());
     }
 
-    public void LoadScene(string sceneToLoad)
+    private void StartJourney(AssetReference journeyToLoad)
     {
-        if (m_Load != null)
-            return;
-
-        m_Load = StartCoroutine(PerformLoad(sceneToLoad));
+        m_JourneyToLoad = journeyToLoad;
+        LoadScene(m_ViewerScene);
     }
 
-    private IEnumerator PerformLoad(string sceneToLoad)
+    private IEnumerator UnloadPreviousScene()
     {
-        LoadingProgress loadingProgress = null;
-        if (loadingProgress != null)
-        {
-            loadingProgress.Fade();
-            yield return new WaitUntil(() => !loadingProgress.Animating);
-        }
-
         m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0f);
-        var load = Addressables.LoadSceneAsync(sceneToLoad);
-        while (!load.IsDone)
-        {
-            m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(load.PercentComplete);
-            yield return null;
-        }
-        m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(1f);
+        var waitTime = m_LoadingProgressEventChannel.OnFade?.Invoke(false);
+        if (waitTime.HasValue)
+            yield return new WaitForSeconds(waitTime.Value);
 
-        if (loadingProgress != null)
-        {
-            loadingProgress.Fade(true);
-            yield return new WaitUntil(() => !loadingProgress.Animating);
-        }
+        if (m_CurrentSceneInstance.Scene != null && m_CurrentSceneInstance.Scene.isLoaded)
+            yield return Addressables.UnloadSceneAsync(m_CurrentSceneHandle);
 
-        m_Load = null;
+        yield return LoadNewScene();
     }
 
-    public void StartJourney(string journeyToLoad)
+    private IEnumerator LoadNewScene()
     {
-        Debug.Log($"StartJournet: {journeyToLoad}");
+        m_CurrentSceneHandle = Addressables.LoadSceneAsync(m_SceneToLoad, LoadSceneMode.Additive);
+        yield return m_CurrentSceneHandle;
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0.5f);
+
+        yield return OnNewSceneLoaded();
+    }
+
+    private IEnumerator OnNewSceneLoaded()
+    {
+        m_CurrentSceneInstance = m_CurrentSceneHandle.Result;
+        SceneManager.SetActiveScene(m_CurrentSceneInstance.Scene);
+
+        if (m_SceneToLoad == m_ViewerScene && m_JourneyToLoad != null)
+        {
+            m_CurrentJourneyHandle = m_JourneyToLoad.LoadAssetAsync<JourneySO>();
+            yield return m_CurrentJourneyHandle;
+            m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0.6f);
+
+            var journey = m_CurrentJourneyHandle.Result;
+            m_NavigationEventChannel.OnLoadMap(journey.Map, journey.StartPoint, journey.StartRotation);
+            yield return new WaitForSeconds(0.15f);
+            m_JourneyEventChannel.OnLoadEntries(journey.Entries);
+            yield return new WaitForSeconds(0.15f);
+            m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0.8f);
+        }
+        else if (m_CurrentJourneyHandle.IsValid())
+        {
+            Addressables.Release(m_CurrentJourneyHandle);
+            m_JourneyToLoad = null;
+            m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(0.8f);
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        m_SceneLoaderEventChannel.OnLoadingProgressUpdated?.Invoke(1f);
+        yield return new WaitForSeconds(0.5f);
+
+        m_IsLoading = false;
+        m_LoadingProgressEventChannel.OnFade.Invoke(true);
     }
 }

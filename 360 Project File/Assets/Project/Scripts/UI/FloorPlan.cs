@@ -9,6 +9,7 @@ public class FloorPlan : CollapsiblePanel
     private static readonly Color k_InactiveMapColor = new(1f, 1f, 1f, 0f);
     private static readonly Color k_ActiveMapColor = Color.white;
 
+    protected override RectTransform.Edge ExpandEdge => RectTransform.Edge.Top;
     protected override float ContentHeight => 384f;
 
     [Header("UI")]

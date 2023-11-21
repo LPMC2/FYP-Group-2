@@ -94,6 +94,7 @@ public class NavigationManager : MonoBehaviour
                 spherical.gameObject.name = landmark.name;
                 spherical.Texture = landmark.Texture;
                 spherical.transform.SetLocalPositionAndRotation(new Vector3(landmark.Position.x / 10f, 1f, -(landmark.Position.y / 10f)), Quaternion.Euler(landmark.Rotation));
+                spherical.Alpha = 0f;
                 m_MapDict[floor].Add(landmark, spherical);
             }
         }
@@ -188,6 +189,10 @@ public class NavigationManager : MonoBehaviour
             m_Move = null;
         }
 
+        if (m_CurrentSpherical != null)
+            m_CurrentSpherical.Alpha = 0f;
+        target.Alpha = 1f;
+
         m_CameraRig.position = target.transform.position;
         var targetFloor = GetMapFloor(target);
         m_NavigationEventChannel.OnMapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor, NavigationMode.Teleport);
@@ -198,7 +203,7 @@ public class NavigationManager : MonoBehaviour
 
     private IEnumerator PerformMove(SphericalHelper target)
     {
-        m_NavigationEventChannel.OnNavigationStarted.Invoke();
+        m_NavigationEventChannel.OnNavigationStarted?.Invoke();
 
         // Camera rotation
         var cameraTransform = m_Camera.transform;
@@ -243,12 +248,12 @@ public class NavigationManager : MonoBehaviour
             yield return null;
         }
         m_CameraRig.position = toPosition;
-        // Set previous spherical back to fully visible for scene view debugging
-        m_CurrentSpherical.Alpha = target.Alpha = 1f;
+        m_CurrentSpherical.Alpha = 0f;
+        target.Alpha = 1f;
         m_CurrentSpherical.transform.localScale = target.transform.localScale = Vector3.one;
 
         m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Move);
-        m_NavigationEventChannel.OnNavigationFinished.Invoke();
+        m_NavigationEventChannel.OnNavigationFinished?.Invoke();
 
         m_Move = null;
         m_CurrentSpherical = target;

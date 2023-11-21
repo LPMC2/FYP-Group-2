@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class SceneChanger : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class SceneChanger : MonoBehaviour
         if (m_ChangeSceneTriggered)
             return;
 
-        m_SceneLoaderEventChannel.OnChangeScene.Invoke(sceneToLoad);
+        m_SceneLoaderEventChannel.OnChangeScene?.Invoke(new AssetReference(sceneToLoad));
         m_ChangeSceneTriggered = true;
     }
 
@@ -22,7 +23,7 @@ public class SceneChanger : MonoBehaviour
         if (m_ChangeSceneTriggered)
             return;
 
-        m_SceneLoaderEventChannel.OnStartJourney.Invoke(journeyToLoad);
+        m_SceneLoaderEventChannel.OnStartJourney?.Invoke(new AssetReference(journeyToLoad));
         m_ChangeSceneTriggered = true;
     }
 }

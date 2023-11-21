@@ -15,16 +15,13 @@ public class LoadingProgress : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField]
+    private LoadingProgressEventChannelSO m_LoadingProgressEventChannel;
+    [SerializeField]
     private SceneLoaderEventChannelSO m_SceneLoaderEventChannel;
 
     private float m_IndicatorWidth;
     private Coroutine m_Fade;
     public bool Animating => m_Fade != null;
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 
     private void Start()
     {
@@ -35,15 +32,17 @@ public class LoadingProgress : MonoBehaviour
 
     private void OnEnable()
     {
+        m_LoadingProgressEventChannel.OnFade += OnFade;
         m_SceneLoaderEventChannel.OnLoadingProgressUpdated += OnLoadingProgressUpdated;
     }
 
     private void OnDisable()
     {
+        m_LoadingProgressEventChannel.OnFade -= OnFade;
         m_SceneLoaderEventChannel.OnLoadingProgressUpdated -= OnLoadingProgressUpdated;
     }
 
-    public float Fade(bool fadeOut = false)
+    private float OnFade(bool fadeOut = false)
     {
         if (m_Fade != null)
             return 0f;
