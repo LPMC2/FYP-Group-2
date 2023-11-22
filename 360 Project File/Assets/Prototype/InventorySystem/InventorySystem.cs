@@ -2,12 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class InventorySystem : MonoBehaviour
 {
-  
-    [Header("Inventory")]
-    [SerializeField] private int maxFrontSlots = 9;
+
+    [Header("Inventory Settings")]
+    [SerializeField] 
+    private Backpack backpack;
+    [SerializeField] 
+    private int maxFrontSlots = 9;
+    public int[] initialSlotItem;
+
+    [Header("Inventory UI")]
+    public GameObject slotPrefab;
+    [SerializeField] 
+    GameObject SlotPlaceHolder;
+    
     #region maxFrontSlots getter
     public int GetMaxFrontSlots()
     {
@@ -19,14 +30,89 @@ public class InventorySystem : MonoBehaviour
     }
     #endregion
     public Slot[] slot;
-    //public int getSelectedSlot()
-    //{
-    //    return selectedSlot;
-    //}
-    //public void setSelectedSlot(int id)
-    //{
-    //    selectedSlot = id;
-    //}
+    [SerializeField]
+    private ItemSO itemData;
+
+    private void Start()
+    {
+        backpack.ContentTransform.transform.GetChild(0).GetComponent<VerticalLayoutGroup>().spacing = -backpack.ContentTransform.GetChild(0).GetComponent<RectTransform>().rect.height / 2f;
+        setSlotUI();
+        setInitialInventory();
+    }
+
+    #region Function
+    private void setSlotUI()
+    {
+        for (int i = 0; i < slot.Length; i++)
+        {
+            AddSlot();
+        }
+    }
+    public void AddSlot()
+    {
+        GameObject ui = Instantiate(slotPrefab, SlotPlaceHolder.transform.position, Quaternion.identity);
+        ui.transform.SetParent(SlotPlaceHolder.transform);
+        RectTransform rectTransform = ui.GetComponent<RectTransform>();
+        Vector2 clampedSizeDelta = rectTransform.sizeDelta;
+        clampedSizeDelta.x = Mathf.Clamp(clampedSizeDelta.x, 0, backpack.ContentTransform.rect.width);
+        rectTransform.sizeDelta = clampedSizeDelta;
+        rectTransform.localScale = Vector3.one;
+
+    }
+    private void setInitialInventory()
+    {
+        for (int i = 0; i < initialSlotItem.Length; i++)
+        {
+            setSlotItem(i, initialSlotItem[i]);
+        }
+    }
+
+    public void setSlotItem(int id, int item)
+    {
+        if (item >= itemData.item.Length || id >= slot.Length)
+        {
+            return;
+        }
+        //Debug.Log(id + ":" + item + "\n" + slot[slot.Length - 1] + "\n" + slot[slot.Length - 2].getId());
+        slot[id].setId(item);
+        if (item != -1 && item < itemData.item.Length)
+        {
+            slot[id].item.SlotUI.itemSprite = itemData.item[item].itemSprite;
+            slot[id].setName(itemData.item[item].GetItemName());
+        }
+        
+        setSlotUI(id);
+
+    }
+    private void setSlotUI(int id)
+    {
+
+        if (id < SlotPlaceHolder.transform.childCount)
+        {
+            Image image = GameObjectFinder.GetGameObjectWithTagFromChilds(SlotPlaceHolder.transform.GetChild(id).gameObject, "Image").GetComponent<Image>();
+            TMP_Text itemText = GameObjectFinder.GetGameObjectWithTagFromChilds(SlotPlaceHolder.transform.GetChild(id).gameObject, "Text").GetComponent<TMP_Text>();
+            image.sprite = slot[id].item.SlotUI.itemSprite;
+            
+            itemText.text = slot[id].getName();
+
+        }
+
+    }
+    public void ChangeName(int languageIndex)
+    {
+       
+        for (int id = 0; id < slot.Length; id++)
+        {
+            Debug.Log(itemData.item[slot[id].getId()].GetItemName(languageIndex+1));
+            slot[id].setName(itemData.item[slot[id].getId()].GetItemName(languageIndex+1));
+            TMP_Text itemText = GameObjectFinder.GetGameObjectWithTagFromChilds(SlotPlaceHolder.transform.GetChild(id).gameObject, "Text").GetComponent<TMP_Text>();
+            itemText.text = slot[id].getName();
+        }
+
+    }
+    #endregion
+
+    #region Slot Class
     public Slot[] GetSlots()
     {
         return slot;
@@ -73,6 +159,8 @@ public class InventorySystem : MonoBehaviour
     public class Item
     {
         [SerializeField] private GameObject itemObject;
+        [SerializeField] private SlotUI slotUI;
+        public SlotUI SlotUI { get { return slotUI;} set { slotUI = value; } }
         public GameObject GetItem()
         {
             return itemObject;
@@ -86,9 +174,7 @@ public class InventorySystem : MonoBehaviour
     public class SlotUI
     {
         [SerializeField] private Sprite itemImage;
-        public void setSlotUI(Sprite image)
-        {
-            itemImage = image;
-        }
+        public Sprite itemSprite { get { return itemImage; } set { itemImage = value; } }
     }
+    #endregion
 }
