@@ -284,7 +284,7 @@ public class InventoryBehaviour : MonoBehaviour
         string itemName = "";
         if (inventory.slot[itemId].getId() != -1)
         {
-            itemName = itemData.item[inventory.slot[itemId].getId()].itemName.text;
+            itemName = itemData.item[inventory.slot[itemId].getId()].GetItemName();
         }
 
         // Start the fade coroutine
