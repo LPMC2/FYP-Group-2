@@ -30,11 +30,9 @@ public class InventorySystem : MonoBehaviour
     }
     #endregion
     public Slot[] slot;
-    public ItemSO itemData { get; private set; }
-    private void Awake()
-    {
-        itemData = ItemManager.ItemData;
-    }
+    [SerializeField]
+    private ItemSO itemData;
+
     private void Start()
     {
         backpack.ContentTransform.transform.GetChild(0).GetComponent<VerticalLayoutGroup>().spacing = -backpack.ContentTransform.GetChild(0).GetComponent<RectTransform>().rect.height / 2f;

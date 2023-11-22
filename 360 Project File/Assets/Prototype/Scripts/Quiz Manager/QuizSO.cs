@@ -130,16 +130,7 @@ public class QuizSO : ScriptableObject
         //CorrectCount = -1 -> Answer Unselected, CorrectCount >= 0 -> Answer Selected
     }
 
-    [System.Serializable]
-    public class LocalizableString
-    {
-        public Language language = Language.zh_HK;
-        [TextArea]
-        public string text;
-        public int id;
-        [Header("Only for Quiz UI - Answer Type is Picture")]
-        public Sprite Image;
-    }
+
     public void checkAns()
     {
         //Get the number of correct answers and store the value to correctCount variable
@@ -240,4 +231,14 @@ public class QuizSO : ScriptableObject
             }
         }
     }
+}
+[System.Serializable]
+public class LocalizableString
+{
+    public Language language = Language.zh_HK;
+    [TextArea]
+    public string text;
+    public int id;
+    [Header("Only for Quiz UI - Answer Type is Picture")]
+    public Sprite Image;
 }
