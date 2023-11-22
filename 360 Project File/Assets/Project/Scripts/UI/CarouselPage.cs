@@ -24,6 +24,14 @@ public class CarouselPage : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
+    private CanvasGroup m_CanvasGroup;
+    public float Alpha
+    {
+        get => m_CanvasGroup.alpha;
+        set => m_CanvasGroup.alpha = value;
+    }
+
+    [SerializeField]
     private TMP_Text m_Title;
     [SerializeField]
     private TMP_Text m_Content;

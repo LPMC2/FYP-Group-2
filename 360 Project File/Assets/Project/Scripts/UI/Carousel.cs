@@ -7,7 +7,7 @@ public class Carousel : MonoBehaviour
 {
     [Header("Data")]
     [SerializeField]
-    private TransitFacts m_DataSource;
+    private TransitFactsSO m_DataSource;
 
     [Header("Pages")]
     [SerializeField]
@@ -37,7 +37,7 @@ public class Carousel : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField]
-    private float m_NavigateTime;
+    private AnimationCurve m_NavigateAnimation = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
 
     [Header("Event Channels")]
     [SerializeField]
@@ -111,9 +111,9 @@ public class Carousel : MonoBehaviour
         var fromPos = m_ContentRectTransform.anchoredPosition;
         var toPos = new Vector2(CalculateOffset(index), 0f);
         float time = 0f;
-        while (time < m_NavigateTime)
+        while (time < m_NavigateAnimation.GetLastKeyTime())
         {
-            m_ContentRectTransform.anchoredPosition = Vector2.Lerp(fromPos, toPos, time / m_NavigateTime);
+            m_ContentRectTransform.anchoredPosition = Vector2.Lerp(fromPos, toPos, m_NavigateAnimation.Evaluate(time));
             time += Time.deltaTime;
             yield return null;
         }

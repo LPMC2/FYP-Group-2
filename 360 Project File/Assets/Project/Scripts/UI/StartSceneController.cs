@@ -20,6 +20,7 @@ public class StartSceneController : MonoBehaviour
         {
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
+            canvasGroup.gameObject.SetActive(true);
         }
     }
 

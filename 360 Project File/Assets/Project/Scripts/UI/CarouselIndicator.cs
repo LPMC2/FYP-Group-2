@@ -4,8 +4,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class CarouselIndicator : MonoBehaviour
 {
-    public static Color k_InactiveColor = new Color(0.85f, 0.85f, 0.85f);
-    public static Color k_ActiveColor = new Color(0.33f, 0.33f, 0.33f);
+    public static Color k_InactiveColor = new Color(0.78f, 0.78f, 0.78f);
+    public static Color k_ActiveColor = new Color(0f, 0f, 0f);
 
     private bool m_Active;
     public bool Active

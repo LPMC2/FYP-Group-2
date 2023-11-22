@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Localization;
 
 [CreateAssetMenu]
-public class TransitFacts : ScriptableObject
+public class TransitFactsSO : ScriptableObject
 {
     [SerializeField]
     private Entry[] m_Entries;
