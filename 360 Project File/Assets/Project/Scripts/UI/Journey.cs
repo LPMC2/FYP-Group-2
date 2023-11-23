@@ -21,6 +21,10 @@ public class Journey : CollapsiblePanel
     [SerializeField]
     private Button m_NextButton;
 
+    [Header("UI")]
+    [SerializeField]
+    private GameObject m_CompletedDialog;
+
     [Header("Animation")]
     [SerializeField]
     private AnimationCurve m_NavigateAnim = AnimationCurve.EaseInOut(0f, 0f, 0.35f, 1f);
@@ -36,6 +40,9 @@ public class Journey : CollapsiblePanel
     private int m_CurrentEntry;
 
     private Coroutine m_Navigate;
+
+    private void Start()
+        => m_CompletedDialog.SetActive(false);
 
     protected override void OnEnable()
     {
@@ -61,13 +68,13 @@ public class Journey : CollapsiblePanel
     {
         foreach (var (data, ui) in m_ManagedEntries)
         {
-            if (data.Done || data != entry)
+            if ((data.Done && ui.Done) || data != entry)
                 continue;
 
             data.Done = true;
             ui.Done = true;
             m_JourneyEventChannel.OnEntryCompleted?.Invoke(data);
-            MoveToFirstIncomplete();
+            CompleteCheck();
         }
     }
 
@@ -90,13 +97,13 @@ public class Journey : CollapsiblePanel
     {
         foreach (var (data, ui) in m_ManagedEntries)
         {
-            if (data.Done || data.Type != JourneyEntrySO.JourneyType.ReachDestination || data.Destination != landmark)
+            if ((data.Done && ui.Done) || data.Type != JourneyEntrySO.JourneyType.ReachDestination || data.Destination != landmark)
                 continue;
 
             data.Done = true;
             ui.Done = true;
             m_JourneyEventChannel.OnEntryCompleted?.Invoke(data);
-            MoveToFirstIncomplete();
+            CompleteCheck();
         }
     }
 
@@ -106,7 +113,7 @@ public class Journey : CollapsiblePanel
     public void NextItem()
         => NavigateTo(m_CurrentEntry + 1);
 
-    private void MoveToFirstIncomplete()
+    private void CompleteCheck()
     {
         int index = 0;
         foreach (var (_, ui) in m_ManagedEntries)
@@ -116,7 +123,17 @@ public class Journey : CollapsiblePanel
 
             index++;
         }
-        NavigateTo(index);
+
+        // If there are incomplete entries, display that entry
+        if (index != m_ManagedEntries.Count)
+        {
+            NavigateTo(index);
+            return;
+        }
+
+        // All entries completed
+        m_CompletedDialog.SetActive(true);
+        m_JourneyEventChannel.OnJourneyCompleted?.Invoke();
     }
 
     private void NavigateTo(int index)
