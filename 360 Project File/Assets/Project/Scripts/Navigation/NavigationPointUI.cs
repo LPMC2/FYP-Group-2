@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 using TMPro;
 
@@ -11,17 +12,19 @@ public class NavigationPointUI : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
+    private NavigationButton m_NavButtonPrefab;
+    [SerializeField]
+    private Transform m_NavButtonRoot;
+    [SerializeField]
+    private ActionButton m_ActionButtonPrefab;
+    [SerializeField]
+    private Transform m_ActionButtonRoot;
+    [SerializeField]
     private Image m_Blocker;
     [SerializeField]
-    private NavigationButton m_ButtonPrefab;
-
-    [SerializeField]
     private TMP_Text m_LocationDisplay;
-    public string LocationDisplay
-    {
-        get => m_LocationDisplay.text;
-        set => m_LocationDisplay.text = value;
-    }
+    [SerializeField]
+    private LocalizeStringEvent m_DisplayNameLocalizeEvent;
 
     [Header("Animation")]
     [SerializeField]
@@ -38,26 +41,33 @@ public class NavigationPointUI : MonoBehaviour
     private Coroutine m_CanvasFade;
 
     private SphericalHelper m_Current;
-    private NavigationButton[] m_Buttons;
+    private NavigationButton[] m_NavButtons;
+    private ActionButton[] m_ActionButtons;
 
     private void Awake()
     {
         m_CanvasRect = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         m_CanvasGroup = GetComponent<CanvasGroup>();
-        m_Buttons = new NavigationButton[10];
-        for (int i = 0; i < m_Buttons.Length; i++)
+        m_NavButtons = new NavigationButton[10];
+        for (int i = 0; i < m_NavButtons.Length; i++)
         {
-            var button = Instantiate(m_ButtonPrefab, transform);
+            var button = Instantiate(m_NavButtonPrefab, m_NavButtonRoot);
             button.gameObject.SetActive(false);
-            m_Buttons[i] = button;
+            m_NavButtons[i] = button;
         }
-        m_Blocker.transform.SetAsLastSibling();
+        m_ActionButtons = new ActionButton[10];
+        for (int i = 0; i < m_ActionButtons.Length; i++)
+        {
+            var button = Instantiate(m_ActionButtonPrefab, m_ActionButtonRoot);
+            button.gameObject.SetActive(false);
+            m_ActionButtons[i] = button;
+        }
         m_Blocker.raycastTarget = false;
     }
 
     private void Start()
     {
-        LocationDisplay = string.Empty;
+        m_LocationDisplay.text = string.Empty;
     }
 
     private void OnEnable()
@@ -82,9 +92,9 @@ public class NavigationPointUI : MonoBehaviour
 
         var planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
         var points = m_Current.NavPoints;
-        for (int i = 0; i < m_Buttons.Length; i++)
+        for (int i = 0; i < m_NavButtons.Length; i++)
         {
-            var button = m_Buttons[i];
+            var button = m_NavButtons[i];
 
             bool shouldActive = true;
             if (i >= points.Length || !GeometryUtility.TestPlanesAABB(planes, points[i].Bounds))
@@ -130,7 +140,29 @@ public class NavigationPointUI : MonoBehaviour
     }
 
     private void OnSphericalChanged(SphericalHelper from, SphericalHelper to, NavigationManager.NavigationMode mode)
-        => m_Current = to;
+    {
+        m_DisplayNameLocalizeEvent.StringReference = to.DisplayNameKey;
+        if (to.DisplayNameKey.IsEmpty)
+            m_LocationDisplay.text = string.Empty;
+
+        for (int i = 0; i < m_ActionButtons.Length; i++)
+        {
+            var button = m_ActionButtons[i];
+
+            bool shouldActive = true;
+            if (to.Actions == null || i >= to.Actions.Length)
+                shouldActive = false;
+
+            button.gameObject.SetActive(shouldActive);
+            if (!button.gameObject.activeSelf)
+                continue;
+
+            button.TextKey = to.Actions[i].actionStringKey;
+            button.JourneyEntry = to.Actions[i].journeyEntry;
+        }
+
+        m_Current = to;
+    }
 
     private IEnumerator PerformUIFade(bool fadeIn)
     {

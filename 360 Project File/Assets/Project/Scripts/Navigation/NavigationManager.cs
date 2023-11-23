@@ -107,8 +107,12 @@ public class NavigationManager : MonoBehaviour
                 var spherical = Instantiate(m_SphericalPrefab, root.transform);
                 spherical.gameObject.name = landmark.name;
                 spherical.Texture = landmark.Texture;
+                spherical.DisplayNameKey = landmark.DisplayNameKey;
+                spherical.Actions = landmark.Actions;
                 spherical.transform.SetLocalPositionAndRotation(new Vector3(landmark.Position.x / 10f, 1f, -(landmark.Position.y / 10f)), Quaternion.Euler(landmark.Rotation));
+#if !UNITY_EDITOR
                 spherical.Alpha = 0f;
+#endif
                 m_MapDict[floor].Add(landmark, spherical);
             }
         }
@@ -134,6 +138,7 @@ public class NavigationManager : MonoBehaviour
             fromPoint.gameObject.name = $"NavPoint (#{i}: {connection.to.name})";
             fromPoint.Destination = to;
             fromPoint.Flags = connection.flags;
+            fromPoint.UnlockingJourneyEntry = connection.unlockingJourneyEntrySO;
             from.AddNavigationPoint(fromPoint);
 
             if (connection.flags.HasFlag(Map.MapConnectionFlags.OneWayOnly))
@@ -143,7 +148,6 @@ public class NavigationManager : MonoBehaviour
             toPoint.gameObject.name = $"NavPoint (#{i}: {connection.from.name})";
             toPoint.Destination = from;
             toPoint.Flags = connection.flags;
-            toPoint.UnlockingJourneyEntry = connection.unlockingJourneyEntrySO;
             to.AddNavigationPoint(toPoint);
         }
 
@@ -174,8 +178,6 @@ public class NavigationManager : MonoBehaviour
                 m_Navigation = StartCoroutine(PerformTeleport(destination));
                 break;
         }
-
-        m_JourneyEventChannel.OnDestinationReached?.Invoke(GetMapLandmark(destination));
     }
 
     private MapFloor GetMapFloor(SphericalHelper sphericalHelper)
@@ -262,13 +264,18 @@ public class NavigationManager : MonoBehaviour
             yield return null;
         }
         m_CameraRig.position = toPosition;
+#if UNITY_EDITOR
+        m_CurrentSpherical.Alpha = 1f;
+#else
         m_CurrentSpherical.Alpha = 0f;
+#endif
         target.Alpha = 1f;
         m_CurrentSpherical.transform.localScale = target.transform.localScale = Vector3.one;
 
         m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Move);
         m_NavigationEventChannel.OnNavigationFinished?.Invoke(NavigationMode.Move);
         m_NavigationPointUIEventChannelSO.OnFadeUI?.Invoke(true);
+        m_JourneyEventChannel.OnDestinationReached?.Invoke(GetMapLandmark(target));
 
         m_Navigation = null;
         m_CurrentSpherical = target;
@@ -282,7 +289,11 @@ public class NavigationManager : MonoBehaviour
         if (time.HasValue)
             yield return new WaitForSeconds(time.Value);
 
+#if UNITY_EDITOR
+        m_CurrentSpherical.Alpha = 1f;
+#else
         m_CurrentSpherical.Alpha = 0f;
+#endif
         target.Alpha = 1f;
         m_CameraRig.position = target.transform.position;
 
@@ -296,6 +307,7 @@ public class NavigationManager : MonoBehaviour
         m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Teleport);
         m_NavigationEventChannel.OnNavigationFinished?.Invoke(NavigationMode.Teleport);
         m_NavigationPointUIEventChannelSO.OnFadeOverlay?.Invoke(true);
+        m_JourneyEventChannel.OnDestinationReached?.Invoke(GetMapLandmark(target));
 
         m_Navigation = null;
         m_CurrentSpherical = target;

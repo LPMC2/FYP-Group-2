@@ -40,6 +40,7 @@ public class Journey : CollapsiblePanel
     protected override void OnEnable()
     {
         base.OnEnable();
+        m_JourneyEventChannel.OnEntryCompleted += OnEntryCompleted;
         m_JourneyEventChannel.OnLoadEntries += OnLoadEntries;
         m_JourneyEventChannel.OnDestinationReached += OnDestinationReached;
         m_PrevButton.onClick.AddListener(PrevItem);
@@ -49,10 +50,25 @@ public class Journey : CollapsiblePanel
     protected override void OnDisable()
     {
         base.OnDisable();
+        m_JourneyEventChannel.OnEntryCompleted -= OnEntryCompleted;
         m_JourneyEventChannel.OnLoadEntries -= OnLoadEntries;
         m_JourneyEventChannel.OnDestinationReached -= OnDestinationReached;
         m_PrevButton.onClick.RemoveListener(PrevItem);
         m_NextButton.onClick.RemoveListener(NextItem);
+    }
+
+    private void OnEntryCompleted(JourneyEntrySO entry)
+    {
+        foreach (var (data, ui) in m_ManagedEntries)
+        {
+            if (data.Done || data != entry)
+                continue;
+
+            data.Done = true;
+            ui.Done = true;
+            m_JourneyEventChannel.OnEntryCompleted?.Invoke(data);
+            MoveToFirstIncomplete();
+        }
     }
 
     private void OnLoadEntries(JourneyEntrySO[] entries)

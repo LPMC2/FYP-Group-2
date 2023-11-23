@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu]
 public class MapLandmark : ScriptableObject
@@ -14,4 +15,19 @@ public class MapLandmark : ScriptableObject
     [SerializeField]
     private Texture2D m_Texture;
     public Texture2D Texture => m_Texture;
+
+    [SerializeField]
+    private LocalizedString m_DisplayNameKey;
+    public LocalizedString DisplayNameKey => m_DisplayNameKey;
+
+    [SerializeField]
+    private MapLandmarkAction[] m_Actions;
+    public MapLandmarkAction[] Actions => m_Actions;
+
+    [System.Serializable]
+    public struct MapLandmarkAction
+    {
+        public LocalizedString actionStringKey;
+        public JourneyEntrySO journeyEntry;
+    }
 }

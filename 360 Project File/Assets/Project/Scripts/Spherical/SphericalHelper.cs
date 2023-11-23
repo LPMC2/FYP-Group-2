@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshRenderer))]
@@ -11,12 +12,21 @@ public class SphericalHelper : MonoBehaviour
     [SerializeField]
     private Material m_MaterialRef;
 
+    private LocalizedString m_DisplayNameKey;
+
     private List<NavigationPoint> m_NavPoints;
     public NavigationPoint[] NavPoints => m_NavPoints.ToArray();
+    public MapLandmark.MapLandmarkAction[] Actions { get; set; }
 
     private MeshRenderer m_Renderer;
     private Material m_Material;
 
+    public LocalizedString DisplayNameKey
+    {
+        get => m_DisplayNameKey;
+        set => m_DisplayNameKey = value;
+    }
+    
     public Texture Texture
     {
         get => m_Material.GetTexture(k_BaseMapId);
