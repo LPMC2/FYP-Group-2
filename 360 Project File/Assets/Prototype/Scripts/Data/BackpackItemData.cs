@@ -17,10 +17,10 @@ public class BackpackItemData : MonoBehaviour
 
     [SerializeField]
     [Tooltip("Will be called when RunItemIdFunction() is Called & use itemId as parameter")]
-    private ItemIdEvent functionWithItemId;
+    private UnityEvent<int> functionWithItemId;
     [SerializeField]
     [Tooltip("Will be called when RunItemObjectFunction() is Called & use itemObject as parameter")]
-    private ItemObjectEvent functionWithItemObj;
+    private UnityEvent<GameObject> functionWithItemObj;
 
     public void RunItemIdFunction()
     {
@@ -32,11 +32,5 @@ public class BackpackItemData : MonoBehaviour
     }
 
 
-    [System.Serializable]
- 
-    public class ItemIdEvent : UnityEvent<int> { }
-    [System.Serializable]
-
-    public class ItemObjectEvent : UnityEvent<GameObject> { }
 
 }
