@@ -1,10 +1,17 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class NavigationPointUI : MonoBehaviour
 {
+    private static readonly Color k_BlockerActiveColor = Color.black;
+    private static readonly Color k_BlockerInactiveColor = new(0f, 0f, 0f, 0f);
+
+    [Header("UI")]
+    [SerializeField]
+    private Image m_Blocker;
     [SerializeField]
     private NavigationButton m_ButtonPrefab;
 
@@ -22,11 +29,14 @@ public class NavigationPointUI : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField]
+    private NavigationPointUIEventChannelSO m_NavigationPointUIEventChannel;
+    [SerializeField]
     private NavigationEventChannelSO m_NavigationEventChannel;
 
     private RectTransform m_CanvasRect;
     private CanvasGroup m_CanvasGroup;
     private Coroutine m_CanvasFade;
+
     private SphericalHelper m_Current;
     private NavigationButton[] m_Buttons;
 
@@ -41,6 +51,8 @@ public class NavigationPointUI : MonoBehaviour
             button.gameObject.SetActive(false);
             m_Buttons[i] = button;
         }
+        m_Blocker.transform.SetAsLastSibling();
+        m_Blocker.raycastTarget = false;
     }
 
     private void Start()
@@ -50,15 +62,16 @@ public class NavigationPointUI : MonoBehaviour
 
     private void OnEnable()
     {
-        m_NavigationEventChannel.OnNavigationStarted += OnNavigationStarted;
-        m_NavigationEventChannel.OnNavigationFinished += OnNavigationFinished;
+        m_NavigationPointUIEventChannel.OnDisplayUnlockJourneyEntry += OnDisplayUnlockJourneyEntry;
+        m_NavigationPointUIEventChannel.OnFadeUI += OnFadeUI;
+        m_NavigationPointUIEventChannel.OnFadeOverlay += OnFadeOverlay;
         m_NavigationEventChannel.OnSphericalChanged += OnSphericalChanged;
     }
 
     private void OnDisable()
     {
-        m_NavigationEventChannel.OnNavigationStarted -= OnNavigationStarted;
-        m_NavigationEventChannel.OnNavigationFinished -= OnNavigationFinished;
+        m_NavigationPointUIEventChannel.OnFadeUI -= OnFadeUI;
+        m_NavigationPointUIEventChannel.OnFadeOverlay -= OnFadeOverlay;
         m_NavigationEventChannel.OnSphericalChanged -= OnSphericalChanged;
     }
 
@@ -89,44 +102,66 @@ public class NavigationPointUI : MonoBehaviour
 
             // Update data
             button.NavPoint = points[i];
+            button.Locked = points[i].UnlockingJourneyEntry != null;
         }
     }
 
-    private void OnNavigationStarted()
-        => Fade();
+    private void OnDisplayUnlockJourneyEntry(JourneyEntrySO entry)
+    {
+        Debug.Log($"Completed journey {entry.name}");
+    }
 
-    private void OnNavigationFinished()
-        => Fade(true);
-
-    private void OnSphericalChanged(SphericalHelper from, SphericalHelper to, NavigationManager.NavigationMode mode)
-        => m_Current = to;
-
-    private void Fade(bool fadeIn = false)
+    private float OnFadeUI(bool fadeIn)
     {
         if (m_CanvasFade != null)
             StopCoroutine(m_CanvasFade);
 
-        m_CanvasFade = StartCoroutine(PerformFade(fadeIn));
+        m_CanvasFade = StartCoroutine(PerformUIFade(fadeIn));
+        return m_FadeAnimation.GetLastKeyTime();
     }
 
-    private IEnumerator PerformFade(bool fadeIn)
+    private float OnFadeOverlay(bool fadeIn)
     {
-        float from = fadeIn ? 0f : 1f;
-        float to = fadeIn ? 1f : 0f;
+        if (m_CanvasFade != null)
+            StopCoroutine(m_CanvasFade);
 
-        if (fadeIn)
-            m_CanvasGroup.blocksRaycasts = true;
+        m_CanvasFade = StartCoroutine(PerformOverlayFade(fadeIn));
+        return m_FadeAnimation.GetLastKeyTime();
+    }
+
+    private void OnSphericalChanged(SphericalHelper from, SphericalHelper to, NavigationManager.NavigationMode mode)
+        => m_Current = to;
+
+    private IEnumerator PerformUIFade(bool fadeIn)
+    {
+        var alphaFrom = fadeIn ? 0f : 1f;
+        var alphaTo = fadeIn ? 1f : 0f;
 
         float time = 0f;
         while (time < m_FadeAnimation.GetLastKeyTime())
         {
-            m_CanvasGroup.alpha = Mathf.Lerp(from, to, m_FadeAnimation.Evaluate(time));
+            m_CanvasGroup.alpha = Mathf.Lerp(alphaFrom, alphaTo, m_FadeAnimation.Evaluate(time));
             time += Time.deltaTime;
             yield return null;
         }
-        m_CanvasGroup.alpha = to;
+        m_CanvasGroup.alpha = alphaTo;
+    }
 
-        if (!fadeIn)
-            m_CanvasGroup.blocksRaycasts = false;
+    private IEnumerator PerformOverlayFade(bool fadeIn)
+    {
+        var colorFrom = fadeIn ? k_BlockerActiveColor : k_BlockerInactiveColor;
+        var colorTo = fadeIn ? k_BlockerInactiveColor : k_BlockerActiveColor;
+
+        m_Blocker.raycastTarget = true;
+
+        float time = 0f;
+        while (time < m_FadeAnimation.GetLastKeyTime())
+        {
+            m_Blocker.color = Color.Lerp(colorFrom, colorTo, m_FadeAnimation.Evaluate(time));
+            time += Time.deltaTime;
+            yield return null;
+        }
+        m_Blocker.color = colorTo;
+        m_Blocker.raycastTarget = !fadeIn;
     }
 }

@@ -30,6 +30,11 @@ public class CarouselPage : MonoBehaviour
         get => m_CanvasGroup.alpha;
         set => m_CanvasGroup.alpha = value;
     }
+    public bool BlockRaycasts
+    {
+        get => m_CanvasGroup.blocksRaycasts;
+        set => m_CanvasGroup.blocksRaycasts = value;
+    }
 
     [SerializeField]
     private TMP_Text m_Title;

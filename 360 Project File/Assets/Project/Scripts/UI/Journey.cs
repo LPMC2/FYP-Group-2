@@ -40,8 +40,8 @@ public class Journey : CollapsiblePanel
     protected override void OnEnable()
     {
         base.OnEnable();
-        m_JourneyEventChannel.OnEntryCompleted += OnEntryCompleted;
         m_JourneyEventChannel.OnLoadEntries += OnLoadEntries;
+        m_JourneyEventChannel.OnDestinationReached += OnDestinationReached;
         m_PrevButton.onClick.AddListener(PrevItem);
         m_NextButton.onClick.AddListener(NextItem);
     }
@@ -49,15 +49,10 @@ public class Journey : CollapsiblePanel
     protected override void OnDisable()
     {
         base.OnDisable();
-        m_JourneyEventChannel.OnEntryCompleted -= OnEntryCompleted;
         m_JourneyEventChannel.OnLoadEntries -= OnLoadEntries;
+        m_JourneyEventChannel.OnDestinationReached -= OnDestinationReached;
         m_PrevButton.onClick.RemoveListener(PrevItem);
         m_NextButton.onClick.RemoveListener(NextItem);
-    }
-
-    private void OnEntryCompleted(JourneyEntrySO entry)
-    {
-        Debug.Log($"[Journey] '{entry.name}' completed");
     }
 
     private void OnLoadEntries(JourneyEntrySO[] entries)
@@ -68,10 +63,25 @@ public class Journey : CollapsiblePanel
             var instance = Instantiate(m_EntryPrefab, m_EntryRoot);
             instance.Index = i + 1;
             instance.StepKey = entries[i].StepKey;
+            instance.Done = false;
             m_ManagedEntries.Add(entries[i], instance);
         }
         RefeshPosition();
         m_PrevButton.gameObject.SetActive(false);
+    }
+
+    private void OnDestinationReached(MapLandmark landmark)
+    {
+        foreach (var (data, ui) in m_ManagedEntries)
+        {
+            if (data.Done || data.Type != JourneyEntrySO.JourneyType.ReachDestination || data.Destination != landmark)
+                continue;
+
+            data.Done = true;
+            ui.Done = true;
+            m_JourneyEventChannel.OnEntryCompleted?.Invoke(data);
+            MoveToFirstIncomplete();
+        }
     }
 
     public void PrevItem()
@@ -79,6 +89,19 @@ public class Journey : CollapsiblePanel
 
     public void NextItem()
         => NavigateTo(m_CurrentEntry + 1);
+
+    private void MoveToFirstIncomplete()
+    {
+        int index = 0;
+        foreach (var (_, ui) in m_ManagedEntries)
+        {
+            if (!ui.Done)
+                break;
+
+            index++;
+        }
+        NavigateTo(index);
+    }
 
     private void NavigateTo(int index)
     {

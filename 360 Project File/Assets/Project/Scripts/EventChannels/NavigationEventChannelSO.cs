@@ -1,11 +1,10 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 [CreateAssetMenu(menuName = "Events/Navigation")]
 public class NavigationEventChannelSO : ScriptableObject
 {
-    public UnityAction OnNavigationStarted;
-    public UnityAction OnNavigationFinished;
+    public NavigationStartedAction OnNavigationStarted;
+    public NavigationFinishedAction OnNavigationFinished;
     public MapFloorAddedAction OnMapFloorAdded;
     public MapFloorChangedAction OnMapFloorChanged;
     public SphericalChangedAction OnSphericalChanged;
@@ -14,6 +13,8 @@ public class NavigationEventChannelSO : ScriptableObject
     public NavigateAction OnNavigate;
 }
 
+public delegate void NavigationStartedAction(NavigationManager.NavigationMode mode);
+public delegate void NavigationFinishedAction(NavigationManager.NavigationMode mode);
 public delegate void MapFloorAddedAction(MapFloor mapFloor);
 public delegate void MapFloorChangedAction(MapFloor from, MapFloor to, NavigationManager.NavigationMode mode);
 public delegate void SphericalChangedAction(SphericalHelper from, SphericalHelper to, NavigationManager.NavigationMode mode);

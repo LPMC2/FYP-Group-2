@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NavigationManager : MonoBehaviour
@@ -9,6 +10,8 @@ public class NavigationManager : MonoBehaviour
     private Transform m_CameraRig;
     [SerializeField]
     private Transform m_Camera;
+    [SerializeField]
+    private Transform m_Floor;
 
     [Header("Animation")]
     [SerializeField]
@@ -30,13 +33,18 @@ public class NavigationManager : MonoBehaviour
     [SerializeField]
     private NavigationEventChannelSO m_NavigationEventChannel;
     [SerializeField]
+    private NavigationPointUIEventChannelSO m_NavigationPointUIEventChannelSO;
+    [SerializeField]
+    private JourneyEventChannelSO m_JourneyEventChannel;
+    [SerializeField]
     private CameraEventChannelSO m_CameraEventChannel;
 
     private static int s_MapFloorLayer;
     private Dictionary<MapFloor, Dictionary<MapLandmark, SphericalHelper>> m_MapDict;
     private MapFloor m_CurrentMapFloor;
     private SphericalHelper m_CurrentSpherical;
-    private Coroutine m_Move;
+
+    private Coroutine m_Navigation;
 
     private void Awake()
     {
@@ -54,6 +62,12 @@ public class NavigationManager : MonoBehaviour
     {
         m_NavigationEventChannel.OnLoadMap -= OnLoadMap;
         m_NavigationEventChannel.OnNavigate -= OnNavigate;
+    }
+
+    private void Update()
+    {
+        if (m_Floor != null)
+            m_Floor.localEulerAngles = new Vector3(0f, m_Camera.localEulerAngles.y, 0f);
     }
 
     private void OnLoadMap(Map map, MapLandmark startPoint, Vector3 startRotation)
@@ -129,81 +143,81 @@ public class NavigationManager : MonoBehaviour
             toPoint.gameObject.name = $"NavPoint (#{i}: {connection.from.name})";
             toPoint.Destination = from;
             toPoint.Flags = connection.flags;
+            toPoint.UnlockingJourneyEntry = connection.unlockingJourneyEntrySO;
             to.AddNavigationPoint(toPoint);
         }
 
-        OnNavigate(GetSphericalHelper(startPoint), NavigationMode.Teleport);
+        var startSpherical = GetSphericalHelper(startPoint);
+        startSpherical.Alpha = 1f;
+        m_CurrentSpherical = startSpherical;
+        m_NavigationEventChannel.OnSphericalChanged(null, startSpherical, NavigationMode.Teleport);
+
+        var startFloor = GetMapFloor(startSpherical);
+        m_CurrentMapFloor = startFloor;
+        m_NavigationEventChannel.OnMapFloorChanged?.Invoke(null, startFloor, NavigationMode.Teleport);
+
+        m_CameraRig.position = m_CurrentSpherical.transform.position;
         m_CameraEventChannel.OnRotationSnap?.Invoke(startRotation);
     }
 
     private void OnNavigate(SphericalHelper destination, NavigationMode mode)
     {
+        if (m_Navigation != null)
+            StopCoroutine(m_Navigation);
+
         switch (mode)
         {
             case NavigationMode.Move:
-                MoveTowards(destination);
+                m_Navigation = StartCoroutine(PerformMove(destination));
                 break;
             case NavigationMode.Teleport:
-                TeleportTowards(destination);
+                m_Navigation = StartCoroutine(PerformTeleport(destination));
                 break;
         }
+
+        m_JourneyEventChannel.OnDestinationReached?.Invoke(GetMapLandmark(destination));
     }
 
     private MapFloor GetMapFloor(SphericalHelper sphericalHelper)
     {
-        foreach (var mapEntry in m_MapDict)
+        foreach (var (floor, landmarkDict) in m_MapDict)
         {
-            if (!mapEntry.Value.ContainsValue(sphericalHelper))
+            if (!landmarkDict.ContainsValue(sphericalHelper))
                 continue;
 
-            return mapEntry.Key;
+            return floor;
+        }
+        return null;
+    }
+
+    private MapLandmark GetMapLandmark(SphericalHelper sphericalHelper)
+    {
+        foreach (var (_, landmarkDict) in m_MapDict)
+        {
+            if (!landmarkDict.ContainsValue(sphericalHelper))
+                continue;
+
+            return landmarkDict.First(x => x.Value == sphericalHelper).Key;
         }
         return null;
     }
 
     private SphericalHelper GetSphericalHelper(MapLandmark mapLandmark)
     {
-        foreach (var mapEntry in m_MapDict)
+        foreach (var landmarkDict in m_MapDict.Values)
         {
-            if (!mapEntry.Value.ContainsKey(mapLandmark))
+            if (!landmarkDict.ContainsKey(mapLandmark))
                 continue;
 
-            return mapEntry.Value[mapLandmark];
+            return landmarkDict[mapLandmark];
         }
         return null;
     }
 
-    private void MoveTowards(SphericalHelper target)
-    {
-        if (m_Move != null)
-            StopCoroutine(m_Move);
-
-        m_Move = StartCoroutine(PerformMove(target));
-    }
-
-    private void TeleportTowards(SphericalHelper target)
-    {
-        if (m_Move != null)
-        {
-            StopCoroutine(m_Move);
-            m_Move = null;
-        }
-
-        if (m_CurrentSpherical != null)
-            m_CurrentSpherical.Alpha = 0f;
-        target.Alpha = 1f;
-
-        m_CameraRig.position = target.transform.position;
-        var targetFloor = GetMapFloor(target);
-        m_NavigationEventChannel.OnMapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor, NavigationMode.Teleport);
-        m_CurrentMapFloor = targetFloor;
-        m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Teleport);
-        m_CurrentSpherical = target;
-    }
-
     private IEnumerator PerformMove(SphericalHelper target)
     {
-        m_NavigationEventChannel.OnNavigationStarted?.Invoke();
+        m_NavigationEventChannel.OnNavigationStarted?.Invoke(NavigationMode.Move);
+        m_NavigationPointUIEventChannelSO.OnFadeUI?.Invoke(false);
 
         // Camera rotation
         var cameraTransform = m_Camera.transform;
@@ -253,9 +267,37 @@ public class NavigationManager : MonoBehaviour
         m_CurrentSpherical.transform.localScale = target.transform.localScale = Vector3.one;
 
         m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Move);
-        m_NavigationEventChannel.OnNavigationFinished?.Invoke();
+        m_NavigationEventChannel.OnNavigationFinished?.Invoke(NavigationMode.Move);
+        m_NavigationPointUIEventChannelSO.OnFadeUI?.Invoke(true);
 
-        m_Move = null;
+        m_Navigation = null;
+        m_CurrentSpherical = target;
+    }
+
+    private IEnumerator PerformTeleport(SphericalHelper target)
+    {
+        m_NavigationEventChannel.OnNavigationStarted?.Invoke(NavigationMode.Teleport);
+
+        var time = m_NavigationPointUIEventChannelSO.OnFadeOverlay?.Invoke(false);
+        if (time.HasValue)
+            yield return new WaitForSeconds(time.Value);
+
+        m_CurrentSpherical.Alpha = 0f;
+        target.Alpha = 1f;
+        m_CameraRig.position = target.transform.position;
+
+        var targetFloor = GetMapFloor(target);
+        if (m_CurrentMapFloor != targetFloor)
+        {
+            m_NavigationEventChannel.OnMapFloorChanged?.Invoke(m_CurrentMapFloor, targetFloor, NavigationMode.Teleport);
+            m_CurrentMapFloor = targetFloor;
+        }
+
+        m_NavigationEventChannel.OnSphericalChanged?.Invoke(m_CurrentSpherical, target, NavigationMode.Teleport);
+        m_NavigationEventChannel.OnNavigationFinished?.Invoke(NavigationMode.Teleport);
+        m_NavigationPointUIEventChannelSO.OnFadeOverlay?.Invoke(true);
+
+        m_Navigation = null;
         m_CurrentSpherical = target;
     }
 

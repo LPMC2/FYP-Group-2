@@ -16,6 +16,7 @@ public class Map : ScriptableObject
     {
         public MapLandmark from, to;
         public MapConnectionFlags flags;
+        public JourneyEntrySO unlockingJourneyEntrySO;
     }
 
     [System.Flags]

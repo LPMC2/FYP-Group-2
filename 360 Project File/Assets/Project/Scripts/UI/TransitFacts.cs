@@ -46,6 +46,7 @@ public class TransitFacts : MonoBehaviour
             page.TitleKey = entry.titleKey;
             page.ContentKey = entry.bodyKey;
             page.Alpha = 0f;
+            page.BlockRaycasts = false;
             var indicator = Instantiate(m_IndicatorPrefab, m_IndicatorRoot);
             indicator.Active = false;
             m_ManagedPages.Add((page, indicator));
@@ -56,6 +57,7 @@ public class TransitFacts : MonoBehaviour
     {
         var (page, indicator) = m_ManagedPages[m_CurrentPage];
         page.Alpha = 1f;
+        page.BlockRaycasts = true;
         indicator.Active = true;
         m_PrevButton.interactable = false;
     }
@@ -102,8 +104,8 @@ public class TransitFacts : MonoBehaviour
         oldPage.Alpha = 0f;
         newPage.Alpha = 1f;
 
-        oldIndicator.Active = false;
-        newIndicator.Active = true;
+        oldPage.BlockRaycasts = oldIndicator.Active = false;
+        newPage.BlockRaycasts = newIndicator.Active = true;
 
         m_PrevButton.interactable = index != 0;
         m_NextButton.interactable = index != m_ManagedPages.Count - 1;

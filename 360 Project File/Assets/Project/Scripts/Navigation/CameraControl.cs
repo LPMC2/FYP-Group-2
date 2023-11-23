@@ -69,10 +69,10 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    private void OnNavigationStarted()
+    private void OnNavigationStarted(NavigationManager.NavigationMode mode)
         => m_CameraLocked = true;
 
-    private void OnNavigationFinished()
+    private void OnNavigationFinished(NavigationManager.NavigationMode mode)
     {
         OverrideCameraRotation(transform.localEulerAngles);
         m_CameraLocked = false;

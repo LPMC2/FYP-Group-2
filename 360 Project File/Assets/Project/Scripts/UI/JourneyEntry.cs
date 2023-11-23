@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
+using UnityEngine.UI;
 using TMPro;
 
 public class JourneyEntry : MonoBehaviour
@@ -24,4 +25,12 @@ public class JourneyEntry : MonoBehaviour
     }
     [SerializeField]
     private TMP_Text m_Step;
+    [SerializeField]
+    private Image m_DoneImage;
+
+    public bool Done
+    {
+        get => m_DoneImage.enabled;
+        set => m_DoneImage.enabled = value;
+    }
 }
