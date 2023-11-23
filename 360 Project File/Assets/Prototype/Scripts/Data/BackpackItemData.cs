@@ -15,24 +15,28 @@ public class BackpackItemData : MonoBehaviour
         itemObject = itemObj;
     }
 
-    [SerializeField] 
+    [SerializeField]
+    [Tooltip("Will be called when RunItemIdFunction() is Called & use itemId as parameter")]
     private ItemIdEvent functionWithItemId;
     [SerializeField]
+    [Tooltip("Will be called when RunItemObjectFunction() is Called & use itemObject as parameter")]
     private ItemObjectEvent functionWithItemObj;
 
-    public void runItemIdFunction()
+    public void RunItemIdFunction()
     {
         functionWithItemId.Invoke(itemId);
     }
-    public void runItemObjectFunction()
+    public void RunItemObjectFunction()
     {
         functionWithItemObj.Invoke(itemObject);
     }
 
 
     [System.Serializable]
+ 
     public class ItemIdEvent : UnityEvent<int> { }
     [System.Serializable]
+
     public class ItemObjectEvent : UnityEvent<GameObject> { }
 
 }
