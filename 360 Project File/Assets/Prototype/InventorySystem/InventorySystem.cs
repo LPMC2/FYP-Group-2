@@ -79,6 +79,12 @@ public class InventorySystem : MonoBehaviour
         {
             slot[id].item.SlotUI.itemSprite = itemData.item[item].itemSprite;
             slot[id].setName(itemData.item[item].GetItemName());
+            BackpackItemData backpackItemData = SlotPlaceHolder.transform.GetChild(id).GetComponent<BackpackItemData>();
+            if(backpackItemData != null)
+            {
+                backpackItemData.SetItemId(item);
+                backpackItemData.SetItemObject(backpackItemData.gameObject);
+            }
         }
         
         setSlotUI(id);
