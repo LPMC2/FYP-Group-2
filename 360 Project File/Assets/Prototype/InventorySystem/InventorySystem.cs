@@ -32,9 +32,10 @@ public class InventorySystem : MonoBehaviour
     public Slot[] slot;
     [SerializeField]
     private ItemSO itemData;
-
+    public BackpackItemData[] backpackItemDatas { get; private set; }
     private void Start()
     {
+        backpackItemDatas = new BackpackItemData[slot.Length];
         backpack.ContentTransform.transform.GetChild(0).GetComponent<VerticalLayoutGroup>().spacing = -backpack.ContentTransform.GetChild(0).GetComponent<RectTransform>().rect.height / 2f;
         setSlotUI();
         setInitialInventory();
@@ -85,6 +86,7 @@ public class InventorySystem : MonoBehaviour
                 backpackItemData.SetItemId(item);
                 backpackItemData.SetItemObject(backpackItemData.gameObject);
             }
+            backpackItemDatas[id] = backpackItemData;
         }else
         if(item == -1)
         {
