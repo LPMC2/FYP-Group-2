@@ -9,6 +9,8 @@ public class QuizAnsUIManager : MonoBehaviour
     [SerializeField] private int pictureConstraintCount = 2;
     [SerializeField]
     private Vector2 TextSpacing = new Vector2(279.2f, 16.0f);
+    [SerializeField]
+    private float TextLeftSpacing = -163f;
     [SerializeField] private int textConstraintCount = 1;
     private Vector2 multipleChoiceSpacing = new Vector2(432.91f, 16.0f);
     [SerializeField] private int multipleChoiceConstraintCount = 1;
@@ -58,6 +60,7 @@ public class QuizAnsUIManager : MonoBehaviour
                 gridLayout.spacing = TextSpacing;
                 gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 gridLayout.constraintCount = textConstraintCount;
+                gridLayout.padding.left = (int)TextLeftSpacing;
                 if(uiManager != null)
                 {
                     uiManager.AnswerUIObject = uiManager.TextUIObject;

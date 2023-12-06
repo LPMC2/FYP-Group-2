@@ -8,6 +8,9 @@ public class QuizSO : ScriptableObject
     [Header("Setup")]
     public int id;
     public int fullStarsScoreReq = 100;
+    public LocalizableString[] correctText;
+    public LocalizableString[] incorrectText;
+    public LocalizableString[] correctAnsText;
     [Header("Unit: Second")]
     public float timeLimit = 1f;
     [Header("Note: for Language:\n- en -> English\n- zh_HK -> Traditional Chinese\n- zh_CN -> Simplified Chinese")]
@@ -164,6 +167,26 @@ public class QuizSO : ScriptableObject
         }
         return "";
     }
+    public int[] SearchCorrectAnswer(int page)
+    {
+        int[] correctAnswers = new int[0];
+        for(int i=0; i< questions[page].answer.Length; i++)
+        {
+
+            for(int j=0; j<questions[page].inputAnswer.Length;j++)
+            {
+                if(questions[page].answer[i] == questions[page].inputAnswer[j])
+                {
+                    correctAnswers = arrayBehaviour.addArray(correctAnswers);
+                    correctAnswers[correctAnswers.Length - 1] = questions[page].inputAnswer[j];
+                    break;
+                }
+            }
+
+        }
+
+        return correctAnswers;
+    }
     public bool checkSingleAns(int page, bool isAddScore = true)
     {
         
@@ -241,4 +264,19 @@ public class LocalizableString
     public int id;
     [Header("Only for Quiz UI - Answer Type is Picture")]
     public Sprite Image;
+    public static string GetLocalizableString(Language language, LocalizableString[] localizableStrings)
+    {
+        string str = "";
+        foreach(LocalizableString localizableString in localizableStrings)
+        {
+            if(localizableString.language == language)
+            {
+                str = localizableString.text;
+                break;
+            }
+        }
+
+        return str;
+
+    }
 }

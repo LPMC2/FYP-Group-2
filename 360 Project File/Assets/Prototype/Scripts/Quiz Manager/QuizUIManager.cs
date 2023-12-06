@@ -18,7 +18,7 @@ public class QuizUIManager : MonoBehaviour
         Chinese Traditional - zh_HK
         Chinese Simplified - zh_CN
     */
-
+    public static QuizUIManager Singleton;
     [Header("Main UI")]
     [SerializeField] private int page = 0;
     [SerializeField] private GameObject mainQuizCanvas;
@@ -97,10 +97,12 @@ public class QuizUIManager : MonoBehaviour
     [SerializeField] private DataStorage dataStorage;
     private string[] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
     Vector3 contentTransform;
-
+    public static QuizSO QuizSOSingleton;
     int pagelimit = 1;
     void Start()
     {
+        Singleton = this;
+        QuizSOSingleton = quizSO;
         SetupVertical(StartPageUI, 2f);
         timeRemaining = 0;
         quizSO.correctCount = -1;
@@ -292,20 +294,40 @@ public class QuizUIManager : MonoBehaviour
         quizSO.questions[page].inputAnswer = arrayBehaviour.BubbleSortArray(quizSO.questions[page].inputAnswer);
         //Calculate Score
         quizSO.checkSingleAns(page);
+        int[] correctAnswers = quizSO.SearchCorrectAnswer(page);
         for (int a = 0; a < quizSO.questions[page].inputAnswer.Length; a++)
         {
             Animator animatorTarget = targetUI[a].GetComponent<Animator>();
-            
+            animatorTarget.enabled = true;
             if (quizSO.questions[page].inputAnswer[a] != -1)
             {
                 //Show and animate all incorrect / correct answers
                         for (int c = 0; c < quizSO.questions[page].inputAnswer.Length; c++)
                         {
-                            Animator animatorTarget1 = targetUI[c].GetComponent<Animator>();
-                            animatorTarget1.Play("incorrect");
+                    QuizAnsBehaviour quizAnsBehaviour = targetUI[c].GetComponent<QuizAnsBehaviour>();
+                    Animator animatorTarget1 = targetUI[c].GetComponent<Animator>();
+                              quizAnsBehaviour.SetCorrectStateUI(CorrectState.Incorrect);
+                             animatorTarget1.Play("incorrect");
                         }
                         for (int b = 0; b < quizSO.questions[page].answer.Length; b++)
                         {
+                    QuizAnsBehaviour quizAnsBehaviour = ansUI[b].GetComponent<QuizAnsBehaviour>();
+                    bool isCorrect = false;
+                            for(int c=0; c<correctAnswers.Length; c++)
+                              {
+                                   if(quizSO.questions[page].answer[b] == correctAnswers[c])
+                                     {
+                            isCorrect = true;
+                            break;
+                                      }
+                               }
+                            if(isCorrect)
+                               {
+                                quizAnsBehaviour.SetCorrectStateUI(CorrectState.Correct);
+                               } else
+                                {
+                                    quizAnsBehaviour.SetCorrectStateUI(CorrectState.CorrectAnswer);
+                                }
                             Animator animatorAns = ansUI[b].GetComponent<Animator>();
                             animatorAns.Play("correct");
                         }
@@ -586,6 +608,7 @@ public class QuizUIManager : MonoBehaviour
             Debug.Log(i);
             GameObject target = currentContentUI.transform.GetChild(i).gameObject;
             QuizAnsBehaviour targetComponent = target.GetComponent<QuizAnsBehaviour>();
+            targetComponent.SetCorrectStateUI(targetComponent.correctState);
             if (ans.Length >= i)
             {
                 Debug.Log(ans.Length + "/" + i);

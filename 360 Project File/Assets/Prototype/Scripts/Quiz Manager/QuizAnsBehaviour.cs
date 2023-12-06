@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,12 +14,59 @@ public class QuizAnsBehaviour : MonoBehaviour
     [SerializeField] ScoreBehaviour scoreSO;
     [SerializeField] private Sprite selectedSprite;
     [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Color normalColor;
+    [SerializeField] private Color SelectedColor;
+    [SerializeField] private Color correctColor;
+    [SerializeField] private Color incorrectColor;
     [SerializeField] private bool isPressed = false;
+    private GameObject ansIndicatorObject;
+    private GameObject backGround;
+    #region Color Modifier Settings
+    [Header("Color Transition Settings")]
+    private Color startColor;
+    private Color endColor;
+    private Image targetImage;
+    [SerializeField] private float duration = 1f;
+    private bool isActive = false;
+    private float timer = 0f;
+    public CorrectState correctState { get; private set; }
+    public void StartColorTransition(Image target, Color StartColor, Color EndColor)
+    {
+        startColor = StartColor;
+        endColor = EndColor;
+        isActive = true;
+        targetImage = target;
+        timer = 0f;
+        
+    }
+    private void ChangeColor()
+    {
+        if (!isActive) return;
+        timer += Time.deltaTime;
+
+        // Calculate the current color based on the timer and duration
+        float t = Mathf.Clamp01(timer / duration);
+        Color currentColor = Color.Lerp(startColor, endColor, t);
+
+        // Assign the current color to the sprite renderer
+        targetImage.color = currentColor;
+
+        // Check if the color change is complete
+        if (t >= 1f)
+        {
+            timer = 0f;
+            isActive = false;
+        }
+    }
+    #endregion
     public Toggle toggle;
     private Image toggleTargetImage;
     private Button btn;
     private void Start()
     {
+        backGround = GameObjectFinder.GetGameObjectWithTagFromChilds(gameObject, "Bg");
+        ansIndicatorObject = GameObjectFinder.GetGameObjectWithTagFromChilds(gameObject, "Indicator");
+        GetComponent<Animator>().enabled = false;
         if (quizSO.questions[page].AnswerType != AnsType.Multiple_Choice)
         {
             quizSO.questions[page].inputAnswer = new int[1];
@@ -42,19 +90,64 @@ public class QuizAnsBehaviour : MonoBehaviour
         toggle.onValueChanged.AddListener(OnToggleValueChanged);
 
     }
+    public void SetCorrectStateUI(CorrectState correctState)
+    {
+        Image ansIndicatorImage = ansIndicatorObject.GetComponent<Image>();
+        TMP_Text ansIndicatorText = ansIndicatorObject.transform.GetChild(0).GetComponent<TMP_Text>();
+        Outline outline = backGround.GetComponent<Outline>();
+        if (ansIndicatorText == null || ansIndicatorImage == null) return;
+        ansIndicatorObject.SetActive(true);
+        this.correctState = correctState;
+        switch(correctState)
+        {
+            case CorrectState.Correct:
+                ansIndicatorText.text = LocalizableString.GetLocalizableString(QuizUIManager.Singleton.lang, QuizUIManager.QuizSOSingleton.correctText);
+                StartColorTransition(ansIndicatorImage, ansIndicatorImage.color, correctColor);
+                outline.effectColor = correctColor;
+                break;
+            case CorrectState.Incorrect:
+                ansIndicatorText.text = LocalizableString.GetLocalizableString(QuizUIManager.Singleton.lang, QuizUIManager.QuizSOSingleton.incorrectText);
+                StartColorTransition(ansIndicatorImage, ansIndicatorImage.color, incorrectColor);
+                outline.effectColor = incorrectColor;
+                break;
+            case CorrectState.CorrectAnswer:
+                ansIndicatorText.text = LocalizableString.GetLocalizableString(QuizUIManager.Singleton.lang, QuizUIManager.QuizSOSingleton.correctAnsText);
+                StartColorTransition(ansIndicatorImage, ansIndicatorImage.color, correctColor);
+                outline.effectColor = correctColor;
+                break;
+            case CorrectState.Default:
+                ansIndicatorObject.SetActive(false);
+                break;
+        }
+    }
     private void Update()
     {
-        if (quizSO.questions[page].AnswerType == AnsType.Multiple_Choice)
-        {
-            if (isPressed == true)
-            {
-                toggleTargetImage.sprite = selectedSprite;
-            } else if(isPressed == false)
-            {
-                toggleTargetImage.sprite = normalSprite;
-            }
+        //if (quizSO.questions[page].AnswerType == AnsType.Multiple_Choice)
+        //{
+        //    if (isPressed == true)
+        //    {
+        //        toggleTargetImage.col = selectedSprite;
+        //    } else if(isPressed == false)
+        //    {
+        //        toggleTargetImage.sprite = normalSprite;
+        //    }
 
+        //}
+        ChangeColor();
+    }
+    public void SetPressedState(bool value)
+    {
+        isPressed = value;
+        switch(isPressed) 
+        {
+            case true:
+                StartColorTransition(toggleTargetImage ,toggleTargetImage.color, SelectedColor);
+                break;
+            case false:
+                StartColorTransition(toggleTargetImage, toggleTargetImage.color, normalColor);
+                break;
         }
+        
     }
     public void setAns(int id, string targetText, int pg, QuizSO targetQuizSO)
     {
@@ -73,7 +166,7 @@ public class QuizAnsBehaviour : MonoBehaviour
 
         } else
         {
-            isPressed = !isPressed;
+            SetPressedState(!isPressed);
             Button btn = gameObject.GetComponent<Button>();
             if (btn == null) return;
             if (btn.interactable == true && isPressed == false)
@@ -151,4 +244,11 @@ public class QuizAnsBehaviour : MonoBehaviour
     {
         quizSO.checkSingleAns(page);
     }
+}
+public enum CorrectState
+{
+    Default,
+    Correct,
+    Incorrect,
+    CorrectAnswer
 }
