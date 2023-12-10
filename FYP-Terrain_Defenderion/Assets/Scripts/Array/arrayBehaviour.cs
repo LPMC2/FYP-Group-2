@@ -74,33 +74,39 @@ public class arrayBehaviour
     }
     public static T[,] Add2DArray<T>(T[,] arr, ArrayType arrayType = default)
     {
-        int originalRowsize = arr.Length;
-        int originalColsize = arr.GetLength(1);
-        T[,] newArray = new T[originalRowsize, originalColsize];
-        switch(arrayType)
+        int addArrayRow = 0;
+        int addArrayCol = 0;
+        switch (arrayType)
         {
             case ArrayType.row:
-                newArray = new T[originalRowsize + 1, originalColsize];
+                addArrayRow++;
                 break;
             case ArrayType.column:
-                newArray = new T[originalRowsize, originalColsize + 1];
+                addArrayCol++;
                 break;
         }
-        string debug = "List of array:\n";
+        int newRowsize = arr.Length + addArrayRow;
+        int newColsize = arr.GetLength(1) + addArrayCol;
+        int originalRowsize = arr.Length;
+        int originalColsize = arr.GetLength(1);
+        T[,] newArray = new T[newRowsize, newColsize];
+       
         for (int i = 0; i < newArray.Length; i++)
         {
-            for (int j = 0; j < newArray.GetLength(1); i++)
+            for (int j = 0; j < newArray.GetLength(1); j++)
             {
                 if (i < originalRowsize && j< originalColsize)
                 {
-
-                    newArray[i,j] = arr[i,j];
+                    if (arr.Length >= 1 && arr.GetLength(1) >= 1)
+                    {
+                        newArray[i, j] = arr[i, j];
+                    }
                 }
-                debug += newArray[i, j];
+
             }
 
         }
-        Debug.Log(debug);
+        Debug2DArray(newArray);
         return newArray;
     }
     public static T[] ResetArray<T>(T[] originalArray)
@@ -140,6 +146,21 @@ public class arrayBehaviour
             }
         }
         return targetInt;
+    }
+    public static void Debug2DArray<T>(T[,] arr)
+    {
+        #if !UNITY_EDITOR
+        return;
+        #endif
+        string DebugArr = "2D Array List: ";
+        for(int i=0; i< arr.Length;i++)
+        {
+            for(int j=0; j<arr.GetLength(1);j++)
+            {
+                DebugArr += arr[i, j] + "\n";
+            }
+        }
+        Debug.Log(DebugArr);
     }
 }
 public enum ArrayType

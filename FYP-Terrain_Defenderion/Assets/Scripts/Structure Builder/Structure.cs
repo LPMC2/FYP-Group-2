@@ -120,8 +120,8 @@ public class StructureStorage
     }
     public static void ProcessChildObjects(Transform parentObject)
     {
-        GameObject[,] bodyList = new GameObject[0, 0];
-        GameObject[,] headList = new GameObject[0, 0];
+        GameObject[,] bodyList = new GameObject[0, 1];
+        GameObject[,] headList = new GameObject[0, 1];
         GameObject other = null;
         int count = 0;
         foreach (Transform target in parentObject)
@@ -134,17 +134,18 @@ public class StructureStorage
                 switch(gridData.originInteractType) 
                 {
                     case InteractType.Body:
-                        arrayBehaviour.Add2DArray(bodyList, ArrayType.row);
-                        bodyList[count, 0] = target.gameObject;
+                        bodyList= arrayBehaviour.Add2DArray(bodyList, ArrayType.row);
+                        bodyList[bodyList.Length-1, 0] = target.gameObject;
                         break;
                     case InteractType.Head:
-                        arrayBehaviour.Add2DArray(bodyList, ArrayType.row);
-                        headList[count, 0] = target.gameObject;
+                        headList= arrayBehaviour.Add2DArray(headList, ArrayType.row);
+                        headList[headList.Length-1, 0] = target.gameObject;
                         break;
                 }
                 count++;
             }
         }
+
         Debug.Log(count);
          count = 0;
         foreach (Transform child in parentObject)
@@ -165,12 +166,12 @@ public class StructureStorage
                 switch (gridData.originInteractType)
                 {
                     case InteractType.Body:
-                        arrayBehaviour.Add2DArray(bodyList, ArrayType.column);
+                        bodyList = arrayBehaviour.Add2DArray(bodyList, ArrayType.column);
                         int targetId = FindParentId(bodyList, gridData.originGameObjectId);
                         bodyList[targetId, arrayBehaviour.FindIndexFromEmpty2DArray(bodyList, targetId)] = child.gameObject;
                         break;
                     case InteractType.Head:
-                        arrayBehaviour.Add2DArray(headList, ArrayType.column);
+                        headList = arrayBehaviour.Add2DArray(headList, ArrayType.column);
                         int targetId1 = FindParentId(headList, gridData.originGameObjectId);
                         bodyList[targetId1, arrayBehaviour.FindIndexFromEmpty2DArray(headList, targetId1)] = child.gameObject;
                         break;
@@ -234,9 +235,10 @@ public class StructureStorage
     }
     private static int FindParentId(GameObject[,] target, int originGameObjectId)
     {
-        int targetId = default;
+        int targetId = -1;
         for(int i=0; i< target.Length; i++)
         {
+            Debug.Log("Array: " + i);
             if(target[i,0].GetComponent<GridData>().id == originGameObjectId)
             {
                 targetId = i;
