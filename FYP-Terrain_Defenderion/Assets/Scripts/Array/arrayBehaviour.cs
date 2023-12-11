@@ -85,19 +85,20 @@ public class arrayBehaviour
                 addArrayCol++;
                 break;
         }
-        int newRowsize = arr.Length + addArrayRow;
+        int newRowsize = arr.GetLength(0) + addArrayRow;
         int newColsize = arr.GetLength(1) + addArrayCol;
-        int originalRowsize = arr.Length;
+        int originalRowsize = arr.GetLength(0);
         int originalColsize = arr.GetLength(1);
+        Debug.Log(newRowsize + "(" + originalRowsize + ")" + " -- " + newColsize + "(" + originalColsize + ")");
         T[,] newArray = new T[newRowsize, newColsize];
        
-        for (int i = 0; i < newArray.Length; i++)
+        for (int i = 0; i < newArray.GetLength(0); i++)
         {
             for (int j = 0; j < newArray.GetLength(1); j++)
             {
                 if (i < originalRowsize && j< originalColsize)
                 {
-                    if (arr.Length >= 1 && arr.GetLength(1) >= 1)
+                    if (arr.GetLength(0) >= 1 && arr.GetLength(1) >= 1)
                     {
                         newArray[i, j] = arr[i, j];
                     }
@@ -106,7 +107,6 @@ public class arrayBehaviour
             }
 
         }
-        Debug2DArray(newArray);
         return newArray;
     }
     public static T[] ResetArray<T>(T[] originalArray)
@@ -147,18 +147,23 @@ public class arrayBehaviour
         }
         return targetInt;
     }
-    public static void Debug2DArray<T>(T[,] arr)
+    public static void Debug2DArray<T>(T[,] arr, string name = "")
     {
-        #if !UNITY_EDITOR
+#if !UNITY_EDITOR
         return;
-        #endif
-        string DebugArr = "2D Array List: ";
-        for(int i=0; i< arr.Length;i++)
+#endif
+        
+        string DebugArr = "2D Array List " + name +":" +"\n";
+
+        if (arr.GetLength(0) < 1 || arr.GetLength(1) < 1) return;
+        for(int i=0; i< arr.GetLength(0);i++)
         {
             for(int j=0; j<arr.GetLength(1);j++)
             {
+                Debug.Log(i + " - " + j);
                 DebugArr += arr[i, j] + "\n";
             }
+            DebugArr += "----------\n";
         }
         Debug.Log(DebugArr);
     }

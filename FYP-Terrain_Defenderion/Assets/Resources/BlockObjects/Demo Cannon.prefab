@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5758054749942120788}
-  - component: {fileID: 4317251356075744221}
   - component: {fileID: 336408891748576621}
+  - component: {fileID: 2910484625424886871}
+  - component: {fileID: 313929091189323795}
   m_Layer: 0
   m_Name: Demo Cannon
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2342362351553313624}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 715.21326, y: 164.6083, z: 78.00484}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -34,7 +35,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4317251356075744221
+--- !u!114 &336408891748576621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2342362351553313624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4d12787835a1341bba9d5617df92fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originShooter: {fileID: 0}
+  shootObject: {fileID: 0}
+  shootingSpeed: 1
+  objectSpeed: 1
+  shootCount: 1
+  shootSpeedPerCount: 0.1
+--- !u!33 &2910484625424886871
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2342362351553313624}
+  m_Mesh: {fileID: 5060444177187149915, guid: 19c45b1cc87e041469962b1b3e255b14, type: 3}
+--- !u!65 &313929091189323795
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,20 +80,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &336408891748576621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2342362351553313624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee4d12787835a1341bba9d5617df92fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Size: {x: 1, y: 1, z: 1.28}
+  m_Center: {x: 0, y: 0.06, z: -0.31}
 --- !u!1001 &8951205303931109342
 PrefabInstance:
   m_ObjectHideFlags: 0

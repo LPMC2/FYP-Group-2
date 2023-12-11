@@ -29,7 +29,7 @@ public class StructureStorage
     public InteractType originInteractType = default;
     public int originGameObjectId = -1;
     public bool isUtility = false;
-    
+    public bool isDefense = false;
     public StructureStorage ()
     {
         //structureId = structure.structureId;
@@ -160,7 +160,7 @@ public class StructureStorage
             }
             //Find childs of body/head object
 
-            if (gridData != null && gridData.id == -1 && gridData.originGameObjectId > -1)
+            if (gridData != null && gridData.originGameObjectId > -1)
             {
                 GameObject parent = default;
                 switch (gridData.originInteractType)
@@ -168,18 +168,19 @@ public class StructureStorage
                     case InteractType.Body:
                         bodyList = arrayBehaviour.Add2DArray(bodyList, ArrayType.column);
                         int targetId = FindParentId(bodyList, gridData.originGameObjectId);
-                        bodyList[targetId, arrayBehaviour.FindIndexFromEmpty2DArray(bodyList, targetId)] = child.gameObject;
+                        bodyList[targetId, bodyList.GetLength(1)-1] = child.gameObject;
                         break;
                     case InteractType.Head:
                         headList = arrayBehaviour.Add2DArray(headList, ArrayType.column);
                         int targetId1 = FindParentId(headList, gridData.originGameObjectId);
-                        bodyList[targetId1, arrayBehaviour.FindIndexFromEmpty2DArray(headList, targetId1)] = child.gameObject;
+                        bodyList[targetId1, bodyList.GetLength(1) - 1] = child.gameObject;
                         break;
                 }
 
             }
 
-
+            arrayBehaviour.Debug2DArray(bodyList, nameof(bodyList));
+            arrayBehaviour.Debug2DArray(headList, nameof(headList));
             //if (gridData != null && gridData.id == -1 && gridData.originGameObjectId > -1)
             //{
             //    switch (gridData.originInteractType)
@@ -236,7 +237,7 @@ public class StructureStorage
     private static int FindParentId(GameObject[,] target, int originGameObjectId)
     {
         int targetId = -1;
-        for(int i=0; i< target.Length; i++)
+        for(int i=0; i< target.GetLength(0); i++)
         {
             Debug.Log("Array: " + i);
             if(target[i,0].GetComponent<GridData>().id == originGameObjectId)

@@ -377,6 +377,7 @@ public class MeshCombiner : MonoBehaviour
 			}
 			else
 			{
+				if(meshFilters[i+1] != null)
 				DestroyImmediate(meshFilters[i+1].gameObject);
 			}
 		}

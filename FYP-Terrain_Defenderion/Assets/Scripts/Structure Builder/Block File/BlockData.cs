@@ -14,6 +14,7 @@ public class BlockData
     public float captureOrthographicSize = 1f;
     [Header("Utility Type Selection")]
     public bool isUtility = false;
+    public bool isDefense = false;
     public InteractType utilityType = default;
     public Material getBlockTexture()
     {

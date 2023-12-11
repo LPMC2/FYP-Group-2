@@ -480,7 +480,7 @@ public class InventoryBehaviour : MonoBehaviour
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                     RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
                     Image uiImg = instantiatedUI.GetComponent<Image>();
-                    if (blockData.blockData[inventory.slot[id].getId()].isUtility == false)
+                    if (blockData.blockData[inventory.slot[id].getId()].blockModel != null)
                     {
                         float width = rectTransform.rect.width * 2.5f;
                         float height = rectTransform.rect.height * 2.5f;

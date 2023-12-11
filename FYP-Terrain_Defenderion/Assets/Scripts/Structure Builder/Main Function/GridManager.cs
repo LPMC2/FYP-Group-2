@@ -335,7 +335,7 @@ public class GridManager : MonoBehaviour
         Ray ray = new Ray(cameraObject.transform.position, cameraObject.transform.forward);
         hits = Physics.RaycastAll(ray, ContactRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
         Physics.RaycastNonAlloc(ray, hits);
-        HandlePlaceBlock(hits);
+        HandlePlaceBlock(hits, ray);
         Debug.DrawRay(cameraObject.transform.position, cameraObject.transform.forward * ContactRange, Color.red, 5f);
 
     }
@@ -503,8 +503,15 @@ public class GridManager : MonoBehaviour
             outline.OutlineWidth = 0f;
         }
     }
-    private void HandlePlaceBlock(RaycastHit[] hits)
+    private void HandlePlaceBlock(RaycastHit[] hits, Ray ray)
     {
+        //Ray calculation
+        Vector3 rayDirection = -ray.direction;
+        rayDirection.y = 0f;
+        float angle = Mathf.Atan2(rayDirection.z, rayDirection.x) * Mathf.Rad2Deg;
+        float roundedAngle = Mathf.Round(angle / 90f) * 90f;
+        float roundedAngleRad = roundedAngle * Mathf.Deg2Rad;
+        Vector3 rotatedDirection = new Vector3(Mathf.Cos(roundedAngleRad), 0f, Mathf.Sin(roundedAngleRad));
         currentHitObject = null;
         bool stopLoop = false;
         if (hitList != null && hitList.Count > 0) 
@@ -531,7 +538,7 @@ public class GridManager : MonoBehaviour
                             {
                                 stopLoop = true;
                                 currentHitObject = hits[i].collider.gameObject;
-                                HandleBlockPlace(hitList[hitList.Count - 1]);
+                                HandleBlockPlace(hitList[hitList.Count - 1], Quaternion.LookRotation(rotatedDirection));
                                 return;
 
                             }
@@ -548,7 +555,7 @@ public class GridManager : MonoBehaviour
                     if (placeBlockObject != null)
                     {
                         currentHitObject = hitList[hitList.Count - 1];
-                        HandleBlockPlace(hitList[hitList.Count - 1]);
+                        HandleBlockPlace(hitList[hitList.Count - 1], Quaternion.LookRotation(rotatedDirection));
                     }
                 }
             }
@@ -621,11 +628,16 @@ public class GridManager : MonoBehaviour
         
         return false;
     }
-    private void HandleBlockPlace(GameObject hitObject)
+    private void HandleBlockPlace(GameObject hitObject, Quaternion rotation = default)
     {
+        if(rotation == default)
+        {
+            rotation = Quaternion.identity;
+        }
         bool isAffordable = true;
         GridData gridData = hitObject.GetComponent<GridData>();
         GridData hitObjectData = currentHitObject.GetComponent<GridData>();
+        
         if(gridData != null)
         {
             
@@ -635,6 +647,8 @@ public class GridManager : MonoBehaviour
             }
             if(blockData.blockData[currentBlockId].isUtility != true)
             gridData.blockId = CurrentBlockId;
+            gridData.Rotation = new Vector3(rotation.x, rotation.y, rotation.z);
+            gridData.isDefense = blockData.blockData[currentBlockId].isDefense;
         }
         // Handle the trigger collider hit object
         // Example: Call a function on the collided object
@@ -653,7 +667,7 @@ public class GridManager : MonoBehaviour
                 }
                 else
                 {
-                    CreateBlock(hitObject);
+                    CreateBlock(hitObject, rotation);
                     if (currentHitObject != null)
                     {
                         GridData gridDataTarget = currentHitObject.GetComponent<GridData>();
@@ -735,13 +749,14 @@ public class GridManager : MonoBehaviour
             cube.transform.localScale = Vector3.one;
         }
     }
-    void CreateBlock(GameObject parentObj)
+    void CreateBlock(GameObject parentObj, Quaternion rotation)
     {
         if (parentObj.transform.childCount == 0)
         {
             GameObject block = Instantiate(PlaceBlockObject, parentObj.transform.position, Quaternion.identity);
             block.transform.localPosition = parentObj.transform.localPosition;
             block.transform.SetParent(parentObj.transform);
+            block.transform.rotation = rotation;
             block.transform.localPosition = Vector3.zero;
             block.transform.localScale = Vector3.one;
         }
@@ -766,6 +781,10 @@ public class GridManager : MonoBehaviour
                     gridData.id = blockData.GetId();
                     gridData.originInteractType = interactType;
                     gridData.isUtility = true;
+                    if (interactType == InteractType.Body)
+                    {
+                        gridData.originGameObjectId = -1;
+                    }
                 } else 
                 {
                     if (originGridData.id > -1)
@@ -881,19 +900,21 @@ public class GridManager : MonoBehaviour
         int count = 0;
         GameObject structure = new GameObject();
         structure.transform.localPosition = position;
-        GameObject structureRemains = new GameObject();
-        GridData gridDataRemainContent = structureRemains.AddComponent<GridData>();
-        gridDataRemainContent.originInteractType = InteractType.none;
-        GameObject[] utilityList = new GameObject[0];
         int[] utilityIdList = new int[0];
-        structureRemains.transform.position = structure.transform.position;
-        structureRemains.transform.SetParent(structure.transform);
-        int utilityCount = 0;
+
+        List<GameObject> utilityList = new List<GameObject>();
         for (int i=0; i< structureStorage.Length; i++)
         {
             
             GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
-            block.transform.SetParent(structure.transform);
+            block.name = blockData.blockData[structureStorage[i].structureId].blockModel.name + ": " + i;
+            if (structureStorage[i].isUtility == false)
+            {
+                block.transform.SetParent(structure.transform);
+            } else
+            {
+                utilityList.Add(block);
+            }
             count++;
             block.transform.position = new Vector3((structureStorage[i].cellPos[0] - numRows/2) * cellSize, (structureStorage[i].cellPos[1] + cellSize) * cellSize, (structureStorage[i].cellPos[2] - numColumns/2) * cellSize);
             block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
@@ -901,98 +922,15 @@ public class GridManager : MonoBehaviour
 
             GridData gridData = block.AddComponent<GridData>();
             gridData.SetData(structureStorage[i]);
-            //if(gridData.id > -1)
-            //{
-            //    bool haveId = false;
 
-            //    for (int j = 0; j < utilityIdList.Length; j++)
-            //    {
-            //        if (utilityIdList[j] == gridData.id)
-            //        {
-            //            utilityList[j].transform.SetParent(block.transform);
-            //            haveId = true;
-            //        }
-
-            //    }
-            //    if(!haveId)
-            //    {
-            //        GameObject structureContent = new GameObject();
-            //        structureContent.transform.position = structure.transform.position;
-            //        structureContent.transform.SetParent(block.transform);
-            //        utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
-            //        utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
-            //        utilityList[utilityCount] = structureContent;
-            //        utilityIdList[utilityCount] = gridData.id;
-            //        utilityCount++;
-            //    }
-            //} else if(gridData.originInteractType != InteractType.none)
-            //{
-            //    bool haveId = false;
-            //    for(int j = 0; j < utilityIdList.Length; j++)
-            //    {
-            //        Debug.Log(utilityIdList[j] + " : " + gridData.originGameObjectId);
-            //        if(utilityIdList[j] == gridData.originGameObjectId)
-            //        {
-            //            block.transform.SetParent(utilityList[j].transform);
-            //            haveId = true;
-
-            //        }
-
-            //    }
-            //    if(!haveId)
-            //    {
-            //        GameObject structureContent = new GameObject();
-            //        structureContent.transform.position = structure.transform.position;
-            //        structureContent.transform.SetParent(structure.transform);
-            //        utilityList = arrayBehaviour.AddArray<GameObject>(utilityList);
-            //        utilityIdList = arrayBehaviour.AddArray<int>(utilityIdList);
-            //        utilityList[utilityCount] = structureContent;
-            //        utilityIdList[utilityCount] = gridData.originGameObjectId;
-            //        utilityCount++;
-            //    }
-
-            //} else
-            //{
-            //    block.transform.SetParent(structureRemains.transform);
-            //}
 
         }
 
-        //Ensure all objects are in correct parent object
-        //foreach(Transform childTransform in structure.transform)
-        //{
-        //    GridData childGridData = childTransform.GetComponent<GridData>();
-        //    if(childTransform.childCount == 0 && childGridData.id == -1)
-        //    {
-        //        for(int i=0; i< utilityIdList.Length; i++)
-        //        {
-        //            if(utilityIdList[i] == childGridData.originGameObjectId)
-        //            {
-        //                childTransform.SetParent(utilityList[i].transform);
-        //            }
-        //        }
-        //    }
-        //    if(childGridData.id > -1 && childGridData.originInteractType == InteractType.Head)
-        //    {
-        //        for (int i = 0; i < utilityIdList.Length; i++)
-        //        {
-        //            if (utilityIdList[i] == childGridData.originGameObjectId && utilityList[i].GetComponentInParent<GridData>().originInteractType == InteractType.Body)
-        //            {
-        //                childTransform.SetParent(utilityList[i].transform.parent);
-        //            }
-        //        }
-        //    }
-        //    foreach (Transform childContent in childTransform) {
-        //        CombineGameObjects(childContent.gameObject);
-        //    }
-        //}
-        StructureStorage.ProcessChildObjects(structure.transform);
-        arrayBehaviour.DebugArray<int>(utilityIdList);
-        arrayBehaviour.DebugArray<GameObject>(utilityList);
-        //StructureStorage.SetParentFromStructureId(structureStorage, structure, InteractType.Body);
-        //StructureStorage.SetParentFromStructureId(structureStorage, structure, InteractType.Head);
-        
-        
+        CombineGameObjects(structure);
+        foreach(GameObject gameObject in utilityList)
+        {
+            gameObject.transform.SetParent(structure.transform);
+        }
 
 
         Debug.Log("Count: " + count);
@@ -1004,11 +942,13 @@ public class GridManager : MonoBehaviour
         meshCombiner.CreateMultiMaterialMesh = true;
         meshCombiner.DestroyCombinedChildren = true;
         meshCombiner.CombineMeshes(true);
+        
         Destroy(meshCombiner);
         MeshCollider meshCollider = parentObject.AddComponent<MeshCollider>();
         MeshFilter meshFilter = parentObject.GetComponent<MeshFilter>();
         meshCollider.sharedMesh = meshFilter.sharedMesh;
-        meshCollider.convex = true;
+        meshCollider.convex = false;
+        meshCollider.providesContacts = true;
     }
     public void GenerateStructureWithGrid(string filePath = default)
     {

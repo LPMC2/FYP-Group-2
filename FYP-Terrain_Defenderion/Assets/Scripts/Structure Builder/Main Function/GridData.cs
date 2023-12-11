@@ -16,6 +16,7 @@ public class GridData : MonoBehaviour
     public InteractType originInteractType = default;
     public int originGameObjectId = -1;
     public bool isUtility = false;
+    public bool isDefense = false;
     public void reset()
     {
         blockId = -1;
@@ -42,6 +43,7 @@ public class GridData : MonoBehaviour
         originInteractType = structureStorage.originInteractType;
         originGameObjectId = structureStorage.originGameObjectId;
         isUtility = structureStorage.isUtility;
+        isDefense = structureStorage.isDefense;
     }
 
 }
