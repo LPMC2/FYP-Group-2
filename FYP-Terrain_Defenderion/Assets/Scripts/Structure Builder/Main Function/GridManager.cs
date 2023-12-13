@@ -628,6 +628,15 @@ public class GridManager : MonoBehaviour
         
         return false;
     }
+    float NormalizeAngle(float angle)
+    {
+        if (angle > 180f)
+        {
+            angle -= 360f;
+        }
+
+        return angle;
+    }
     private void HandleBlockPlace(GameObject hitObject, Quaternion rotation = default)
     {
         if(rotation == default)
@@ -640,14 +649,17 @@ public class GridManager : MonoBehaviour
         
         if(gridData != null)
         {
-            
-            if(tokenManager != null)
+            Vector3 eulerRotation = rotation.eulerAngles;
+            eulerRotation.x = NormalizeAngle(eulerRotation.x);
+            eulerRotation.y = NormalizeAngle(eulerRotation.y);
+            eulerRotation.z = NormalizeAngle(eulerRotation.z);
+            if (tokenManager != null)
             {
                 isAffordable = isTokenAffordable(tokenManager.GetTokenCost(currentBlockId), gridData);
             }
             if(blockData.blockData[currentBlockId].isUtility != true)
             gridData.blockId = CurrentBlockId;
-            gridData.Rotation = new Vector3(rotation.x, rotation.y, rotation.z);
+            gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
             gridData.isDefense = blockData.blockData[currentBlockId].isDefense;
         }
         // Handle the trigger collider hit object
