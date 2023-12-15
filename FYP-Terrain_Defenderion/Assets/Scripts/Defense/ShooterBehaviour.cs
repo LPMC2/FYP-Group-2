@@ -18,7 +18,10 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private bool isActive = false;
     [SerializeField] private float range = 10f;
     [SerializeField] private GameObject target;
+    [SerializeField] private float damageMultiplier = 1f;
     [SerializeField] private LayerMask targetLayer;
+    [SerializeField]
+    private LayerMask m_HitLayer;
     private bool isRotating = false; // Track if the shooter is currently rotating
     private bool isFiring = false;
     private bool isCD = false; // Track if shooting is in progress
@@ -109,7 +112,26 @@ public class ShooterBehaviour : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, range, targetLayer);
         if (colliders.Length > 0)
         {
-            target = colliders[0].gameObject;
+            float closestDistance = Mathf.Infinity;
+            GameObject closestObject = null;
+
+            foreach (Collider collider in colliders)
+            {
+                float distance = Vector3.Distance(transform.position, collider.transform.position);
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestObject = collider.gameObject;
+                }
+            }
+
+            if (closestObject != null)
+            {
+                if (target == null || target.activeInHierarchy == false)
+                    target = colliders[0].gameObject;
+            }
+           
         }
         else
         {
@@ -180,7 +202,7 @@ public class ShooterBehaviour : MonoBehaviour
 
                     GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
                     Projectile projectile = bullet.GetComponent<Projectile>();
-                    projectile.InitializeProjectile(-rotateObject.transform.forward, 1, default);
+                    projectile.InitializeProjectile(-rotateObject.transform.forward, 1,damageMultiplier, default);
                     if (shootCount > 1)
                         yield return new WaitForSeconds(shootSpeedPerCount);
                 }

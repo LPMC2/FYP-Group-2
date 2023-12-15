@@ -10,9 +10,13 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     private bool m_isPiercing = false;
     [SerializeField]
-    private UnityEvent m_HitFunction;
+    [Tooltip("This unityevent will be invoked and use the collided gameobject as the parameter when hit")]
+    private UnityEvent<GameObject> m_HitFunction;
+    [SerializeField]
+    private LayerMask m_HitLayer;
     public GameObject ParticleEffect;
-    private float damage;
+    [SerializeField]
+    private float damage = 1f;
     private GameObject target;
     private LayerMask obstacleMask;
     private GameObject enemy;
@@ -73,11 +77,15 @@ public class Projectile : MonoBehaviour
         this.obstacleMask = obstacleMask;
     }
 
-    public void InitializeProjectile(Vector3 direction,float speedMultiplier, ProjectileType projectileType = default)
+    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default)
     {
         if(projectileType != default)
         {
             this.projectileType = projectileType;
+        }
+        if(damageMultiplier != default)
+        {
+            damage *= damageMultiplier;
         }
         this.direction = direction;
          speed *= speedMultiplier;
@@ -92,7 +100,10 @@ public class Projectile : MonoBehaviour
         }
         Destroy(gameObject, maxTime);
     }
-
+    private bool IsLayerInMask(int layer, LayerMask layerMask)
+    {
+        return layerMask == (layerMask | (1 << layer));
+    }
     public void ShootStraight()
     {
         if (projectileType == ProjectileType.StraightForward)
@@ -134,13 +145,22 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        m_HitFunction.Invoke();
-      if(m_isPiercing)
+        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer))
+        {
+            return;
+        }
+        m_HitFunction.Invoke(other.gameObject);
+        HealthBehaviour healthBehaviour = other.GetComponent<HealthBehaviour>();
+        if (healthBehaviour != null)
+        {
+            Debug.Log("HIt");
+            healthBehaviour.TakeDamage(damage);
+        }
+      if(!m_isPiercing)
         {
             Destroy(gameObject);
         }
     }
-
 
 
 }
