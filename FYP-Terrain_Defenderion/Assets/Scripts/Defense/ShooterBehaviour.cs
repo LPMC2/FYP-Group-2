@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ShooterBehaviour : MonoBehaviour
 {
+    [SerializeField] private ShootType bulletType;
     [SerializeField] private GameObject originShooter;
     [SerializeField] private GameObject shootObject;
     [SerializeField] private GameObject HeadObject;
@@ -60,7 +61,7 @@ public class ShooterBehaviour : MonoBehaviour
             FindTarget();
             if (target != null && IsTargetInRange(target))
             {
-                Quaternion newRotation = Quaternion.LookRotation(rotateObject.transform.position - target.transform.position);
+                Quaternion newRotation = Quaternion.LookRotation( target.transform.position - rotateObject.transform.position);
                 if (isRotating)
                 {
                     if (mainTargetRotation != newRotation)
@@ -200,9 +201,23 @@ public class ShooterBehaviour : MonoBehaviour
                         yield break; // Stop shooting if target is null or out of range
                     }
 
-                    GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
-                    Projectile projectile = bullet.GetComponent<Projectile>();
-                    projectile.InitializeProjectile(-rotateObject.transform.forward, 1,damageMultiplier, default);
+                    switch(bulletType)
+                    {
+                        case ShootType.ForwardObject:
+                            FireBullet(ProjectileType.StraightForward);
+                            break;
+                        case ShootType.MotionObject:
+                            FireBullet(ProjectileType.InstantForce);
+                            break;
+                        case ShootType.Ray:
+                            LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
+                            if(laserBehaviour != null)
+                            {
+                                laserBehaviour.fire(damageMultiplier);
+                            }
+                            break;
+                    }
+
                     if (shootCount > 1)
                         yield return new WaitForSeconds(shootSpeedPerCount);
                 }
@@ -222,4 +237,17 @@ public class ShooterBehaviour : MonoBehaviour
         target = null;
         isRotating = false;
     }
+    private void FireBullet(ProjectileType projectileType)
+    {
+        GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
+        Projectile projectile = bullet.GetComponent<Projectile>();
+        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType);
+
+    }
+}
+public enum ShootType
+{
+    ForwardObject,
+    MotionObject,
+    Ray
 }

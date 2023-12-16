@@ -13,6 +13,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GridGenerator gridGenerator;
     [SerializeField] private GridUIManager gridUIManager;
     [SerializeField] private GridInputManager gridInputManager;
+    [SerializeField] private LayerMask GridLayer;
     [Header("Input Settings")]
     [SerializeField] private KeyCode openMenuKey = KeyCode.M;
     [Header("User Settings")]
@@ -265,11 +266,11 @@ public class GridManager : MonoBehaviour
                     cellInteractable.transform.SetParent(gridContainer.transform);
                     cellVisuals[row, col] = cellInteractable;
 
-                    if (height > -1 && cellInteractable != null)
+                    if (height > 0 && cellInteractable != null)
                     {
                         cellInteractable.SetActive(false);
                     }
-
+                    gridObjects.Add(cellInteractable);
                     count++;
                 }
             }
@@ -315,15 +316,19 @@ public class GridManager : MonoBehaviour
         }
         UpdateLoadGrid();
     }
+    List<GameObject> gridObjects = new List<GameObject>();
     private void UpdateLoadGrid()
     {
+
         foreach (Transform target in gridContainer.transform)
         {
             float distance = Vector3.Distance(cameraObject.transform.position, target.position);
-            if(distance <= ContactRange && !target.gameObject.activeInHierarchy)
+            if (distance <= ContactRange && !target.gameObject.activeInHierarchy)
             {
                 target.gameObject.SetActive(true);
-            } else if(distance > ContactRange && target.childCount == 0 && target.gameObject.activeInHierarchy)
+                
+            }
+            else if (distance > ContactRange && target.childCount == 0 && target.gameObject.activeInHierarchy)
             {
                 target.gameObject.SetActive(false);
             }

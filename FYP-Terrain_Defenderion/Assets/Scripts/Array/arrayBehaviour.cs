@@ -167,6 +167,18 @@ public class arrayBehaviour
         }
         Debug.Log(DebugArr);
     }
+
+    public static bool ArrayContainsValue<T>(T[] arr, T value)
+    {
+        for(int i=0; i< arr.Length;i++)
+        {
+            if (EqualityComparer<T>.Default.Equals(arr[i], value))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 public enum ArrayType
 {

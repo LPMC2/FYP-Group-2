@@ -9,6 +9,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private HealthBarType m_healthBarType;
     [SerializeField] private bool isDynamicHealthBar = false;
     [SerializeField] private float health = 100f;
+    [SerializeField] private float hitTime = 0.1f;
     private float initialHealth;
     private float damage = 0;
     public GameObject healthBarPrefab;
@@ -22,7 +23,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private float chipSpeed = 2f;
     [SerializeField] private AudioClip HurtSound;
     [SerializeField] private bool Invincible = false;
-    
+    private bool isHit = false;
     public Image frontHealthBar;
     public Image backHealthBar;
     private Animator MobAnimator;
@@ -67,9 +68,15 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             lerpTimer = 0f;
         }
     }
-
+    private IEnumerator HitEnumerator()
+    {
+        isHit = true;
+        yield return new WaitForSeconds(hitTime);
+        isHit = false;
+    }
     public void TakeDamage(float damage)
     {
+        if (isHit) return;
         if (audioSource != null)
         {
             audioSource.PlayOneShot(HurtSound, 1);
@@ -109,7 +116,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             }
         
         }
-
+        StartCoroutine(HitEnumerator());
     }
 
     private void UpdateHealthBar()
