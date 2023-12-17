@@ -30,6 +30,20 @@ public class GridData : MonoBehaviour
         
         isUtility = false;
     }
+    public void SetData(int BlockID, Vector3 pos, Vector3 rotation, Vector3 scale, int TokenCost, int ID, InteractType type, int originID, bool isUtility, bool isDefense)
+    {
+        blockId = BlockID;
+        SetPosition(pos);
+        Rotation = rotation;
+        Scale = scale;
+        tokenCost = TokenCost;
+        id = ID;
+        originInteractType = type;
+        originGameObjectId = originID;
+        this.isUtility = isUtility;
+        this.isDefense = isDefense;
+
+    }
     public void SetData(StructureStorage structureStorage)
     {
         cellX = (int)structureStorage.cellPos[0];
@@ -45,7 +59,12 @@ public class GridData : MonoBehaviour
         isUtility = structureStorage.isUtility;
         isDefense = structureStorage.isDefense;
     }
-
+    public void SetPosition(Vector3 position)
+    {
+        cellX = (int)position.x;
+        cellY = (int)position.z;
+        cellHeight = (int)position.y;
+    }
 }
 public enum InteractType
 {

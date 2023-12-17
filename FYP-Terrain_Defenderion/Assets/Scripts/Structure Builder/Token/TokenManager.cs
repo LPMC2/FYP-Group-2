@@ -28,7 +28,7 @@ public class TokenManager : MonoBehaviour
     {
         initialTokens = tokens;
     }
-    public int GetTokenCost(int blockID)
+    public static int GetTokenCost(int blockID)
     {
         BlockSO blockData = BlockManager.BlockData;
         int cost = 0;

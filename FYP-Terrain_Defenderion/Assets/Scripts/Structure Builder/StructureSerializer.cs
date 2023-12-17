@@ -43,7 +43,7 @@ public static class StructureSerializer
                 {
                     if (gridData.blockId >= 0)
                     {
-                        Debug.Log(gridData.blockId + ": " + gridCell.gameObject);
+                        //Debug.Log(gridData.blockId + ": " + gridCell.gameObject);
                         StructureStorage structureStorage = new StructureStorage();
 
                         structureStorage.structureId = gridData.blockId;
@@ -60,8 +60,9 @@ public static class StructureSerializer
                         structureStorage.tokenCost = gridData.tokenCost;
                         structureStorage.id = gridData.id;
                         structureStorage.isUtility = gridData.isUtility;
+                        structureStorage.isDefense = gridData.isDefense;
                         structureStorage.originGameObjectId = gridData.originGameObjectId;
-                        Debug.Log(structureStorage.originGameObjectId +" / " +gridData.originGameObjectId);
+                        //Debug.Log(structureStorage.originGameObjectId +" / " +gridData.originGameObjectId);
                         structureStorage.originInteractType = gridData.originInteractType;
                         structureStorages.Add(structureStorage);
                     }

@@ -133,7 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7008896}
   - component: {fileID: 7008897}
-  - component: {fileID: 7008898}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -172,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3fc2a3b3a673c54f870328810705de9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridGenerator: {fileID: 0}
+  gridGenerator: {fileID: 389179041}
   gridUIManager: {fileID: 0}
   gridInputManager: {fileID: 0}
   GridLayer:
@@ -182,6 +181,7 @@ MonoBehaviour:
   player: {fileID: 389179032}
   cameraObject: {fileID: 1851295853}
   displayActionBar: {fileID: 374998838}
+  gridPlane: {fileID: 903880806}
   captureCamera: {fileID: 1010875998}
   tokenAmountTextDisplay: {fileID: 1281382417}
   tempStructureImg: {fileID: 623138728}
@@ -193,12 +193,12 @@ MonoBehaviour:
   numRows: 25
   numColumns: 25
   numHeight: 25
-  cellSize: 0.5
+  cellSize: 1
   gridContainer: {fileID: 2120980749}
   gridBlockObj: {fileID: 42713721120813818, guid: de936d7c6f4770540b047cf2d28b4edd, type: 3}
   gridVisualLayer: {fileID: 6367932011207324742}
   gridVisibleObj: {fileID: 6367932011207324742}
-  ContactRange: 3
+  ContactRange: 20
   placeBlockObject: {fileID: 6062487747859630790, guid: 0983b14fd90e94295ac983ccf4c55307, type: 3}
   currentBlockId: 0
   menuObj: {fileID: 917929487}
@@ -208,22 +208,6 @@ MonoBehaviour:
   placeCooldown: 0.05
   breakCooldown: 0.05
   currentHitObject: {fileID: 0}
---- !u!114 &7008898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7008894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcb8a0749bdd8914480b8aa946c1a5e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numRows: 25
-  numColumns: 25
-  numHeight: 25
-  cellSize: 0.5
 --- !u!1 &25314152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,13 +1608,13 @@ GameObject:
   - component: {fileID: 354492394}
   - component: {fileID: 354492393}
   - component: {fileID: 354492392}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &354492392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1675,7 +1659,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.0001, y: 1.0001, z: 1.0001}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &354492394
 MeshRenderer:
@@ -2179,6 +2163,7 @@ GameObject:
   - component: {fileID: 389179039}
   - component: {fileID: 389179038}
   - component: {fileID: 389179040}
+  - component: {fileID: 389179041}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2372,6 +2357,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tokens: 10000
+--- !u!114 &389179041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389179032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcb8a0749bdd8914480b8aa946c1a5e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 1851295855}
+  buildableSurfacesLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  blockTemplatePrefab: {fileID: 1529717368}
+  blockPrefab: {fileID: 354492391}
+  templateMaterial: {fileID: -8474651742996372913, guid: b25799bb1753a9146ba64dbd7b29703d, type: 3}
+  numRows: 0
+  numColumns: 0
+  numHeight: 0
+  cellSize: 0
 --- !u!1 &409416387
 GameObject:
   m_ObjectHideFlags: 0
@@ -3117,7 +3125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &599353910
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3873,7 +3881,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.5}
   m_SizeDelta: {x: 5, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &795464900
@@ -4424,9 +4432,9 @@ GameObject:
   - component: {fileID: 903880809}
   - component: {fileID: 903880808}
   - component: {fileID: 903880807}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: GridPlane
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4511,8 +4519,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 903880806}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 2.5, y: 1, z: 2.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7008896}
@@ -4957,7 +4965,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11.21
+  orthographic size: 20
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -5401,7 +5409,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1108955336
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5712,7 +5720,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1181875398
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7634,7 +7642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2342362351553313624, guid: c4e5a0da7ce61af46acea0e89abf386c, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2787178420702567865, guid: c4e5a0da7ce61af46acea0e89abf386c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8223,7 +8231,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1815611463}
-  - component: {fileID: 1815611462}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -8231,18 +8238,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1815611462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815611461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 815b957e90d3fda4dade601616b0ab82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1815611463
 Transform:
   m_ObjectHideFlags: 0
@@ -9235,7 +9230,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2120980750}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}

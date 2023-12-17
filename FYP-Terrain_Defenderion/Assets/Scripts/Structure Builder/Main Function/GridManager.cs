@@ -21,6 +21,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
+    [SerializeField] private GameObject gridPlane;
     public Camera captureCamera;
     [Header("Token Settings")]
     [SerializeField] private GameObject tokenAmountTextDisplay;
@@ -37,7 +38,9 @@ public class GridManager : MonoBehaviour
     public int numColumns = 5;
     public int numHeight = 5;
     public float cellSize = 1f;
-
+    [SerializeField] private int m_MaxDefenseCount = 10;
+    private int defenseCount = 0;
+    public int MaxDefenseCount { get { return m_MaxDefenseCount; } }
     public GameObject gridContainer;
     [SerializeField] private GameObject gridBlockObj;
     [SerializeField] private GameObject gridVisualLayer;
@@ -89,6 +92,7 @@ public class GridManager : MonoBehaviour
     private bool canBreak = true; // Flag to track if breaking is allowed
     [SerializeField] private float placeCooldown = 0.05f; // Cooldown duration for placing (in seconds)
     [SerializeField] private float breakCooldown = 0.05f; // Cooldown duration for breaking (in seconds)
+    public float BreakCoolDown { get {return breakCooldown; } }
     private float placeTimer = 0.0f; // Timer for placing cooldown
     private float breakTimer = 0.0f; // Timer for breaking cooldown
     private GridCell[,] grid;
@@ -98,7 +102,6 @@ public class GridManager : MonoBehaviour
     private BlockSO blockData;
     private TokenManager tokenManager;
     [SerializeField] private GameObject currentHitObject;
-    
     #region Menu UI
     public void SetSaveMenuImg()
     {
@@ -187,11 +190,13 @@ public class GridManager : MonoBehaviour
     {
         blockData = BlockManager.BlockData;
         gridInputManager = gameObject.GetComponent<GridInputManager>();
-        gridGenerator = gameObject.GetComponent<GridGenerator>();
+
         gridUIManager = gameObject.GetComponent<GridUIManager>();
     }
     private void Start()
     {
+        
+        gridGenerator.SetGridGenerator(this,blockData, currentBlockId, numRows, numColumns, numHeight, cellSize, gridContainer.transform, cameraObject.transform, ContactRange);
         tokenManager = player.GetComponent<TokenManager>();
         if (tokenManager != null)
         {
@@ -201,7 +206,7 @@ public class GridManager : MonoBehaviour
         {
             CreateGrid();
             CreateVisualGrid();
-            CreateInteractableGrid();
+            //CreateInteractableGrid();
         }
     }
     T GetSecondToLastItem<T>(List<T> list)
@@ -233,6 +238,7 @@ public class GridManager : MonoBehaviour
         SpriteRenderer spriteRenderer = gridVisibleObj.GetComponent<SpriteRenderer>();
         rectTransform.localScale = new Vector3(cellSize,cellSize, cellSize);
         spriteRenderer.size = new Vector2(numRows, numColumns);
+        gridPlane.transform.localScale = new Vector3(numRows / 10f, 1f, numColumns / 10f);
         //for(int row = 0; row < numRows; row++)
         //{
         //    for (int col = 0; col < numColumns; col++)
@@ -305,16 +311,18 @@ public class GridManager : MonoBehaviour
         PerformOutlineRaycast();
         if (Input.GetMouseButtonDown(1) && canPlace)
         {
-            PerformPlaceRaycast();
+            //gridGenerator.BuildBlock(placeBlockObject, gridContainer.transform, cameraObject.transform, ContactRange);
+            //PerformPlaceRaycast();
             canPlace = false;
         }
 
         if (Input.GetMouseButtonDown(0) && canBreak)
         {
-            PerformBreakRaycast();
+            //gridGenerator.DestroyBlock(cameraObject.transform, ContactRange);
+            //PerformBreakRaycast();
             canBreak = false;
         }
-        UpdateLoadGrid();
+        //UpdateLoadGrid();
     }
     List<GameObject> gridObjects = new List<GameObject>();
     private void UpdateLoadGrid()
@@ -633,7 +641,21 @@ public class GridManager : MonoBehaviour
         
         return false;
     }
-    float NormalizeAngle(float angle)
+    public void SetFadeinText(string text, Color color = default)
+    {
+        if (color == default)
+        {
+            color = Color.red;
+        }
+        InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
+        if (inventoryBehaviour != null)
+        {
+
+                inventoryBehaviour.StartFadeInText(text, color);
+            
+        }
+    }
+    public static float NormalizeAngle(float angle)
     {
         if (angle > 180f)
         {
@@ -660,7 +682,7 @@ public class GridManager : MonoBehaviour
             eulerRotation.z = NormalizeAngle(eulerRotation.z);
             if (tokenManager != null)
             {
-                isAffordable = isTokenAffordable(tokenManager.GetTokenCost(currentBlockId), gridData);
+                isAffordable = isTokenAffordable(TokenManager.GetTokenCost(currentBlockId), gridData);
             }
             if(blockData.blockData[currentBlockId].isUtility != true)
             gridData.blockId = CurrentBlockId;
@@ -755,6 +777,15 @@ public class GridManager : MonoBehaviour
         Debug.Log("Placed blocks: " + count);
         Destroy(hitObject.transform.GetChild(0).gameObject);
     }
+    public void UpdateToken(int amount)
+    {
+        TokenManager tokenManager = player.GetComponent<TokenManager>();
+        if (tokenManager != null)
+        {
+            tokenManager.addTokens(amount);
+            UpdateTokenDisplay(tokenManager.getTokens());
+        }
+    }
     void CreateCube(GameObject parentObj)
     {
         if (parentObj.transform.childCount == 0)
@@ -823,18 +854,10 @@ public class GridManager : MonoBehaviour
     }
     public void ResetGrid()
     {
+        defenseCount = 0;
         foreach (Transform child in gridContainer.transform)
         {
-            GridData gridData = child.GetComponent<GridData>();
-            gridData.reset();
-            if(child.childCount > 0)
-            {
-                Destroy(child.GetChild(0).gameObject);
-            }
-            if (gridData.cellHeight != 0)
-            {
-                child.gameObject.SetActive(false);
-            }
+            Destroy(child.gameObject);
         }
     }
     private void ToggleCellState(int row, int col)
@@ -877,6 +900,27 @@ public class GridManager : MonoBehaviour
 
            
         }
+    }
+    public void AddDefense(int value)
+    {
+        defenseCount += value;
+    }
+    public bool IsMaxDefenseReached(int blockId)
+    {
+        if(blockData.blockData[blockId].isDefense)
+        {
+            if (defenseCount < m_MaxDefenseCount)
+            {
+                defenseCount++;
+                return false;
+            }
+            else
+            {
+                SetFadeinText("Max Defense Reached! (" + m_MaxDefenseCount + ")");
+                return true;
+            }
+        }
+        return false;
     }
     public void LoadStructure(string filePath = default)
     {
@@ -981,27 +1025,17 @@ public class GridManager : MonoBehaviour
         }
         tokenManager.setTokens(tokenManager.initialTokens);
         int cost = 0;
+        ResetGrid();
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
-        foreach(Transform child in gridContainer.transform)
-        {
-            child.gameObject.SetActive(true);
-            GridData gridData = child.GetComponent<GridData>();
-            gridData.reset();
-            if (child.childCount > 0)
-            {
-                Destroy(child.transform.GetChild(0).gameObject);
-            }
+
             foreach (StructureStorage structureStorage in structureStorages)
             {
-                
-                if (gridData.cellX == structureStorage.cellPos[0] && gridData.cellHeight == structureStorage.cellPos[1] && gridData.cellY == structureStorage.cellPos[2])
-                {
-                    GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].blockModel, Vector3.zero, Quaternion.identity);
-                    block.transform.localPosition = child.transform.position;
-                    block.transform.SetParent(child.transform);
+
+                    GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].blockModel, Vector3.zero, Quaternion.identity, gridContainer.transform);
+                    block.transform.position = new Vector3(structureStorage.cellPos[0], structureStorage.cellPos[1], structureStorage.cellPos[2]);
                     block.transform.eulerAngles = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
                     block.transform.localScale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
-
+                    GridData gridData = block.AddComponent<GridData>();
                     gridData.isAutoRotatable = structureStorage.isAutoRotatable;
                     gridData.cellX = (int)structureStorage.cellPos[0];
                     gridData.cellY = (int)structureStorage.cellPos[2];
@@ -1011,19 +1045,31 @@ public class GridManager : MonoBehaviour
                     gridData.Scale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
                     gridData.tokenCost = structureStorage.tokenCost;
                     gridData.isUtility = structureStorage.isUtility;
+                    gridData.isDefense = structureStorage.isDefense;
+            if(gridData.isDefense)
+            {
+                defenseCount--;
+            }
                     gridData.id = structureStorage.id;
-                    
+                    block.tag = "Grid";
+                    block.layer = LayerMask.NameToLayer("Grid");
                     gridData.originGameObjectId = structureStorage.originGameObjectId;
                     gridData.originInteractType = structureStorage.originInteractType;
                     cost += structureStorage.tokenCost;
-                }
-               
-            }
-            if(child.childCount == 0)
+            BoxCollider boxCollider = block.GetComponent<BoxCollider>();
+            if(boxCollider!= null)
             {
-                child.gameObject.SetActive(false);
+                boxCollider.size += new Vector3(0.0001f, 0.0001f, 0.0001f);
             }
-        }
+            MeshRenderer meshRenderer = block.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            }
+
+        
         isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath));
     }
     public void UpdateTokenDisplay(int newAmount)
