@@ -21,6 +21,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     [Header("Display Settings")]
     [SerializeField] private GameObject displayActionBar;
+    [SerializeField] private GameObject displayDefenseCount;
     [SerializeField] private GameObject gridPlane;
     public Camera captureCamera;
     [Header("Token Settings")]
@@ -77,16 +78,20 @@ public class GridManager : MonoBehaviour
     #region isEditable Toggler
     public void ToggleIsEditable(bool state = default)
     {
+        InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
         if (state == default)
         {
             isEditable = !isEditable;
             gridGenerator.BuildMode = isEditable;
             isMenuOpen = !isEditable;
+            inventoryBehaviour.HaveInventoryBag = isEditable;
+            
         } else
         {
             isEditable = state;
             gridGenerator.BuildMode = isEditable;
             isMenuOpen = state;
+            inventoryBehaviour.HaveInventoryBag = state;
         }
     }
     #endregion
@@ -145,15 +150,17 @@ public class GridManager : MonoBehaviour
     }
     public void ToggleEditState(bool state = default)
     {
-        Animator animator = menuObj.GetComponent<Animator>();
-        if (animator != null)
-            animator.SetTrigger("State");
+
         InventoryBehaviour inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
         if (inventoryBehaviour != null)
         {
+            if (inventoryBehaviour.invBagOpened) return;
             ToggleIsEditable(state);
             inventoryBehaviour.ToggleCursorState(state);
         }
+        Animator animator = menuObj.GetComponent<Animator>();
+        if (animator != null)
+            animator.SetTrigger("State");
     }
     #endregion
 
@@ -857,6 +864,7 @@ public class GridManager : MonoBehaviour
     public void ResetGrid()
     {
         defenseCount = 0;
+        UpdateDefenseCount();
         foreach (Transform child in gridContainer.transform)
         {
             Destroy(child.gameObject);
@@ -906,6 +914,15 @@ public class GridManager : MonoBehaviour
     public void AddDefense(int value)
     {
         defenseCount += value;
+        UpdateDefenseCount();
+    }
+    private void UpdateDefenseCount()
+    {
+        TMP_Text text = displayDefenseCount.GetComponent<TMP_Text>();
+        if(text!=null)
+        {
+            text.text = "Defense Left: " + (m_MaxDefenseCount - defenseCount); 
+        }
     }
     public bool IsMaxDefenseReached(int blockId)
     {
@@ -913,7 +930,7 @@ public class GridManager : MonoBehaviour
         {
             if (defenseCount < m_MaxDefenseCount)
             {
-                defenseCount++;
+                AddDefense(1);
                 return false;
             }
             else
@@ -962,7 +979,7 @@ public class GridManager : MonoBehaviour
         }
         int count = 0;
         GameObject structure = new GameObject();
-        structure.transform.localPosition = position;
+        structure.transform.position = position;
         int[] utilityIdList = new int[0];
 
         List<GameObject> utilityList = new List<GameObject>();
@@ -979,7 +996,7 @@ public class GridManager : MonoBehaviour
                 utilityList.Add(block);
             }
             count++;
-            block.transform.position = new Vector3((structureStorage[i].cellPos[0] - numRows/2) * cellSize, (structureStorage[i].cellPos[1] + cellSize) * cellSize, (structureStorage[i].cellPos[2] - numColumns/2) * cellSize);
+            block.transform.position = new Vector3((structureStorage[i].cellPos[0]) * cellSize, (structureStorage[i].cellPos[1]) * cellSize, (structureStorage[i].cellPos[2]) * cellSize);
             block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
             block.transform.localScale = new Vector3(structureStorage[i].Scale[0] * cellSize, structureStorage[i].Scale[1] * cellSize, structureStorage[i].Scale[2] * cellSize);
 
@@ -1001,6 +1018,16 @@ public class GridManager : MonoBehaviour
     }
     private void CombineGameObjects(GameObject parentObject)
     {
+        List<GameObject> excludeList = new List<GameObject>();
+        foreach(Transform child in parentObject.transform)
+        {
+            if(child.GetComponent<GridData>().isDefense || child.GetComponent<GridData>().isUtility)
+            {
+                excludeList.Add(child.gameObject);
+                child.SetParent(null);
+            }
+            
+        }
         MeshCombiner meshCombiner = parentObject.AddComponent<MeshCombiner>();
         meshCombiner.CreateMultiMaterialMesh = true;
         meshCombiner.DestroyCombinedChildren = true;
@@ -1012,6 +1039,10 @@ public class GridManager : MonoBehaviour
         meshCollider.sharedMesh = meshFilter.sharedMesh;
         meshCollider.convex = false;
         meshCollider.providesContacts = true;
+        foreach(GameObject gameObject in excludeList)
+        {
+            gameObject.transform.SetParent(parentObject.transform);
+        }
     }
     public void GenerateStructureWithGrid(string filePath = default)
     {

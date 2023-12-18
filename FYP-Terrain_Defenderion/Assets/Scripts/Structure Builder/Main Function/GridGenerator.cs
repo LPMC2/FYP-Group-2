@@ -7,7 +7,8 @@ public class GridGenerator : MonoBehaviour
 {
     [SerializeField]
     private Camera playerCamera;
-
+    [SerializeField]
+    private float minBuildDistance = 1f;
     private bool buildModeOn = false;
     public bool BuildMode { get { return buildModeOn; } set { buildModeOn = value; } }
     private bool canBuild = false;
@@ -82,6 +83,10 @@ public class GridGenerator : MonoBehaviour
             {
                 canBuild = false;
             }
+            if (Input.GetMouseButtonDown(0))
+            {
+                DestroyBlock(shootingPoint, range);
+            }
         }
 
         if (!buildModeOn)
@@ -98,20 +103,24 @@ public class GridGenerator : MonoBehaviour
             {
                 PlaceBlock();
             }
-            if(Input.GetMouseButtonDown(0))
+
+        }
+        if(!canBuild)
+        {
+            if (Input.GetMouseButtonDown(1))
             {
-                DestroyBlock(shootingPoint, range);
+                ErrorMessage();
             }
         }
     }
     private void PlaceBlock()
     {
         if (gridManager.PlaceBlockObject == null || gridManager.CurrentBlockId == -1) return;
-        if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
+        if (gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
         {
             return;
         }
-        if (gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
+        if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
         {
             return;
         }
@@ -181,13 +190,37 @@ public class GridGenerator : MonoBehaviour
         Vector3 rotatedDirection = new Vector3(Mathf.Cos(roundedAngleRad), 0f, Mathf.Sin(roundedAngleRad));
         return Quaternion.LookRotation(rotatedDirection);
     }
-    private bool IsValidPosition(Vector3 spawnPosition)
+    bool boundState;
+    private bool distanceState;
+    private void ErrorMessage()
     {
 
+        InventoryBehaviour inventoryBehaviour = gameObject.GetComponent<InventoryBehaviour>();
+        if (inventoryBehaviour == null) return;
+        if (distanceState == false)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Too close to build a block", Color.red);
+        }
+        if (boundState == false)
+        {
+            inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Block out of bounds", Color.red);
+               
+        }
+
+        
+    }
+    private bool IsValidPosition(Vector3 spawnPosition)
+    {
+        float distance = Vector3.Distance(playerCamera.transform.position, spawnPosition);
+        boundState = spawnPosition.x > -numRows / 2f && spawnPosition.x < numRows / 2f &&
+               spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
+               spawnPosition.z > -numColumns / 2f && spawnPosition.z < numColumns / 2f;
+        distanceState = distance >= minBuildDistance;
+        
         // Check if the spawn position is within the valid range
         return spawnPosition.x > -numRows / 2f && spawnPosition.x < numRows / 2f &&
                spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
-               spawnPosition.z > -numColumns/2f && spawnPosition.z < numColumns/2f;
+               spawnPosition.z > -numColumns/2f && spawnPosition.z < numColumns/2f && distance >= minBuildDistance;
     }
     GameObject lastOutlineBlock;
     private void PerformOutlineRaycast()

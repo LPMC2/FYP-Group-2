@@ -32,9 +32,10 @@ public class GameObjectExtension : MonoBehaviour
     }
     public static void RemoveAllObjectsFromParent(Transform parent)
     {
-        foreach(Transform child in parent)
+        for(int i=0; i< parent.childCount; i++)
         {
-            Destroy(child.gameObject);
+            Destroy(parent.GetChild(i).gameObject);
         }
+
     }
 }

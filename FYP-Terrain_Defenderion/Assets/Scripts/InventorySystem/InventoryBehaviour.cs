@@ -14,10 +14,12 @@ public class InventoryBehaviour : MonoBehaviour
     [Header("Toggle")]
     [SerializeField] private bool isDropable = false;
     [SerializeField] private bool haveInventoryBag = false;
+    public bool HaveInventoryBag { set { haveInventoryBag = value; } }
     [Header("Input Settings")]
     public KeyCode dropKey = KeyCode.Q;
     public KeyCode invBagKey = KeyCode.E;
     public bool isItemSelectable = true;
+    public bool invBagOpened { get; private set; }
     [Header("Canvas")]
     public GameObject SlotPlaceHolder;
     [Header("Slot UI")]
@@ -38,6 +40,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private InventoryType inventoryType; 
     public InventorySystem inventory;
     [SerializeField] private int selectedSlot = 1;
+    public int SelectedSlot { get { return selectedSlot; } }
     [SerializeField] private GameObject slotObject;
     [SerializeField] private GameObject placeItemLocation;
     [SerializeField] private int[] initialSlotItem;
@@ -303,6 +306,13 @@ public class InventoryBehaviour : MonoBehaviour
         Image uiImg = ui.GetComponent<Image>();
         uiImg.sprite = slotImageNormal;
         uiImg.preserveAspect = true;
+        Button button = ui.AddComponent<Button>();
+        button.targetGraphic = uiImg;
+        ColorBlock colorBlock = button.colors;
+        colorBlock.highlightedColor = Color.green;
+        button.colors = colorBlock;
+        SlotBehaviour slotBehaviour = ui.AddComponent<SlotBehaviour>();
+        slotBehaviour.Initialize(this, slotObj.transform.childCount-1, SlotType.InventorySlot);
     }
     private void setInitialInventory()
     {
@@ -393,7 +403,7 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 case InventoryType.item:
                     targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
-                break;
+                     break;
                 case InventoryType.block:
                     if(invId == -1)
                     {
@@ -471,12 +481,14 @@ public class InventoryBehaviour : MonoBehaviour
 
                     uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
                     uiImg.preserveAspect = true;
+                    uiImg.raycastTarget = false;
                 }
             }
             if(inventoryType == InventoryType.block)
             {
                 if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < blockData.blockData.Length)
                 {
+                    GameObjectExtension.RemoveAllObjectsFromParent(targetUI.transform);
                     int invId = inventory.slot[id].getId();
                     GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
                     instantiatedUI.transform.SetParent(targetUI.transform);
@@ -500,6 +512,7 @@ public class InventoryBehaviour : MonoBehaviour
                         ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
+                        uiImg.raycastTarget = false;
                         gridManager.captureCamera.orthographicSize = cameraSize;
                     } else
                     {
@@ -516,6 +529,7 @@ public class InventoryBehaviour : MonoBehaviour
     }
     private void SetBlockSlotUI(int id, GameObject slotObj, Transform parentObj)
     {
+        
         int invId = inventory.slot[id].getId();
         GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity, parentObj);
         if (instantiatedUI.GetComponent<Image>() == null)
@@ -525,6 +539,7 @@ public class InventoryBehaviour : MonoBehaviour
         instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
         Image uiImg = instantiatedUI.GetComponent<Image>();
+        uiImg.raycastTarget = false;
         if (blockData.blockData[inventory.slot[id].getId()].blockModel != null)
         {
             float width = rectTransform.rect.width * 2.5f;
@@ -730,6 +745,8 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 GameObject slotItem = Instantiate(slotBasePrefab, menuSlot.transform.position, Quaternion.identity, menuSlot.transform);
                 SetBlockSlotUI(blockID, slotObject, slotItem.transform);
+                SlotBehaviour slotBehaviour = slotItem.GetComponent<SlotBehaviour>();
+                slotBehaviour.Initialize(this, blockID, SlotType.InventoryBag);
             }
             RectTransform rectTransform = menuSlot.GetComponent<RectTransform>();
             float height = slotBasePrefab.GetComponent<RectTransform>().rect.height * Mathf.Ceil(menuSlot.transform.childCount / 10f) + menuContentOffset;
@@ -746,13 +763,9 @@ public class InventoryBehaviour : MonoBehaviour
     private void OpenBag()
     {
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
-        Cursor.visible = !Cursor.visible;
-        if (Cursor.visible == true)
-        {
-            Cursor.lockState = CursorLockMode.None;
-        } else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        invBagOpened = invBagPanel.activeInHierarchy;
+        ToggleCursorState(invBagPanel.activeInHierarchy);
+
+       
     }
 }

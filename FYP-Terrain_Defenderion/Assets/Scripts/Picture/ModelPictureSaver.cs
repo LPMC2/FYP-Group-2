@@ -18,7 +18,7 @@ public class ModelPictureSaver : MonoBehaviour
         modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
         // Generate a unique file name
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
-        Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);
+        //Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);
         // Capture the object's image
         CaptureObjectImage(camera, modelPrefab, fileName);
 
