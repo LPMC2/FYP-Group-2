@@ -14,6 +14,7 @@ public class ModelPictureSaver : MonoBehaviour
         FolderManager.CreateFolder("/StructureData/StructureImg");
         FolderManager.CreateFolder("/StructureData/Temp");
         FolderManager.CreateFolder(savePath);
+        int layer = modelPrefab.layer;
         modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
         // Generate a unique file name
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
@@ -30,6 +31,7 @@ public class ModelPictureSaver : MonoBehaviour
                 modelPrefab.SetActive(false);
             }
         }
+        modelPrefab = SetAllChildLayer(modelPrefab, LayerMask.LayerToName(layer));
     }
     public static GameObject SetAllChildLayer(GameObject target, string layerName)
     {

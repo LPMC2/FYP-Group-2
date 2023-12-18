@@ -160,7 +160,7 @@ private IEnumerator FireLaserForDuration(float duration)
     }
     private void HitTakeDamage(GameObject hit)
     {
-        Debug.Log("hit");
+
         HealthBehaviour healthBehaviour = hit.GetComponent<HealthBehaviour>();
         if (healthBehaviour != null)
         {

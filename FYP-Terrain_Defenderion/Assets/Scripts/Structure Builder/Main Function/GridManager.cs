@@ -80,10 +80,12 @@ public class GridManager : MonoBehaviour
         if (state == default)
         {
             isEditable = !isEditable;
+            gridGenerator.BuildMode = isEditable;
             isMenuOpen = !isEditable;
         } else
         {
             isEditable = state;
+            gridGenerator.BuildMode = isEditable;
             isMenuOpen = state;
         }
     }

@@ -46,9 +46,15 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private float dropForce = 10f;
     [SerializeField] private Vector3 dropOffset;
     [Header("Inventory Bag Settings")]
+    [SerializeField] private InventoryBagSO invBagSO;
+    [SerializeField] private GameObject slotBasePrefab;
     [SerializeField] private GameObject invBagPanel;
-    [SerializeField] private GameObject invBagContainer;
-    [SerializeField] private GameObject interactableSlotObj;
+    [SerializeField] private GameObject menuTypeObj;
+    [SerializeField] private GameObject menuContent;
+    [SerializeField] private float menuContentOffset = 25f;
+    [SerializeField] private GameObject menuContentPrefab;
+    [SerializeField] private GameObject menuScrollView;
+    [SerializeField] private int menuPage = 0;
     [Header("Block Inventory Settings")]
     public GridManager gridManager;
     private ItemSO itemData;
@@ -267,14 +273,7 @@ public class InventoryBehaviour : MonoBehaviour
     {
         setSlotUI(SlotPlaceHolder, "hotbar");
         setInitialInventory();
-        if (invBagPanel != null)
-        {
-            invBagPanel.SetActive(true);
-            setSlotUI(invBagContainer, "bag");
-            initalizeInvBag();
-
-            invBagPanel.SetActive(false);
-        }
+        InitialInvBag();
     }
     private void setSlotUI(GameObject slotPH, string type)
     {
@@ -378,15 +377,16 @@ public class InventoryBehaviour : MonoBehaviour
 
     public void EquipItem(int slotId)
     {
+
         ItemManager.removeChilds(placeItemLocation);
         resetSelectUI();
         if (selectedSlot != slotId)
         {
             selectedSlot = slotId;
         }
-        if (inventory.slot[slotId].getId() >= 0 && slotId < inventory.slot.Length)
+        if (inventory.slot[slotId].getId() >= -1 && slotId < inventory.slot.Length)
         {
-            //Debug.Log(inventory.slot[slotId].getId());
+
             GameObject targetItem = null;
             int invId = inventory.slot[slotId].getId();
             switch (inventoryType)
@@ -395,9 +395,14 @@ public class InventoryBehaviour : MonoBehaviour
                     targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
                 break;
                 case InventoryType.block:
+                    if(invId == -1)
+                    {
+                        gridManager.PlaceBlockObject = null;
+                        gridManager.CurrentBlockId = -1;
+                        break;
+                    }
                     if (blockData.blockData[invId].isUtility == false)
                     {
-                        Debug.Log(" Not Utility");
                         GameObject gameObject = blockData.blockData[invId].blockModel;
                         targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
                         targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
@@ -405,7 +410,6 @@ public class InventoryBehaviour : MonoBehaviour
                     }
                     if(blockData.blockData[invId].isUtility == true)
                     {
-                        Debug.Log("Block!");
                         if (blockData.blockData[invId].blockModel != null)
                         {
                             GameObject gameObject = blockData.blockData[invId].blockModel;
@@ -426,13 +430,16 @@ public class InventoryBehaviour : MonoBehaviour
                     gridManager.CurrentBlockId = inventory.slot[slotId].getId();
                  break;
             }
-            targetItem.transform.SetParent(placeItemLocation.transform);
-            Collider itemCollider = targetItem.GetComponent<Collider>();
-            if (itemCollider != null)
+            if (targetItem != null)
             {
-                itemCollider.isTrigger = true;
+                targetItem.transform.SetParent(placeItemLocation.transform);
+                Collider itemCollider = targetItem.GetComponent<Collider>();
+                if (itemCollider != null)
+                {
+                    itemCollider.isTrigger = true;
+                }
+                targetItem.transform.rotation = new Quaternion(0, 0, 0, 0);
             }
-            targetItem.transform.rotation = new Quaternion(0,0,0,0);
         }
         Image targetImg = SlotPlaceHolder.transform.GetChild(slotId).GetComponent<Image>();
         targetImg.sprite = slotImageSelected;
@@ -486,12 +493,10 @@ public class InventoryBehaviour : MonoBehaviour
                         float height = rectTransform.rect.height * 2.5f;
                         rectTransform.sizeDelta = new Vector2(width, height);
                         GameObject gameObject = Instantiate(blockData.blockData[invId].blockModel);
-                        Debug.Log(gameObject);
                         float cameraSize = gridManager.captureCamera.orthographicSize;
                         gameObject.transform.SetParent(gridManager.captureCamera.transform);
                         gameObject.transform.localPosition = Vector3.forward * 10;
                         gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
-                        Debug.Log(gameObject.transform.position);
                         ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
@@ -508,6 +513,41 @@ public class InventoryBehaviour : MonoBehaviour
             }
         }
 
+    }
+    private void SetBlockSlotUI(int id, GameObject slotObj, Transform parentObj)
+    {
+        int invId = inventory.slot[id].getId();
+        GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity, parentObj);
+        if (instantiatedUI.GetComponent<Image>() == null)
+        {
+            instantiatedUI.AddComponent<Image>();
+        }
+        instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
+        Image uiImg = instantiatedUI.GetComponent<Image>();
+        if (blockData.blockData[inventory.slot[id].getId()].blockModel != null)
+        {
+            float width = rectTransform.rect.width * 2.5f;
+            float height = rectTransform.rect.height * 2.5f;
+            rectTransform.sizeDelta = new Vector2(width, height);
+            GameObject gameObject = Instantiate(blockData.blockData[invId].blockModel);
+            float cameraSize = gridManager.captureCamera.orthographicSize;
+            gameObject.transform.SetParent(gridManager.captureCamera.transform);
+            gameObject.transform.localPosition = Vector3.forward * 10;
+            gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
+            ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
+
+            uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
+            gridManager.captureCamera.orthographicSize = cameraSize;
+        }
+        else
+        {
+            float width = rectTransform.rect.width * 1.5f;
+            float height = rectTransform.rect.height * 1.5f;
+            rectTransform.sizeDelta = new Vector2(width, height);
+            uiImg.sprite = ConvertMaterialToSprite(blockData.blockData[invId].blockTexture);
+        }
+        uiImg.preserveAspect = true;
     }
     private Sprite ConvertMaterialToSprite(Material sourceMaterial)
     {
@@ -528,13 +568,13 @@ public class InventoryBehaviour : MonoBehaviour
             return null;
         }
     }
-    private void initalizeInvBag()
-    {
-        for (int i = 0; i < inventory.slot.Length; i++)
-        {
-            setSlotObjUI(i, invBagContainer, interactableSlotObj);
-        }
-    }
+    //private void initalizeInvBag()
+    //{
+    //    for (int i = 0; i < inventory.slot.Length; i++)
+    //    {
+    //        setSlotObjUI(i, invBagContainer, interactableSlotObj);
+    //    }
+    //}
     #region Text Display
     public void StartFadeInText(int itemId, Color color = default(Color))
     {
@@ -631,6 +671,78 @@ public class InventoryBehaviour : MonoBehaviour
     }
 
     #endregion
+    private void InitialInvBag()
+    {
+        if (invBagPanel != null)
+        {
+            invBagPanel.SetActive(true);
+            for (int i = 0; i < invBagSO.inventoryBag.Length; i++)
+            {
+                InvBagSetup(i, false);
+            }
+            SetMenuPage(menuPage);
+            InvBagTypeSetup();
+            invBagPanel.SetActive(false);
+        }
+    }
+    public void SetMenuPage(int page)
+    {
+        menuContent.SetActive(false);
+        menuContent = menuScrollView.transform.GetChild(0).GetChild(page).gameObject;
+        menuContent.SetActive(true);
+        ScrollRect scrollRect = menuScrollView.GetComponent<ScrollRect>();
+        scrollRect.content = menuContent.GetComponent<RectTransform>();
+    }
+    private void InvBagTypeSetup()
+    {
+        if (invBagSO == null) return;
+        GameObjectExtension.RemoveAllObjectsFromParent(menuTypeObj.transform);
+        //Type Button generation
+
+        for (int i = 0; i < invBagSO.inventoryBag.Length; i++)
+        {
+            GameObject typeBtn = Instantiate(invBagSO.typeBtnPrefab, menuTypeObj.transform.position, Quaternion.identity, menuTypeObj.transform);
+            TMP_Text text = GameObjectExtension.GetGameObjectWithTagFromChilds(typeBtn, "Text").GetComponent<TMP_Text>();
+            text.text = invBagSO.inventoryBag[i].TypeName;
+            InventoryMenuTypeBehaviour inventoryMenuTypeBehaviour = typeBtn.GetComponent<InventoryMenuTypeBehaviour>();
+            inventoryMenuTypeBehaviour.Initialize(i, this);
+        }
+    }
+    private void InvBagSetup(int page, bool setPage = true)
+    {
+        if (invBagSO == null) return;
+        if(menuPage != page)
+        {
+            if(setPage)
+            menuPage = page;
+        }
+        menuContent = Instantiate(menuContentPrefab, menuScrollView.transform.GetChild(0).position, Quaternion.identity, menuScrollView.transform.GetChild(0));
+        float mainHeight = 0f;
+        //Menu Item generation
+        foreach(InvMenu invMenu in invBagSO.inventoryBag[page].invMenus)
+        {
+            GameObject menuNameObj = Instantiate(invBagSO.MenuNamePrefab, menuContent.transform.position, Quaternion.identity, menuContent.transform);
+            TMP_Text text1 = GameObjectExtension.GetGameObjectWithTagFromChilds(menuNameObj, "Text").GetComponent<TMP_Text>();
+            text1.text = invMenu.MenuName;
+            mainHeight += menuNameObj.GetComponent<RectTransform>().rect.height;
+            GameObject menuSlot = Instantiate(invBagSO.MenuSlotPrefab, menuContent.transform.position, Quaternion.identity, menuContent.transform);
+            foreach(int blockID in invMenu.BlockID)
+            {
+                GameObject slotItem = Instantiate(slotBasePrefab, menuSlot.transform.position, Quaternion.identity, menuSlot.transform);
+                SetBlockSlotUI(blockID, slotObject, slotItem.transform);
+            }
+            RectTransform rectTransform = menuSlot.GetComponent<RectTransform>();
+            float height = slotBasePrefab.GetComponent<RectTransform>().rect.height * Mathf.Ceil(menuSlot.transform.childCount / 10f) + menuContentOffset;
+            mainHeight += height;
+            rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, height);
+        }
+        RectTransform mainRect = menuContent.GetComponent<RectTransform>();
+        mainRect.sizeDelta = new Vector2(mainRect.rect.x, mainHeight);
+        menuContent.SetActive(false);
+        
+        
+
+    }
     private void OpenBag()
     {
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);

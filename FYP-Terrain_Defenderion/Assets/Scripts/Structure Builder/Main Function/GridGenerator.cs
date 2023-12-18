@@ -9,6 +9,7 @@ public class GridGenerator : MonoBehaviour
     private Camera playerCamera;
 
     private bool buildModeOn = false;
+    public bool BuildMode { get { return buildModeOn; } set { buildModeOn = value; } }
     private bool canBuild = false;
 
     private BlockSO bSys;
@@ -63,7 +64,6 @@ public class GridGenerator : MonoBehaviour
     private void Update()
     {
        
-
         if (buildModeOn)
         {
             RaycastHit buildPosHit;
@@ -72,7 +72,7 @@ public class GridGenerator : MonoBehaviour
             {
                 Vector3 point = buildPosHit.point;
                 buildPos = new Vector3(Mathf.Round(point.x), Mathf.Round(point.y), Mathf.Round(point.z));
-                Debug.Log(buildPos);
+
                 if (IsValidPosition(buildPos))
                     canBuild = true;
                 else
@@ -106,6 +106,7 @@ public class GridGenerator : MonoBehaviour
     }
     private void PlaceBlock()
     {
+        if (gridManager.PlaceBlockObject == null || gridManager.CurrentBlockId == -1) return;
         if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
         {
             return;
@@ -137,64 +138,19 @@ public class GridGenerator : MonoBehaviour
         gridData.tokenCost = blockSO.blockData[gridManager.CurrentBlockId].tokenCost;
         newBlock.tag = "Grid";
         newBlock.layer = LayerMask.NameToLayer("Grid");
-        Debug.Log(newBlock.layer);
+        MeshRenderer meshRenderer = newBlock.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
     }
     private GameObject targetBlock;
     private Transform parent;
     private Transform shootingPoint;
     float range;
     private bool isBreak;
-    //public GameObject BuildBlock(GameObject block, Transform parent, Transform shootingPoint, float range)
-    //{
-    //    Ray ray = new Ray(shootingPoint.position, shootingPoint.forward * range);
-    //    GameObject targetBlock = null;
-    //    if (Physics.Raycast(shootingPoint.position, shootingPoint.forward, out RaycastHit hitInfo, range))
-    //    {
-    //        Debug.DrawRay(shootingPoint.position, shootingPoint.forward * range, Color.magenta, 5f);
-    //        Vector3 spawnPosition = Vector3.zero;
-    //        if (hitInfo.transform.CompareTag("Grid"))
-    //        {
-    //            spawnPosition = GetNearestPointOnGrid(hitInfo.point, shootingPoint, hitInfo.normal);
-    //            if (IsValidPosition(spawnPosition))
-    //            {
-    //               targetBlock = Instantiate(block, spawnPosition, Quaternion.identity, parent);
-    //                GridData gridData = targetBlock.AddComponent<GridData>();
-    //                gridData.SetPosition(spawnPosition);
-    //            }
-    //        }
-    //        else if(hitInfo.transform.CompareTag("GridPlane"))
-    //        {
-    //            spawnPosition = GetNearestPointOnGrid(hitInfo.point, shootingPoint, Vector3.zero);
-    //            Vector3 sPointLocation = new Vector3(shootingPoint.parent.localPosition.x, shootingPoint.parent.localPosition.y, shootingPoint.parent.localPosition.z);
-    //            Debug.Log(spawnPosition + "\n" + spawnPosition + shootingPoint.parent.localPosition);
-    //                targetBlock = Instantiate(block, spawnPosition , Quaternion.identity, parent);
-    //            GridData gridData = targetBlock.AddComponent<GridData>();
-    //            gridData.cellX = (int)(spawnPosition.x / cellSize * 2);
-    //                gridData.cellY = (int)(spawnPosition.z / cellSize * 2);
-    //                gridData.cellHeight = (int)(spawnPosition.y / cellSize * 2);
-
-    //        }
-    //        if(targetBlock != null)
-    //        {
-    //            Quaternion direction = GetDirection(ray);
-    //            GridData gridData = targetBlock.GetComponent<GridData>();
-    //            Vector3 eulerRotation = direction.eulerAngles;
-    //            targetBlock.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
-    //            eulerRotation.x = GridManager.NormalizeAngle(eulerRotation.x);
-    //            eulerRotation.y = GridManager.NormalizeAngle(eulerRotation.y);
-    //            eulerRotation.z = GridManager.NormalizeAngle(eulerRotation.z);
-    //            targetBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-    //            gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-    //            gridData.blockId = blockID;
-    //            gridData.isDefense = blockSO.blockData[blockID].isDefense;
-    //            gridData.isUtility = blockSO.blockData[blockID].isUtility;
-    //            targetBlock.tag = "Grid";
-    //            targetBlock.layer = LayerMask.NameToLayer("Grid");
-    //        }
-    //    }
-    //    return targetBlock;
-    //}
-
+   
     public void DestroyBlock(Transform shootingPoint, float range)
     {
         RaycastHit hit;
@@ -215,35 +171,6 @@ public class GridGenerator : MonoBehaviour
 
     }
 
-    //private static Vector3 CalculateSpawnPosition(Vector3 hitPoint, Vector3 hitNormal, float cellSize)
-    //{
-    //    Debug.Log(hitPoint + "/" + hitNormal);
-    //    float x =(hitPoint.x + hitNormal.x)  ;
-    //    float y = (hitPoint.y + hitNormal.y)   ;
-    //    float z = (hitPoint.z + hitNormal.z)   ;
-
-    //    return new Vector3(x, y, z);
-    //}
-    //public Vector3 GetNearestPointOnGrid(Vector3 position, Transform placerPos, Vector3 hitNormal)
-    //{
-    //    position -= placerPos.position;
-
-    //    int xCount = Mathf.RoundToInt(position.x / cellSize);
-    //    int yCount = Mathf.RoundToInt(position.y / cellSize);
-    //    int zCount = Mathf.RoundToInt(position.z / cellSize);
-
-    //    Vector3 result = new Vector3(
-    //        (float)xCount * cellSize,
-    //        (float)yCount * cellSize,
-    //        (float)zCount * cellSize);
-    //    if(hitNormal.y == 0f)
-    //    {
-    //        result += hitNormal * cellSize;
-    //    }
-    //    result += placerPos.position;
-
-    //    return result;
-    //}
     public Quaternion GetDirection(Ray ray)
     {
         Vector3 rayDirection = -ray.direction;
