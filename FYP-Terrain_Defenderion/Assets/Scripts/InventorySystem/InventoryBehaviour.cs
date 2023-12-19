@@ -482,6 +482,9 @@ public class InventoryBehaviour : MonoBehaviour
                     uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
                     uiImg.preserveAspect = true;
                     uiImg.raycastTarget = false;
+                    SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();
+                    if(simpleTooltip!=null)
+                    simpleTooltip.infoLeft = itemData.item[inventory.slot[id].getId()].itemName;
                 }
             }
             if(inventoryType == InventoryType.block)
@@ -522,6 +525,9 @@ public class InventoryBehaviour : MonoBehaviour
                         uiImg.sprite = ConvertMaterialToSprite(blockData.blockData[invId].blockTexture);
                     }
                     uiImg.preserveAspect = true;
+                    SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();
+                    if (simpleTooltip != null)
+                        simpleTooltip.infoLeft = blockData.blockData[inventory.slot[id].getId()].blockModel.name;
                 }
             }
         }
@@ -745,6 +751,8 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 GameObject slotItem = Instantiate(slotBasePrefab, menuSlot.transform.position, Quaternion.identity, menuSlot.transform);
                 SetBlockSlotUI(blockID, slotObject, slotItem.transform);
+                SimpleTooltip simpleTooltip = slotItem.GetComponent<SimpleTooltip>();
+                simpleTooltip.infoLeft = blockData.blockData[blockID].blockModel.name;
                 SlotBehaviour slotBehaviour = slotItem.GetComponent<SlotBehaviour>();
                 slotBehaviour.Initialize(this, blockID, SlotType.InventoryBag);
             }

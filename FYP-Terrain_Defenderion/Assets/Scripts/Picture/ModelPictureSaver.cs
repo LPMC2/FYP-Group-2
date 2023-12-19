@@ -16,6 +16,12 @@ public class ModelPictureSaver : MonoBehaviour
         FolderManager.CreateFolder(savePath);
         int layer = modelPrefab.layer;
         modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
+        MeshRenderer meshRenderer = modelPrefab.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
         // Generate a unique file name
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
         //Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);
