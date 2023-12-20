@@ -14,6 +14,25 @@ public class GameObjectExtension : MonoBehaviour
             }
         }
     }
+    public static void DisableFromTime(MonoBehaviour monoBehaviour ,GameObject gameObject, float time) 
+    {
+        monoBehaviour.StartCoroutine(DisableTimer(gameObject, time));
+    }
+    private static IEnumerator DisableTimer(GameObject gameobj, float time)
+    {
+        yield return new WaitForSeconds(time);
+        gameobj.SetActive(false);
+    }
+
+    public static void ActivateFromTime(MonoBehaviour monoBehaviour, GameObject gameObject, float time)
+    {
+        monoBehaviour.StartCoroutine(ActivateTimer(gameObject, time));
+    }
+    private static IEnumerator ActivateTimer(GameObject gameobj, float time)
+    {
+        yield return new WaitForSeconds(time);
+        gameobj.SetActive(true);
+    }
     public static GameObject GetGameObjectWithTagFromChilds(GameObject target, string tag)
     {
         if (target.CompareTag(tag))
@@ -38,4 +57,14 @@ public class GameObjectExtension : MonoBehaviour
         }
 
     }
+    public static void DisableMeshFromTime(MonoBehaviour monoBehaviour, GameObject gameObject, float time)
+    {
+        monoBehaviour.StartCoroutine(DisableMeshTimer(gameObject, time));
+    }
+    private static IEnumerator DisableMeshTimer(GameObject gameobj, float time)
+    {
+        yield return new WaitForSeconds(time);
+        gameobj.GetComponent<MeshRenderer>().enabled = false;
+    }
+
 }

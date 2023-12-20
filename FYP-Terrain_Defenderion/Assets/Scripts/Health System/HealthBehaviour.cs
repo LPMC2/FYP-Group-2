@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public class HealthBehaviour : MonoBehaviour, IDamageable
 {
@@ -15,6 +16,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     public GameObject healthBarPrefab;
     [SerializeField] private Vector3 healthbarOffset;
     [SerializeField] private float DeathTime = 0f;
+    [SerializeField] private bool destroyOnDeath = true;
+    [SerializeField] private bool isRespawn = false;
+    [SerializeField] private float respawnTime = 5f;
+    [SerializeField] private UnityEvent m_DeathEvents;
     [SerializeField]
     private GameObject healthBarUI;
     private Slider healthBarSlider;
@@ -33,6 +38,12 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     {
         initialHealth = health;
         audioSource = GetComponent<AudioSource>();
+        if(isRespawn && destroyOnDeath)
+        {
+#if UNITY_EDITOR
+            Debug.LogError("Respawn will not work as the object is destroyed!");
+            #endif
+        }
     }
 
     public void SetDamage(float damageAmount)
@@ -94,31 +105,66 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
 
             if (health <= 0)
             {
-               
-
-                
-                    if (DeathTime > 0)
-                    {
-                       if(gameObject.GetComponent<Collider>() != null)
-                    {
-                        Destroy(gameObject.GetComponent<Collider>());
-                    }
-                     
-                            Destroy(gameObject, DeathTime);
-                    }
-                        else
-                        {
-                            Destroy(gameObject);
-                        }
-                 
-
-                
+                Death();
             }
         
         }
+        if(health > 0)
         StartCoroutine(HitEnumerator());
     }
+    private void Death()
+    {
+        m_DeathEvents.Invoke();
+        if(isRespawn)
+        StartCoroutine(RespawnTimer());
+        if (DeathTime > 0)
+        {
+            if (destroyOnDeath)
+            {
+                if (gameObject.GetComponent<Collider>() != null)
+                {
+                    Destroy(gameObject.GetComponent<Collider>());
+                }
+                Destroy(gameObject, DeathTime);
+            } else
+            {
+                if (gameObject.GetComponent<Collider>() != null)
+                {
+                    gameObject.GetComponent<Collider>().enabled = false;
+                }
+                GameObjectExtension.DisableMeshFromTime(this, gameObject, DeathTime);
+                GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
+            }
+        }
+        else
+        {
+            if (destroyOnDeath)
+                Destroy(gameObject);
+            else
+            {
+                GameObjectExtension.DisableMeshFromTime(this, gameObject, 0f);
+                GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
+            }
+        }
+    }
+    public void ResetHealth()
+    {
+        gameObject.SetActive(true);
+        if(gameObject.GetComponent<Collider>() != null)
+        {
+            gameObject.GetComponent<Collider>().enabled = true;
+        }
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        health = initialHealth;
+        lerpTimer = 0f;
+        GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar").SetActive(true);
+    }
+    private IEnumerator RespawnTimer()
+    {
 
+        yield return new WaitForSeconds(DeathTime + respawnTime);
+        ResetHealth();
+    }
     private void UpdateHealthBar()
     {
         if (m_healthBarType == HealthBarType.WorldSpace)

@@ -53,7 +53,7 @@ public class ShooterBehaviour : MonoBehaviour
     private float cooldownTimer = 0f; // Cooldown timer
     [SerializeField]
     private float cooldownDuration = 0.5f; // Cooldown duration
-
+    private GameObject currentTarget = null;
     void Update()
     {
         if (isActive && rotateObject != null)
@@ -86,18 +86,19 @@ public class ShooterBehaviour : MonoBehaviour
                     {
                         isCooldown = true;
                     }
-                    if (isCooldown)
+                   
+                }
+                if (isCooldown)
+                {
+                    cooldownTimer += Time.deltaTime;
+                    if (cooldownTimer >= cooldownDuration)
                     {
-                        cooldownTimer += Time.deltaTime;
-                        if (cooldownTimer >= cooldownDuration)
-                        {
-                            isCooldown = false;
-                            cooldownTimer = 0f;
-                            targetRotation = newRotation;
-                            mainTargetRotation = newRotation;
-                            isRotating = true;
-                            StartCoroutine(RotateToTargetCoroutine());
-                        }
+                        isCooldown = false;
+                        cooldownTimer = 0f;
+                        targetRotation = newRotation;
+                        mainTargetRotation = newRotation;
+                        isRotating = true;
+                        StartCoroutine(RotateToTargetCoroutine());
                     }
                 }
             }
@@ -124,22 +125,42 @@ public class ShooterBehaviour : MonoBehaviour
                 {
                     closestDistance = distance;
                     closestObject = collider.gameObject;
+
                 }
             }
 
             if (closestObject != null)
             {
-                if (target == null || target.activeInHierarchy == false)
-                    target = colliders[0].gameObject;
+                if (target == null || target.activeInHierarchy == false || target.GetComponent<Collider>().enabled == false)
+                {
+                    if (currentTarget != closestObject)
+                    {
+                        target =closestObject;
+                        currentTarget = closestObject;
+                        isCooldown = true;
+                        CloseLaser();
+                    }
+                   
+                }
             }
            
         }
         else
         {
             target = null;
+            currentTarget = null;
+            CloseLaser();
         }
     }
-
+    private void CloseLaser()
+    {
+        if (bulletType != ShootType.Ray) return;
+        LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
+        if (laserBehaviour != null)
+        {
+            laserBehaviour.CloseLaser();
+        }
+    }
     private bool IsTargetInRange(GameObject target)
     {
         float distance = Vector3.Distance(transform.position, target.transform.position);

@@ -81,9 +81,19 @@ public class LaserBehaviour : MonoBehaviour
 
     }
     List<GameObject> hitObjects = new List<GameObject>();
+    float setLaserTimer = 0f;
+    public void CloseLaser()
+    {
+        setLaserTimer = fireTime/1.5f* laserClosingTime;
+    }
 private IEnumerator FireLaserForDuration(float duration)
     {
         float laserTimer = 0f;
+        if(setLaserTimer > 0f)
+        {
+            laserTimer = setLaserTimer;
+            setLaserTimer = 0f;
+        }
         float initialWidth = lineRenderer.widthMultiplier;
         while (laserTimer < duration)
         {
