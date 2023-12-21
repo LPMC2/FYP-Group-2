@@ -66,6 +66,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private Camera captureCamera;
     [SerializeField] private GameObject captureContainer;
     [SerializeField] private string captureSavePath = "/StructureData/Inventory/Temp";
+    private GameObject ToolTipGameobject;
     private void Awake()
     {
         StartCursorState();
@@ -138,6 +139,7 @@ public class InventoryBehaviour : MonoBehaviour
             inventory = gameObject.GetComponent<InventorySystem>();
         }
         setup();
+        ToolTipGameobject = GameObject.FindGameObjectWithTag("ToolTip");
     }
 
     // Update is called once per frame
@@ -512,7 +514,7 @@ public class InventoryBehaviour : MonoBehaviour
                         gameObject.transform.SetParent(gridManager.captureCamera.transform);
                         gameObject.transform.localPosition = Vector3.forward * 10;
                         gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
-                        ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
+                        ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
                         uiImg.raycastTarget = false;
@@ -556,7 +558,7 @@ public class InventoryBehaviour : MonoBehaviour
             gameObject.transform.SetParent(gridManager.captureCamera.transform);
             gameObject.transform.localPosition = Vector3.forward * 10;
             gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
-            ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true);
+            ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
 
             uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
             gridManager.captureCamera.orthographicSize = cameraSize;
@@ -752,7 +754,7 @@ public class InventoryBehaviour : MonoBehaviour
                 GameObject slotItem = Instantiate(slotBasePrefab, menuSlot.transform.position, Quaternion.identity, menuSlot.transform);
                 SetBlockSlotUI(blockID, slotObject, slotItem.transform);
                 SimpleTooltip simpleTooltip = slotItem.GetComponent<SimpleTooltip>();
-                simpleTooltip.infoLeft = blockData.blockData[blockID].blockModel.name;
+                simpleTooltip.infoLeft = blockData.blockData[blockID].blockModel.name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
                 SlotBehaviour slotBehaviour = slotItem.GetComponent<SlotBehaviour>();
                 slotBehaviour.Initialize(this, blockID, SlotType.InventoryBag);
             }
@@ -765,8 +767,6 @@ public class InventoryBehaviour : MonoBehaviour
         mainRect.sizeDelta = new Vector2(mainRect.rect.x, mainHeight);
         menuContent.SetActive(false);
         
-        
-
     }
     private void SetSlotsToolTip( bool state)
     {
@@ -780,6 +780,8 @@ public class InventoryBehaviour : MonoBehaviour
     {
         gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
+        ToolTipGameobject.SetActive(invBagPanel.activeInHierarchy);
+        ToolTipGameobject.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
         invBagOpened = invBagPanel.activeInHierarchy;
         ToggleCursorState(invBagPanel.activeInHierarchy);
 

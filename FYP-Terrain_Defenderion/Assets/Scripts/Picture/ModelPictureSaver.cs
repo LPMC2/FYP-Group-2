@@ -9,7 +9,7 @@ public class ModelPictureSaver : MonoBehaviour
     private static Renderer modelRenderer;
     private static GameObject modelInstance;
 
-    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true)
+    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false)
     {
         FolderManager.CreateFolder("/StructureData/StructureImg");
         FolderManager.CreateFolder("/StructureData/Temp");
@@ -19,9 +19,13 @@ public class ModelPictureSaver : MonoBehaviour
         MeshRenderer meshRenderer = modelPrefab.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
-            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            if (!lightAllowed)
+            {
+                meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
         }
+        
         // Generate a unique file name
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
         //Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);

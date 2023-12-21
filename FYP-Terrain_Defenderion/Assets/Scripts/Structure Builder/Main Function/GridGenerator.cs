@@ -67,6 +67,7 @@ public class GridGenerator : MonoBehaviour
        
         if (buildModeOn)
         {
+            PerformOutlineRaycast();
             RaycastHit buildPosHit;
 
             if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, 10, buildableSurfacesLayer))
@@ -97,7 +98,7 @@ public class GridGenerator : MonoBehaviour
 
         if (canBuild)
         {
-            PerformOutlineRaycast();
+
 
             if (Input.GetMouseButtonDown(1))
             {
