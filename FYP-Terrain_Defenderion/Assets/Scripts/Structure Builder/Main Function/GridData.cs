@@ -4,9 +4,9 @@ using UnityEngine;
 using System.Reflection;
 public class GridData : MonoBehaviour
 {
-    public int cellX = 0;
-    public int cellY = 0;
-    public int cellHeight = 0;
+    public float cellX = 0;
+    public float cellY = 0;
+    public float cellHeight = 0;
     public int blockId = -1;
     public Vector3 Rotation;
     public Vector3 Scale = new Vector3(1,1,1);
@@ -46,9 +46,9 @@ public class GridData : MonoBehaviour
     }
     public void SetData(StructureStorage structureStorage)
     {
-        cellX = (int)structureStorage.cellPos[0];
-        cellY = (int)structureStorage.cellPos[2];
-        cellHeight = (int)structureStorage.cellPos[1];
+        cellX = structureStorage.cellPos[0];
+        cellY = structureStorage.cellPos[2];
+        cellHeight = structureStorage.cellPos[1];
         Rotation = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
         Scale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
         tokenCost = structureStorage.tokenCost;
@@ -61,9 +61,9 @@ public class GridData : MonoBehaviour
     }
     public void SetPosition(Vector3 position)
     {
-        cellX = (int)position.x;
-        cellY = (int)position.z;
-        cellHeight = (int)position.y;
+        cellX = position.x;
+        cellY = position.z;
+        cellHeight = position.y;
     }
 }
 public enum InteractType

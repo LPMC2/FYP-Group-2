@@ -536,7 +536,7 @@ public class InventoryBehaviour : MonoBehaviour
     private void SetBlockSlotUI(int id, GameObject slotObj, Transform parentObj)
     {
         
-        int invId = inventory.slot[id].getId();
+        int invId = id;
         GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity, parentObj);
         if (instantiatedUI.GetComponent<Image>() == null)
         {
@@ -546,7 +546,7 @@ public class InventoryBehaviour : MonoBehaviour
         RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
         Image uiImg = instantiatedUI.GetComponent<Image>();
         uiImg.raycastTarget = false;
-        if (blockData.blockData[inventory.slot[id].getId()].blockModel != null)
+        if (blockData.blockData[invId].blockModel != null)
         {
             float width = rectTransform.rect.width * 2.5f;
             float height = rectTransform.rect.height * 2.5f;
@@ -768,8 +768,17 @@ public class InventoryBehaviour : MonoBehaviour
         
 
     }
+    private void SetSlotsToolTip( bool state)
+    {
+        foreach(Transform tooltip in menuContent.transform)
+        {
+            SimpleTooltip ToolTip = tooltip.GetComponent<SimpleTooltip>();
+            ToolTip.enabled = state;
+        }
+    }
     private void OpenBag()
     {
+        gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
         invBagOpened = invBagPanel.activeInHierarchy;
         ToggleCursorState(invBagPanel.activeInHierarchy);

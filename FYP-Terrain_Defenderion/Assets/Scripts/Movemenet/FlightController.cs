@@ -13,6 +13,7 @@ public class FlightController : MonoBehaviour
     [SerializeField] float mouseSensitivity = 3f;
     [SerializeField] float acceleration = 1f;
     [SerializeField] PlayerInput playerInput;
+    bool isMoveable = false;
     InputAction moveAction;
     InputAction lookAction;
     InputAction updownAction;
@@ -58,8 +59,15 @@ public class FlightController : MonoBehaviour
     }
     private void Update()
     {
-        UpdateMovementFlying();
-        UpdateLook();
+        if (isMoveable)
+        {
+            UpdateMovementFlying();
+            UpdateLook();
+        }
+    }
+    public void SetMoveable(bool state)
+    {
+        isMoveable = state;
     }
     private void UpdateLook()
     {

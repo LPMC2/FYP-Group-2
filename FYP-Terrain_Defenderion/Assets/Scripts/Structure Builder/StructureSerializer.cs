@@ -172,9 +172,12 @@ public static class StructureSerializer
                 result.FileName = GetFileName(files[id]);
                 break;
             case StructureType.image:
-                result.FilePath = filesMain[id];
-                result.ImageData = LoadSpriteFromFile(files[id]);
-                result.FileName = GetFileName(files[id]);
+                if (files.Length == filesMain.Length)
+                {
+                    result.FilePath = filesMain[id];
+                    result.ImageData = LoadSpriteFromFile(files[id]);
+                    result.FileName = GetFileName(files[id]);
+                }
                 break;
         }
         return result;

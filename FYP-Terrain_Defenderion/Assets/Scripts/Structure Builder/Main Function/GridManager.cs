@@ -11,6 +11,7 @@ public class GridManager : MonoBehaviour
 {
     [Header("Managers")]
     [SerializeField] private GridGenerator gridGenerator;
+    public GridGenerator Gridgenerator { get { return gridGenerator; } }
     [SerializeField] private GridUIManager gridUIManager;
     [SerializeField] private GridInputManager gridInputManager;
     [SerializeField] private LayerMask GridLayer;
@@ -204,7 +205,7 @@ public class GridManager : MonoBehaviour
     }
     private void Start()
     {
-        
+        UpdateDefenseCount();
         gridGenerator.SetGridGenerator(this,blockData, currentBlockId, numRows, numColumns, numHeight, cellSize, gridContainer.transform, cameraObject.transform, ContactRange);
         tokenManager = player.GetComponent<TokenManager>();
         if (tokenManager != null)
@@ -216,7 +217,12 @@ public class GridManager : MonoBehaviour
             CreateGrid();
             CreateVisualGrid();
             //CreateInteractableGrid();
+            isEditable = false;
         }
+    }
+    public void SetEditable(bool value)
+    {
+        isEditable = value;
     }
     T GetSecondToLastItem<T>(List<T> list)
     {
@@ -935,6 +941,8 @@ public class GridManager : MonoBehaviour
             }
             else
             {
+                tokenManager.addTokens(blockData.blockData[currentBlockId].tokenCost);
+                UpdateTokenDisplay(tokenManager.getTokens());
                 SetFadeinText("Max Defense Reached! (" + m_MaxDefenseCount + ")");
                 return true;
             }
@@ -1066,6 +1074,8 @@ public class GridManager : MonoBehaviour
 
                     GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].blockModel, Vector3.zero, Quaternion.identity, gridContainer.transform);
                     block.transform.position = new Vector3(structureStorage.cellPos[0], structureStorage.cellPos[1], structureStorage.cellPos[2]);
+                    if(block.GetComponent<BoxCollider>() != null)
+                    block.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, blockData.blockData[structureStorage.structureId].blockModel.transform.position.x + blockData.blockData[structureStorage.structureId].blockModel.transform.position.z);
                     block.transform.eulerAngles = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
                     block.transform.localScale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
                     GridData gridData = block.AddComponent<GridData>();

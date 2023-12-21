@@ -116,15 +116,15 @@ public class GridGenerator : MonoBehaviour
     private void PlaceBlock()
     {
         if (gridManager.PlaceBlockObject == null || gridManager.CurrentBlockId == -1) return;
-        if (gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
-        {
-            return;
-        }
         if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
         {
             return;
+        } else if(gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
+        {
+            return;
         }
-        Ray ray = new Ray(shootingPoint.position, shootingPoint.forward * range);
+
+        Ray ray = new Ray(shootingPoint.position, shootingPoint.forward);
         GameObject newBlock = Instantiate(gridManager.PlaceBlockObject, buildPos, Quaternion.identity, parent);
         BoxCollider boxCollider = newBlock.GetComponent<BoxCollider>();
         if(boxCollider != null)
@@ -138,9 +138,14 @@ public class GridGenerator : MonoBehaviour
         eulerRotation.x = GridManager.NormalizeAngle(eulerRotation.x);
         eulerRotation.y = GridManager.NormalizeAngle(eulerRotation.y);
         eulerRotation.z = GridManager.NormalizeAngle(eulerRotation.z);
+        Vector3 offsetPos = GetOffsetPosFromDir(eulerRotation ,gridManager.PlaceBlockObject.transform.position);
+        if(newBlock.GetComponent<BoxCollider>()!=null)
+        newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, gridManager.PlaceBlockObject.transform.position.x + gridManager.PlaceBlockObject.transform.position.z);
+        newBlock.transform.position += offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-        gridData.SetPosition(buildPos);
+        gridData.SetPosition(buildPos+offsetPos);
         gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+        gridData.Scale = gridManager.PlaceBlockObject.transform.localScale;
         gridData.blockId = gridManager.CurrentBlockId;
         gridData.isDefense = blockSO.blockData[gridManager.CurrentBlockId].isDefense;
         gridData.isUtility = blockSO.blockData[gridManager.CurrentBlockId].isUtility;
@@ -159,7 +164,29 @@ public class GridGenerator : MonoBehaviour
     private Transform shootingPoint;
     float range;
     private bool isBreak;
-   
+    private Vector3 GetOffsetPosFromDir(Vector3 direction, Vector3 originalOffset)
+    {
+        //Debug.Log("Direction: " + direction) ;
+        Vector3 newOffset = Vector3.zero;
+        if (direction == Vector3.zero)
+        {
+            newOffset.z -= originalOffset.z;
+        }
+        else if (direction.y == 90f)
+        {
+            newOffset.x -= originalOffset.x;
+        }
+        else if (direction.y == -90f)
+        {
+            newOffset.x += originalOffset.x;
+        }
+        else if (direction.y == 180f)
+        {
+            newOffset.z += originalOffset.z;
+        }
+        newOffset.y = originalOffset.y;
+        return newOffset;
+    }
     public void DestroyBlock(Transform shootingPoint, float range)
     {
         RaycastHit hit;
