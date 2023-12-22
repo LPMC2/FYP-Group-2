@@ -1097,7 +1097,7 @@ public class GridManager : MonoBehaviour
             {
                 GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
                 block.name = blockData.blockData[structureStorage[i].structureId].blockModel.name + ": " + i;
-                if (structureStorage[i].isUtility == false)
+                if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
                 {
                     block.transform.SetParent(structure.transform);
                 }

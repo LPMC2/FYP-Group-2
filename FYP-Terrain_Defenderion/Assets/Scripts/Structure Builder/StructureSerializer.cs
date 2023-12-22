@@ -236,10 +236,24 @@ public static class StructureSerializer
         filePath = filePath.Replace(name, "");
         filePath = filePath.Replace(".json", "");
         filePath = ReplaceBetweenFileAndImg(filePath, 0, false);
-        Debug.Log(filePath);
+        //Debug.Log(filePath);
         Camera camera = GameObject.FindGameObjectWithTag("GridCamera").GetComponent<Camera>();
         GameObject gameObject = GenerateStructure(GameObject.Find("Grid").GetComponent<GridManager>(), LoadObject(structureFilePath));
+        float initialCameraSize = camera.orthographicSize;
+        switch (gameObject.GetComponent<GridData>().gridSize)
+        {
+            case GridSize.Small:
+                camera.orthographicSize = 7.69f;
+                break;
+            case GridSize.Normal:
+                camera.orthographicSize = 14.15f;
+                break;
+            case GridSize.Large:
+                camera.orthographicSize = 26.3f;
+                break;
+        }
         ModelPictureSaver.CaptureAndSaveImage(camera, gameObject, filePath, name);
+        camera.orthographicSize = initialCameraSize;
     }
     public static GameObject GenerateStructure(GridManager gridManager, StructureStorage[] structureStorage, Vector3 position = default(Vector3))
     {
@@ -254,28 +268,28 @@ public static class StructureSerializer
         }
         int count = 0;
         GameObject structure = new GameObject();
+        GridData gridData1 = structure.AddComponent<GridData>();
         structure.transform.localPosition = position;
         for (int i = 0; i < structureStorage.Length; i++)
         {
-            GameObject block =  MonoBehaviour.Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
-            block.transform.SetParent(structure.transform);
-            count++;
-            block.transform.position = new Vector3((structureStorage[i].cellPos[0] - gridManager.numRows / 2) * gridManager.cellSize, (structureStorage[i].cellPos[1] + gridManager.cellSize) * gridManager.cellSize, (structureStorage[i].cellPos[2] - gridManager.numColumns / 2) * gridManager.cellSize);
-            block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
-            block.transform.localScale = new Vector3(structureStorage[i].Scale[0] * gridManager.cellSize, structureStorage[i].Scale[1] * gridManager.cellSize, structureStorage[i].Scale[2] * gridManager.cellSize);
+            if (structureStorage[i].structureId >= 0)
+            {
+                GameObject block = MonoBehaviour.Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
+                block.name = blockData.blockData[structureStorage[i].structureId].blockModel.name + ": " + i;
+                if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
+                {
+                    block.transform.SetParent(structure.transform);
+                }
+                count++;
+                block.transform.position = new Vector3((structureStorage[i].cellPos[0]) , (structureStorage[i].cellPos[1]) , (structureStorage[i].cellPos[2]) );
+                block.transform.eulerAngles = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
+                block.transform.localScale = new Vector3(structureStorage[i].Scale[0] , structureStorage[i].Scale[1] , structureStorage[i].Scale[2] );
 
-            GridData gridData = block.AddComponent<GridData>();
-            gridData.isAutoRotatable = structureStorage[i].isAutoRotatable;
-            gridData.cellX = (int)structureStorage[i].cellPos[0];
-            gridData.cellY = (int)structureStorage[i].cellPos[2];
-            gridData.cellHeight = (int)structureStorage[i].cellPos[1];
-            gridData.blockId = structureStorage[i].structureId;
-            gridData.Rotation = new Vector3(structureStorage[i].Rotation[0], structureStorage[i].Rotation[1], structureStorage[i].Rotation[2]);
-            gridData.Scale = new Vector3(structureStorage[i].Scale[0], structureStorage[i].Scale[1], structureStorage[i].Scale[2]);
-            gridData.isUtility = structureStorage[i].isUtility;
-            gridData.id = structureStorage[i].id;
-            gridData.originGameObjectId = structureStorage[i].originGameObjectId;
-            gridData.originInteractType = structureStorage[i].originInteractType;
+                GridData gridData = block.AddComponent<GridData>();
+                gridData.SetData(structureStorage[i]);
+                gridData1.gridSize = structureStorage[i].gridSize;
+            }
+
         }
         Debug.Log("Count: " + count);
         return structure;
