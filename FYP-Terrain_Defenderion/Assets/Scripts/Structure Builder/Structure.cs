@@ -18,7 +18,7 @@ public class Structure : MonoBehaviour
 [System.Serializable]
 public class StructureStorage
 {
-
+    public GridSize gridSize;
     public int structureId;
     public float[] cellPos = new float[3];
     public float[] Rotation = new float[3];

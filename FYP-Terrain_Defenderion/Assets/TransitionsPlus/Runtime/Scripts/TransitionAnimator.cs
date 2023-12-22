@@ -163,7 +163,7 @@ namespace TransitionsPlus {
             }
         }
 
-        void StartTransition() {
+        public void StartTransition() {
             playing = true;
             startTime = Time.time;
             if (profile != null && profile.sound != null) {

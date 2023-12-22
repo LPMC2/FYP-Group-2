@@ -778,6 +778,7 @@ public class InventoryBehaviour : MonoBehaviour
     }
     private void OpenBag()
     {
+        if (gridManager.IsMenuOpen) return;
         gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
         ToolTipGameobject.SetActive(invBagPanel.activeInHierarchy);

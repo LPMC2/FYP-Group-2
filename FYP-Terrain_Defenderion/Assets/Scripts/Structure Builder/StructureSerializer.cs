@@ -41,8 +41,7 @@ public static class StructureSerializer
                 GridData gridData = gridCell.GetComponent<GridData>();
                 if (gridData != null)
                 {
-                    if (gridData.blockId >= 0)
-                    {
+                    Debug.Log("Data");
                         //Debug.Log(gridData.blockId + ": " + gridCell.gameObject);
                         StructureStorage structureStorage = new StructureStorage();
 
@@ -64,8 +63,9 @@ public static class StructureSerializer
                         structureStorage.originGameObjectId = gridData.originGameObjectId;
                         //Debug.Log(structureStorage.originGameObjectId +" / " +gridData.originGameObjectId);
                         structureStorage.originInteractType = gridData.originInteractType;
+                        structureStorage.gridSize = gridData.gridSize;
                         structureStorages.Add(structureStorage);
-                    }
+                    
                 }
             }
         }
@@ -98,7 +98,9 @@ public static class StructureSerializer
             return structureStorages;
         } else
         {
+#if UNITY_EDITOR
             Debug.LogError("Save file not found in " + path);
+#endif
             return null;
         }
     }

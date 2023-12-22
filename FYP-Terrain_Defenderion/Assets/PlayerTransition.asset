@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0f9d22fa85eb43e8af60b22fb69c43c, type: 3}
-  m_Name: DoubleWipeHorizontal 1
+  m_Name: PlayerTransition
   m_EditorClassIdentifier: 
-  type: 21
+  type: 2
   invert: 1
   timeMultiplier: 1
-  colorMode: 2
-  color: {r: 0, g: 0, b: 0, a: 1}
+  colorMode: 1
+  color: {r: 1, g: 1, b: 1, a: 1}
   gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0, g: 0.25287688, b: 0.31132078, a: 1}
+    key1: {r: 0.5981132, g: 1, b: 0.9559439, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
+    ctime0: 28913
     ctime1: 65535
-    ctime2: 0
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -44,32 +44,32 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_ColorSpace: -1
+    m_ColorSpace: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  gradientMode: 0
+  gradientMode: 10
   shapeTexture: {fileID: 2800000, guid: 2873235459d4547b58d76a16bc824b5a, type: 3}
-  duration: 1.5
-  noiseIntensity: 1
+  duration: 2.5
+  noiseIntensity: 0.5
   vignetteIntensity: 1
-  toonGradientIntensity: 29
-  toonDotIntensity: 0.365
-  toonDotRadius: 0.143
+  toonGradientIntensity: 64
+  toonDotIntensity: 0.5
+  toonDotRadius: 0.333
   toonDotCount: 32
-  rotationMultiplier: 0.1
+  rotationMultiplier: 0
   rotation: 0
-  distortion: 2.5
-  splits: 10
+  distortion: 0
+  splits: 2
   center: {x: 0, y: 0}
   keepAspectRatio: 0
   seed: 0
   centersCount: 16
   texture: {fileID: 0}
-  cellDivisions: 32
+  cellDivisions: 100
   spread: 64
-  noiseScale: {x: 1, y: 0.5}
-  noiseTexture: {fileID: 2800000, guid: 0652033c1c374f849a9bebdec0f50c7c, type: 3}
-  contrast: 1
+  noiseScale: {x: 1, y: 1}
+  noiseTexture: {fileID: 2800000, guid: 8a547588e5fea481a97e1deb94c9612c, type: 3}
+  contrast: 10
   splashTexture: {fileID: 2800000, guid: 9cbb07cca3115403a9ee5ee3e734e27c, type: 3}
   sound: {fileID: 0}
   soundDelay: 0

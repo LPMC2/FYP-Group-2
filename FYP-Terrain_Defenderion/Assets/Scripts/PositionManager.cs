@@ -5,20 +5,24 @@ using UnityEngine;
 
 public class PositionManager : MonoBehaviour
 {
-    Vector3 initialPos;
-    Quaternion initialRotation;
-    Vector3 initialScale;
-    public NetworkVariable<bool> isCloned = new NetworkVariable<bool>();
-    public void Awake()
-    {
-        isCloned.Value = false;
-    }
+    [SerializeField] private bool m_SetValueAtStart = true;
+    [SerializeField] private Vector3 initialPos;
+    [SerializeField] private Quaternion initialRotation;
+    [SerializeField] private Vector3 initialScale;
+    //public NetworkVariable<bool> isCloned = new NetworkVariable<bool>();
+    //public void Awake()
+    //{
+    //    isCloned.Value = false;
+    //}
     // Start is called before the first frame update
     void Start()
     {
-        initialPos = gameObject.transform.position;
-        initialRotation = gameObject.transform.rotation;
-        initialScale = gameObject.transform.localScale;
+        if (m_SetValueAtStart)
+        {
+            initialPos = gameObject.transform.position;
+            initialRotation = gameObject.transform.rotation;
+            initialScale = gameObject.transform.localScale;
+        }
     }
 
     public void ResetTransform()
@@ -26,8 +30,8 @@ public class PositionManager : MonoBehaviour
         transform.position = initialPos;
         transform.rotation = initialRotation;
         transform.localScale = initialScale;
-        if (!isCloned.Value)
-            gameObject.SetActive(true);
+        //if (!isCloned.Value)
+        //    gameObject.SetActive(true);
 
     }
     public void SetScale(float Value)

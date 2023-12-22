@@ -9,8 +9,6 @@ public class GameManager : MonoBehaviour
     public GManager gManager;
     public static GameManager Singleton;
     [SerializeField] private GameState gameState = new GameState(); 
-    [SerializeField]
-    private GameObject m_XROrigin = default;
     private float originMoveSpeed = default;
     //[SerializeField]
     //private NetworkManager m_networkManager = default;

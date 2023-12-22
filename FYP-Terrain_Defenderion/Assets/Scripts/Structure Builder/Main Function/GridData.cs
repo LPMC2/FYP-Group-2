@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Reflection;
 public class GridData : MonoBehaviour
 {
+    public GridSize gridSize;
     public float cellX = 0;
     public float cellY = 0;
     public float cellHeight = 0;
@@ -27,10 +28,10 @@ public class GridData : MonoBehaviour
         id = -1;
         originInteractType = default;
         originGameObjectId = -1;
-        
+        isDefense = false;
         isUtility = false;
     }
-    public void SetData(int BlockID, Vector3 pos, Vector3 rotation, Vector3 scale, int TokenCost, int ID, InteractType type, int originID, bool isUtility, bool isDefense)
+    public void SetData(int BlockID, Vector3 pos, Vector3 rotation, Vector3 scale, int TokenCost, int ID, InteractType type, int originID, bool isUtility, bool isDefense, GridSize gridSize)
     {
         blockId = BlockID;
         SetPosition(pos);
@@ -42,7 +43,7 @@ public class GridData : MonoBehaviour
         originGameObjectId = originID;
         this.isUtility = isUtility;
         this.isDefense = isDefense;
-
+        this.gridSize = gridSize;
     }
     public void SetData(StructureStorage structureStorage)
     {
@@ -58,6 +59,7 @@ public class GridData : MonoBehaviour
         originGameObjectId = structureStorage.originGameObjectId;
         isUtility = structureStorage.isUtility;
         isDefense = structureStorage.isDefense;
+        gridSize = structureStorage.gridSize;
     }
     public void SetPosition(Vector3 position)
     {

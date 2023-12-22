@@ -29,13 +29,20 @@ public class GridGenerator : MonoBehaviour
 
     [SerializeField]
     private Material templateMaterial;
-
+    private GridSize gridSize;
     private int blockSelectCounter = 0;
 
     private void Start()
     {
 
         buildModeOn = true;
+    }
+    public void SetGridSize(int row, int col, int h, GridSize gridSize)
+    {
+        numRows = row;
+        numColumns = col;
+        numHeight = h;
+        this.gridSize = gridSize;
     }
     public int numRows = 25;
     public int numColumns = 25;
@@ -134,6 +141,7 @@ public class GridGenerator : MonoBehaviour
         }
         Quaternion direction = GetDirection(ray);
         GridData gridData = newBlock.AddComponent<GridData>();
+        gridData.gridSize = gridSize;
         Vector3 eulerRotation = direction.eulerAngles;
         //newBlock.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
         eulerRotation.x = GridManager.NormalizeAngle(eulerRotation.x);
@@ -151,6 +159,7 @@ public class GridGenerator : MonoBehaviour
         gridData.isDefense = blockSO.blockData[gridManager.CurrentBlockId].isDefense;
         gridData.isUtility = blockSO.blockData[gridManager.CurrentBlockId].isUtility;
         gridData.tokenCost = blockSO.blockData[gridManager.CurrentBlockId].tokenCost;
+        gridData.gridSize = gridSize;
         newBlock.tag = "Grid";
         newBlock.layer = LayerMask.NameToLayer("Grid");
         MeshRenderer meshRenderer = newBlock.GetComponent<MeshRenderer>();
@@ -289,7 +298,7 @@ public class GridGenerator : MonoBehaviour
         GridData gridData = target.transform.GetComponent<GridData>();
         if (gridData == null) return;
         Outline outline = target.GetComponent<Outline>();
-        if (outline == null)
+        if (outline == null && target != null)
         {
             outline = target.AddComponent<Outline>();
 
