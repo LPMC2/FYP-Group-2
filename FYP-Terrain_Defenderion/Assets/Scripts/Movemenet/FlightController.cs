@@ -36,6 +36,7 @@ public class FlightController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        ResetValues();
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
         //playerInput.Enable();
@@ -64,6 +65,12 @@ public class FlightController : MonoBehaviour
             UpdateMovementFlying();
             UpdateLook();
         }
+    }
+    public void ResetValues()
+    {
+        look = Vector2.zero;
+        cameraTransform.localRotation = Quaternion.identity;
+
     }
     public void SetMoveable(bool state)
     {

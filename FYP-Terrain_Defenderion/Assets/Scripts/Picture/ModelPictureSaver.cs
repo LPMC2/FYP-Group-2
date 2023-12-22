@@ -8,7 +8,6 @@ public class ModelPictureSaver : MonoBehaviour
     private static Camera cameraObj;
     private static Renderer modelRenderer;
     private static GameObject modelInstance;
-
     public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false)
     {
         FolderManager.CreateFolder("/StructureData/StructureImg");

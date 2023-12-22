@@ -81,7 +81,12 @@ public static class StructureSerializer
         return files.Length;
 
     }
-
+    public static void DeleteFile(string path)
+    {
+        string filePath = Application.persistentDataPath + path;
+        if(File.Exists(filePath))
+        File.Delete(filePath);
+    }
     #region Load Data Function
     public static StructureStorage[] LoadObject(string savePath)
     {

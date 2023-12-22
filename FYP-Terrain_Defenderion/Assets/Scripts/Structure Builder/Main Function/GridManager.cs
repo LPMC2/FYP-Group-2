@@ -80,6 +80,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private int currentBlockId;
     [Header("Menu & Saving Settings")]
     [SerializeField] private GameObject menuObj;
+    [SerializeField] private TMP_Dropdown gridTypeDropdown;
     #region placeBlockObject + currentBlockId Setter and Getter
     public GameObject PlaceBlockObject {
         get { return placeBlockObject; }
@@ -95,6 +96,7 @@ public class GridManager : MonoBehaviour
     string imgPath = "Default";
     private int structureId = 0;
     [SerializeField]private string name = "";
+    InventoryBehaviour inventoryBehaviour;
     #region pathSetter
     public void SetPath(string str)
     {
@@ -232,6 +234,15 @@ public class GridManager : MonoBehaviour
     {
         structureId = value;
     }
+    public void DeleteStructure()
+    {
+        string fileName = StructureSerializer.GetFileName(path, 1);
+        string filePath = "/StructureData/StructureFile/" + fileName + ".json";
+        string imgPath = "/StructureData/StructureImg/" + fileName + ".png";
+        StructureSerializer.DeleteFile(filePath);
+        StructureSerializer.DeleteFile(imgPath);
+
+    }
     private void SetStructurePath(int id)
     {
         StructureTypeFile structureTypeFile = StructureSerializer.SearchStructureFile(id, StructureSerializer.StructureType.file);
@@ -271,6 +282,7 @@ public class GridManager : MonoBehaviour
             ToggleEditState(false, false);
         }
         isMenuOpen = true;
+        inventoryBehaviour = player.GetComponent<InventoryBehaviour>();
     }
     public void SetEditable(bool value)
     {
@@ -941,6 +953,8 @@ public class GridManager : MonoBehaviour
     }
     public void ResetGrid()
     {
+        tokenManager.setTokens(tokenManager.initialTokens);
+        UpdateTokenDisplay(tokenManager.initialTokens);
         defenseCount = 0;
         UpdateDefenseCount();
         foreach (Transform child in gridContainer.transform)
@@ -964,6 +978,10 @@ public class GridManager : MonoBehaviour
         }
         if (gridContainer.transform.childCount == 0)
         {
+            if (isMainMenu)
+            {
+                SetGridSize(gridTypeDropdown.value);
+            }
             GameObject gameObject = new GameObject("Storage");
             gameObject.transform.SetParent(gridContainer.transform);
             GridData gridData = gameObject.AddComponent<GridData>();
@@ -973,7 +991,7 @@ public class GridManager : MonoBehaviour
             gridData.blockId = -2;
         }
         StructureSerializer.SaveObject(gridContainer, path);
-
+        inventoryBehaviour.StartFadeInText("Successfully saved Structure as: " + StructureSerializer.GetFileName(path, 1), Color.green, 5f);
        
     }
     public void LoadStructure()
@@ -1170,6 +1188,7 @@ public class GridManager : MonoBehaviour
                 {
                     defenseCount--;
                 }
+                gridData.blockId = structureStorage.structureId;
                 gridData.id = structureStorage.id;
                 block.tag = "Grid";
                 block.layer = LayerMask.NameToLayer("Grid");
@@ -1197,9 +1216,8 @@ public class GridManager : MonoBehaviour
                 gridSize = gridData.gridSize;
             }
             }
-
-        
         isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath));
+        inventoryBehaviour.StartFadeInText("Successfully loaded Structure: " + StructureSerializer.GetFileName(path, 1), Color.green, 5f);
         CreateVisualGrid();
     }
     public void UpdateTokenDisplay(int newAmount)
@@ -1232,7 +1250,21 @@ public class GridManager : MonoBehaviour
             return;
         }
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(path);
+        float initialCameraSize = captureCamera.orthographicSize;
+        switch(gridSize)
+        {
+            case GridSize.Small:
+                captureCamera.orthographicSize = 7.69f;
+                break;
+            case GridSize.Normal:
+                captureCamera.orthographicSize = 14.15f;
+                break;
+            case GridSize.Large:
+                captureCamera.orthographicSize = 26.3f;
+                break;
+        }
         ModelPictureSaver.CaptureAndSaveImage(captureCamera ,GenerateStructure(structureStorages), "/StructureData/StructureImg/", name);
+        captureCamera.orthographicSize = initialCameraSize;
     }
     public void SaveTempStructureImg()
     {
