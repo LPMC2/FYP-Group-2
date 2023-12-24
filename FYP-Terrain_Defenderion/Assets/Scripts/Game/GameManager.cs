@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Events;
-
-public class GameManager : MonoBehaviour
+using Unity.Netcode;
+public class GameManager : NetworkBehaviour
 {
     public GManager gManager;
     public static GameManager Singleton;
-    [SerializeField] private GameState gameState = new GameState(); 
+    [SerializeField] private LoadFunction[] loadState;
+    [SerializeField] private NetworkVariable<GameState> gameState = new NetworkVariable<GameState>(); 
     private float originMoveSpeed = default;
     //[SerializeField]
     //private NetworkManager m_networkManager = default;
@@ -73,12 +74,12 @@ public class GameManager : MonoBehaviour
         isEnded = false;
         gameStarted = false;
 
-        gameState = GameState.Default;
+        gameState.Value = GameState.UI;
         m_EnterLobbyEvent.Invoke();
     }
     private void Awake()
     {
-        gManager.StageLevel = 0;
+        gManager.StageLevel.Value = 0;
         Singleton = this;
         
     }
@@ -90,8 +91,11 @@ public class GameManager : MonoBehaviour
         //player.transform.position = startPosition;
         AddStageLevel();
         gameStarted = true;
-        Animator animator = m_UIObject.GetComponent<Animator>();
-        animator.Play("FadeIn");
+        if (m_UIObject != null)
+        {
+            Animator animator = m_UIObject.GetComponent<Animator>();
+            animator.Play("FadeIn");
+        }
         m_EnterGameEvent.Invoke();
 
     }
@@ -105,9 +109,9 @@ public class GameManager : MonoBehaviour
 
     public void AddStageLevel()
     {
-        gManager.StageLevel++;
+        gManager.StageLevel.Value++;
         if (gManager.StartStageEvent.Length > -1)
-            InvokeUnityEvent(gManager.StartStageEvent[gManager.StageLevel]);
+            InvokeUnityEvent(gManager.StartStageEvent[gManager.StageLevel.Value]);
 
     }
 
@@ -128,9 +132,9 @@ public class GameManager : MonoBehaviour
 
         animator.Play("FadeIn");
         StartCoroutine(DelayTeleport(player.GetComponent<PositionManager>().GetInitialPosition()));
-        gManager.StageLevel = 0;
+        gManager.StageLevel.Value = 0;
        
-        gameState = GameState.Default;
+        gameState.Value = GameState.Default;
         m_EnterLobbyEvent.Invoke();
         //NetworkManager.Singleton.Shutdown();
     }
@@ -138,9 +142,9 @@ public class GameManager : MonoBehaviour
     {
         TimeManager timeManager = GetComponent<TimeManager>();
         timeManager.m_ReturnDisplayHeader = "You ran out of time!";
-        if (gameState == GameState.Default)
+        if (gameState.Value == GameState.Default)
         {
-            gameState = GameState.Lose;
+            gameState.Value = GameState.Lose;
             isEnded = true;
         }
 
@@ -149,9 +153,9 @@ public class GameManager : MonoBehaviour
     {
         TimeManager timeManager = GetComponent<TimeManager>();
         timeManager.m_ReturnDisplayHeader = "You escaped and won the game!";
-        if (gameState == GameState.Default)
+        if (gameState.Value == GameState.Default)
         {
-            gameState = GameState.Win;
+            gameState.Value = GameState.Win;
             isEnded= true;
         }
     }
@@ -178,13 +182,13 @@ public class GameManager : MonoBehaviour
     {
         //NetworkDetection();
         if (gameStarted == false) return;
-        if (gManager.LoopingStageEvent.Length != 0 && gManager.LoopingStageEvent.Length <= gManager.StageLevel)
+        if (gManager.LoopingStageEvent.Length != 0 && gManager.LoopingStageEvent.Length <= gManager.StageLevel.Value)
         {
-            InvokeUnityEvent(gManager.LoopingStageEvent[gManager.StageLevel]);
+            InvokeUnityEvent(gManager.LoopingStageEvent[gManager.StageLevel.Value]);
         }
         if(isEnded)
         {
-            switch(gameState)
+            switch(gameState.Value)
             {
                 case GameState.Lose:
                     StartCoroutine(EndGame());
@@ -198,6 +202,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    #region loadFunctions
+    public void LoadStage()
+    {
+        foreach (LoadFunction load in loadState)
+        {
+            StartCoroutine(LoadFunction(load));
+        }
+
+    }
+    private IEnumerator LoadFunction(LoadFunction loadFunction)
+    {
+        loadFunction.loadEvent.Invoke();
+        yield return new WaitForEndOfFrame();
+    }
+    
+    #endregion
     //public void NetworkDetection()
     //{
     //    if(networkData != null && networkData.startNetwork == true)
@@ -224,7 +245,9 @@ public class GameManager : MonoBehaviour
 [System.Serializable]
 public struct GManager 
 {
-    public int StageLevel;
+    public NetworkVariable<int> StageLevel;
+    [TextArea]
+    public string[] noteForStage;
     [Header("Unity Event Functions must be void\nNote: Each Element is a different stage")]
     [SerializeField]
     private UnityEvent[] m_StartStageEvent;
@@ -233,10 +256,28 @@ public struct GManager
     private UnityEvent[] m_LoopingStageEvent;
     public UnityEvent[] LoopingStageEvent { get {return m_LoopingStageEvent; } }
 }
+[System.Serializable]
+public class LoadFunction
+{
+    public LoadState loadState;
+    public UnityEvent loadEvent;
 
+}
 public enum GameState
 {
     Default,
     Win,
-    Lose
+    Lose,
+    UI
+}
+public enum LoadState
+{
+    LoadScene,
+    RandomGeneration,
+    StructureGeneration,
+    InventoryGeneration,
+    PlayerSet,
+    Custom
+
+
 }

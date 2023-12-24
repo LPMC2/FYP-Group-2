@@ -88,9 +88,16 @@ public static class StructureSerializer
         File.Delete(filePath);
     }
     #region Load Data Function
-    public static StructureStorage[] LoadObject(string savePath)
+    public static StructureStorage[] LoadObject(string savePath, bool includeApplicationDataPath = true)
     {
-        string path = Application.persistentDataPath + savePath;
+        string path = "";
+        if(includeApplicationDataPath)
+        {
+            path = Application.persistentDataPath + savePath;
+        } else
+        {
+            path = savePath;
+        }
         
         if (File.Exists(path))
         {
@@ -100,6 +107,7 @@ public static class StructureSerializer
             structureStorages = formatter.Deserialize(stream) as StructureStorage[];
             stream.Close();
             Debug.Log("Count: " + structureStorages.Length);
+
             return structureStorages;
         } else
         {
@@ -109,15 +117,40 @@ public static class StructureSerializer
             return null;
         }
     }
+    public static StructureStorage[] LoadObject(TextAsset saveFile)
+    {
+        if (saveFile != null)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream(saveFile.bytes);
+            StructureStorage[] structureStorages = formatter.Deserialize(stream) as StructureStorage[];
+            stream.Close();
+            //Debug.Log("Count: " + structureStorages.Length);
+            return structureStorages;
+        }
+        else
+        {
+            Debug.LogError("Save file is null!");
+            return null;
+        }
+    }
     #endregion
-    public static string GetFileName(string savePath, int mode = 0)
+    public static string GetFileName(string savePath, int mode = 0, bool includeApplicationDataPath =  true)
     {
         /*  Mode 0 -> Remove _ from file as space
          *  Mode 1 -> Keep all
          * 
          */
-        string path = Application.persistentDataPath + savePath;
-        if(File.Exists(path))
+        string path = "";
+        if (includeApplicationDataPath)
+        {
+            path = Application.persistentDataPath + savePath;
+        }
+        else
+        {
+            path = savePath;
+        }
+        if (File.Exists(path))
         {
             string name = Path.GetFileNameWithoutExtension(path);
             if(mode == 0)
@@ -238,7 +271,7 @@ public static class StructureSerializer
         filePath = ReplaceBetweenFileAndImg(filePath, 0, false);
         //Debug.Log(filePath);
         Camera camera = GameObject.FindGameObjectWithTag("GridCamera").GetComponent<Camera>();
-        GameObject gameObject = GenerateStructure(GameObject.Find("Grid").GetComponent<GridManager>(), LoadObject(structureFilePath));
+        GameObject gameObject = GenerateStructure(LoadObject(structureFilePath));
         float initialCameraSize = camera.orthographicSize;
         switch (gameObject.GetComponent<GridData>().gridSize)
         {
@@ -255,12 +288,9 @@ public static class StructureSerializer
         ModelPictureSaver.CaptureAndSaveImage(camera, gameObject, filePath, name);
         camera.orthographicSize = initialCameraSize;
     }
-    public static GameObject GenerateStructure(GridManager gridManager, StructureStorage[] structureStorage, Vector3 position = default(Vector3))
+    public static GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3), bool combineObjects = false)
     {
-        if(gridManager == null)
-        {
-            return null;
-        }
+        List<GameObject> utilityList = new List<GameObject>();
         BlockSO blockData = BlockManager.BlockData;
         if (position == default(Vector3))
         {
@@ -279,6 +309,9 @@ public static class StructureSerializer
                 if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
                 {
                     block.transform.SetParent(structure.transform);
+                } else
+                {
+                    utilityList.Add(block);
                 }
                 count++;
                 block.transform.position = new Vector3((structureStorage[i].cellPos[0]) , (structureStorage[i].cellPos[1]) , (structureStorage[i].cellPos[2]) );
@@ -290,6 +323,14 @@ public static class StructureSerializer
                 gridData1.gridSize = structureStorage[i].gridSize;
             }
 
+        }
+        if(combineObjects)
+        {
+            CombineGameObjects(structure);
+        }
+        foreach(GameObject utility in utilityList)
+        {
+            utility.transform.SetParent(structure.transform);
         }
         Debug.Log("Count: " + count);
         return structure;
@@ -307,6 +348,34 @@ public static class StructureSerializer
         Sprite sprite = Sprite.Create(texture, rect, Vector2.zero);
 
         return sprite;
+    }
+    private static void CombineGameObjects(GameObject parentObject)
+    {
+        List<GameObject> excludeList = new List<GameObject>();
+        foreach (Transform child in parentObject.transform)
+        {
+            if (child.GetComponent<GridData>().isDefense || child.GetComponent<GridData>().isUtility)
+            {
+                excludeList.Add(child.gameObject);
+                child.SetParent(null);
+            }
+
+        }
+        MeshCombiner meshCombiner = parentObject.AddComponent<MeshCombiner>();
+        meshCombiner.CreateMultiMaterialMesh = true;
+        meshCombiner.DestroyCombinedChildren = true;
+        meshCombiner.CombineMeshes(true);
+
+        MonoBehaviour.Destroy(meshCombiner);
+        MeshCollider meshCollider = parentObject.AddComponent<MeshCollider>();
+        MeshFilter meshFilter = parentObject.GetComponent<MeshFilter>();
+        meshCollider.sharedMesh = meshFilter.sharedMesh;
+        meshCollider.convex = false;
+        meshCollider.providesContacts = true;
+        foreach (GameObject gameObject in excludeList)
+        {
+            gameObject.transform.SetParent(parentObject.transform);
+        }
     }
     public static void UploadStructure(string path)
     {

@@ -138,6 +138,7 @@ public class ShooterBehaviour : MonoBehaviour
                         target =closestObject;
                         currentTarget = closestObject;
                         isCooldown = true;
+                        if(bulletType == ShootType.Ray)
                         CloseLaser();
                     }
                    
@@ -149,6 +150,7 @@ public class ShooterBehaviour : MonoBehaviour
         {
             target = null;
             currentTarget = null;
+            if(bulletType == ShootType.Ray)
             CloseLaser();
         }
     }

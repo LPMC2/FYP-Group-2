@@ -12,6 +12,7 @@ public enum InventoryType
 public class InventoryBehaviour : MonoBehaviour
 {
     [Header("Toggle")]
+    [SerializeField] private bool isInitializeOnStart = true;
     [SerializeField] private bool isDropable = false;
     [SerializeField] private bool haveInventoryBag = false;
     public bool HaveInventoryBag { set { haveInventoryBag = value; } }
@@ -138,24 +139,32 @@ public class InventoryBehaviour : MonoBehaviour
         {
             inventory = gameObject.GetComponent<InventorySystem>();
         }
+        if(isInitializeOnStart)
         setup();
         ToolTipGameobject = GameObject.FindGameObjectWithTag("ToolTip");
     }
-
+    public void SetupInventory()
+    {
+        setup();
+        isInitializeOnStart = true;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (isItemSelectable)
+        if (isInitializeOnStart)
         {
-            inputNumDetection();
-        }
-        if(isDropable)
-        {
-            dropDetection();
-        }
-        if(haveInventoryBag)
-        {
-            openBagDetection();
+            if (isItemSelectable)
+            {
+                inputNumDetection();
+            }
+            if (isDropable)
+            {
+                dropDetection();
+            }
+            if (haveInventoryBag)
+            {
+                openBagDetection();
+            }
         }
     }
     private void openBagDetection()
@@ -278,6 +287,7 @@ public class InventoryBehaviour : MonoBehaviour
     {
         setSlotUI(SlotPlaceHolder, "hotbar");
         setInitialInventory();
+        if(haveInventoryBag)
         InitialInvBag();
     }
     private void setSlotUI(GameObject slotPH, string type)
@@ -308,13 +318,20 @@ public class InventoryBehaviour : MonoBehaviour
         Image uiImg = ui.GetComponent<Image>();
         uiImg.sprite = slotImageNormal;
         uiImg.preserveAspect = true;
-        Button button = ui.AddComponent<Button>();
-        button.targetGraphic = uiImg;
-        ColorBlock colorBlock = button.colors;
-        colorBlock.highlightedColor = Color.green;
-        button.colors = colorBlock;
-        SlotBehaviour slotBehaviour = ui.AddComponent<SlotBehaviour>();
-        slotBehaviour.Initialize(this, slotObj.transform.childCount-1, SlotType.InventorySlot);
+        if(inventoryType == InventoryType.item)
+        {
+            Destroy(ui.GetComponent<BoxCollider>());
+        }
+        if (inventoryType == InventoryType.block)
+        {
+            Button button = ui.AddComponent<Button>();
+            button.targetGraphic = uiImg;
+            ColorBlock colorBlock = button.colors;
+            colorBlock.highlightedColor = Color.green;
+            button.colors = colorBlock;
+            SlotBehaviour slotBehaviour = ui.AddComponent<SlotBehaviour>();
+            slotBehaviour.Initialize(this, slotObj.transform.childCount - 1, SlotType.InventorySlot);
+        }
     }
     private void setInitialInventory()
     {
@@ -404,7 +421,10 @@ public class InventoryBehaviour : MonoBehaviour
             switch (inventoryType)
             {
                 case InventoryType.item:
-                    targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+                    if (invId >= 0)
+                    {
+                        targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+                    }
                      break;
                 case InventoryType.block:
                     if(invId == -1)
