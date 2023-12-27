@@ -13,6 +13,7 @@ public class FlightController : MonoBehaviour
     [SerializeField] float mouseSensitivity = 3f;
     [SerializeField] float acceleration = 1f;
     [SerializeField] PlayerInput playerInput;
+    [SerializeField] private bool startMoveOnInitialize = false;
     bool isMoveable = false;
     InputAction moveAction;
     InputAction lookAction;
@@ -35,6 +36,10 @@ public class FlightController : MonoBehaviour
     }
     private void Start()
     {
+        if(startMoveOnInitialize)
+        {
+            isMoveable = true;
+        }
         controller = GetComponent<CharacterController>();
         ResetValues();
         //Cursor.lockState = CursorLockMode.Locked;

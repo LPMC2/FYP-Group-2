@@ -13,7 +13,44 @@ public class InventoryBagSO : ScriptableObject
     public GameObject MenuNamePrefab;
     public GameObject MenuSlotPrefab;
 
+    public int GetIndexFromTypeName(string name)
+    {
+        int index = 0;
+        foreach(InvType targetname in inventoryBag)
+        {
+            if(name == targetname.TypeName)
+            {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+    public int[] SetItemSize(InvMenu target, int size, bool ignoreOriginValue = false, bool isList = false, int originIndexSize = 0)
+    {
+        int[] newItemID = new int[size];
+        int index = 0;
+        foreach(int id in target.BlockID)
+        {
+            if (index < size)
+            {
+                if (!ignoreOriginValue)
+                {
+                    newItemID[index] = id;
+                } else if(isList)
+                {
+                    newItemID[index] = index + originIndexSize;
+                } else
+                {
+                    newItemID[index] = 0;
+                }
+                index++;
+            }
+        }
+        target.BlockID = newItemID;
+        return  newItemID;
 
+    }
 }
 
 [Serializable]
@@ -33,7 +70,7 @@ public class InvMenu
     [SerializeField] private int[] blockID;
     #region Getter
     public string MenuName { get { return menuName; } }
-    public int[] BlockID { get { return blockID; } }
+    public int[] BlockID { get { return blockID; } set { blockID = value; } }
     #endregion
 
 }

@@ -7,7 +7,8 @@ using TMPro;
 public enum InventoryType
 {
     item,
-    block
+    block,
+    Structure
 }
 public class InventoryBehaviour : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private GameObject slotObject;
     [SerializeField] private GameObject placeItemLocation;
     [SerializeField] private int[] initialSlotItem;
+    [SerializeField] private StructureManager structureManager;
     [Header("Drop Settings")]
     [SerializeField] private GameObject dropItemPrefab;
     [SerializeField] private float dropForce = 10f;
@@ -322,7 +324,7 @@ public class InventoryBehaviour : MonoBehaviour
         {
             Destroy(ui.GetComponent<BoxCollider>());
         }
-        if (inventoryType == InventoryType.block)
+        if (inventoryType == InventoryType.block || inventoryType == InventoryType.Structure)
         {
             Button button = ui.AddComponent<Button>();
             button.targetGraphic = uiImg;
@@ -332,6 +334,7 @@ public class InventoryBehaviour : MonoBehaviour
             SlotBehaviour slotBehaviour = ui.AddComponent<SlotBehaviour>();
             slotBehaviour.Initialize(this, slotObj.transform.childCount - 1, SlotType.InventorySlot);
         }
+
     }
     private void setInitialInventory()
     {
@@ -340,7 +343,7 @@ public class InventoryBehaviour : MonoBehaviour
             setSlotItem(i, initialSlotItem[i]);
         }
     }
-    public void setSlotItem(int id, int item)
+    public void setSlotItem(int id, int item, bool equipItem = true)
     {
         inventory.slot[id].setId(item);
         switch(inventoryType)
@@ -358,11 +361,15 @@ public class InventoryBehaviour : MonoBehaviour
 
                 }
             break;
+            case InventoryType.Structure:
+ 
+                break;
         }
        
         setSlotObjUI(id, SlotPlaceHolder, slotObject);
         if (id == selectedSlot)
         {
+            if(equipItem)
             EquipItem(id);
         }
     }
@@ -484,10 +491,7 @@ public class InventoryBehaviour : MonoBehaviour
         {
 
             GameObject targetUI = slotPH.transform.GetChild(id).gameObject;
-            if (targetUI.transform.childCount > 1)
-            {
-                Destroy(targetUI.transform.GetChild(0).gameObject);
-            }
+            GameObjectExtension.RemoveAllObjectsFromParent(targetUI.transform);
             if (inventoryType == InventoryType.item)
             {
                 if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < itemData.item.Length)
@@ -513,7 +517,7 @@ public class InventoryBehaviour : MonoBehaviour
             {
                 if (inventory.slot[id].getId() != -1 && inventory.slot[id].getId() < blockData.blockData.Length)
                 {
-                    GameObjectExtension.RemoveAllObjectsFromParent(targetUI.transform);
+                   
                     int invId = inventory.slot[id].getId();
                     GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
                     instantiatedUI.transform.SetParent(targetUI.transform);
@@ -551,6 +555,34 @@ public class InventoryBehaviour : MonoBehaviour
                     if (simpleTooltip != null)
                         simpleTooltip.infoLeft = blockData.blockData[inventory.slot[id].getId()].blockModel.name;
                 }
+            }
+            if(inventoryType == InventoryType.Structure)
+            {
+                int invId = inventory.slot[id].getId();
+                GameObject instantiatedUI = Instantiate(slotObj, targetUI.transform.position, Quaternion.identity, targetUI.transform);
+                Image image = instantiatedUI.GetComponent<Image>();
+                if (image == null)
+                {
+                    image = instantiatedUI.AddComponent<Image>();
+                }
+                image.preserveAspect = true;
+                RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
+                if (invId != -1)
+                {
+                    if (structureManager.structurePoolings[invId].structures != null && structureManager.structurePoolings[invId].structures.Count > 0)
+                    {
+                        image.sprite = structureManager.structurePoolings[invId].structureImage;
+                        InventoryBehaviour.SetRectTransformFromStructureSize(rectTransform, structureManager.structurePoolings[invId].structureSize);
+                        SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();
+                        if (simpleTooltip != null)
+                            simpleTooltip.infoLeft = structureManager.structurePoolings[invId].name;
+                    }
+                }
+                if(image.sprite == null)
+                {
+                    image.color = Color.clear;
+                }
+
             }
         }
 
@@ -650,6 +682,9 @@ public class InventoryBehaviour : MonoBehaviour
                         itemName = blockData.blockData[invId].blockTexture.name;
                     }
                 break;
+                case InventoryType.Structure:
+                    itemName = structureManager.structurePoolings[invId].name;
+                    break;
             }
         }
 
@@ -769,14 +804,23 @@ public class InventoryBehaviour : MonoBehaviour
             text1.text = invMenu.MenuName;
             mainHeight += menuNameObj.GetComponent<RectTransform>().rect.height;
             GameObject menuSlot = Instantiate(invBagSO.MenuSlotPrefab, menuContent.transform.position, Quaternion.identity, menuContent.transform);
-            foreach(int blockID in invMenu.BlockID)
+            foreach(int itemID in invMenu.BlockID)
             {
                 GameObject slotItem = Instantiate(slotBasePrefab, menuSlot.transform.position, Quaternion.identity, menuSlot.transform);
-                SetBlockSlotUI(blockID, slotObject, slotItem.transform);
                 SimpleTooltip simpleTooltip = slotItem.GetComponent<SimpleTooltip>();
-                simpleTooltip.infoLeft = blockData.blockData[blockID].blockModel.name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
                 SlotBehaviour slotBehaviour = slotItem.GetComponent<SlotBehaviour>();
-                slotBehaviour.Initialize(this, blockID, SlotType.InventoryBag);
+                if (inventoryType == InventoryType.block)
+                {
+                    SetBlockSlotUI(itemID, slotObject, slotItem.transform);
+                    simpleTooltip.infoLeft = blockData.blockData[itemID].blockModel.name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
+                    slotBehaviour.Initialize(this, itemID, SlotType.InventoryBag);
+                }
+                if(inventoryType == InventoryType.Structure)
+                {
+                    SetStructureSlotUI(itemID, slotObject, slotItem.transform);
+                    simpleTooltip.infoLeft = structureManager.structurePoolings[itemID].name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
+                    slotBehaviour.Initialize(this, itemID, SlotType.StructureEditor);
+                }
             }
             RectTransform rectTransform = menuSlot.GetComponent<RectTransform>();
             float height = slotBasePrefab.GetComponent<RectTransform>().rect.height * Mathf.Ceil(menuSlot.transform.childCount / 10f) + menuContentOffset;
@@ -798,8 +842,11 @@ public class InventoryBehaviour : MonoBehaviour
     }
     private void OpenBag()
     {
-        if (gridManager.IsMenuOpen) return;
-        gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
+        if (gridManager != null && gridManager.IsMenuOpen) return;
+        if (gridManager != null)
+        {
+            gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
+        }
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
         ToolTipGameobject.SetActive(invBagPanel.activeInHierarchy);
         ToolTipGameobject.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
@@ -808,4 +855,53 @@ public class InventoryBehaviour : MonoBehaviour
 
        
     }
+    #region structure
+    private void SetStructureSlotUI(int id, GameObject slotObj, Transform parent)
+    {
+        int invId = id;
+        GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity, parent);
+        if (instantiatedUI.GetComponent<Image>() == null)
+        {
+            instantiatedUI.AddComponent<Image>();
+        }
+        instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
+        Image uiImg = instantiatedUI.GetComponent<Image>();
+        uiImg.raycastTarget = false;
+        if (structureManager != null)
+        {
+
+            uiImg.sprite = structureManager.structurePoolings[invId].structureImage;
+            InventoryBehaviour.SetRectTransformFromStructureSize(rectTransform, structureManager.structurePoolings[invId].structureSize);
+        }
+        uiImg.preserveAspect = true;
+    }
+    public static void SetRectTransformFromStructureSize(RectTransform rectTransform, GridSize gridSize)
+    {
+        float width = 0f;
+        float height = 0f;
+        Vector2 newPosition = rectTransform.anchoredPosition;
+
+        switch (gridSize)
+        {
+            case GridSize.Small:
+                newPosition.y = -3.22f;
+                width = rectTransform.rect.width * 3f;
+                height = rectTransform.rect.height * 3f;
+                break;
+            case GridSize.Normal:
+                newPosition.y = -10.25f;
+                width = rectTransform.rect.width * 2.5f;
+                height = rectTransform.rect.height * 2.5f;
+                break;
+            case GridSize.Large:
+                newPosition.y = -15f;
+                width = rectTransform.rect.width * 3f;
+                height = rectTransform.rect.height * 3f;
+                break;
+        }
+        rectTransform.sizeDelta = new Vector2(width, height);
+        rectTransform.anchoredPosition = newPosition;
+    }
+    #endregion
 }

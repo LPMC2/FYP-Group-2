@@ -6,13 +6,43 @@ using UnityEngine;
 public class GridGenerator : MonoBehaviour
 {
     [SerializeField]
+    private DisplayBehaviour displayBehaviour;
+    [SerializeField]
     private Camera playerCamera;
     [SerializeField]
     private float minBuildDistance = 1f;
     private bool buildModeOn = false;
     public bool BuildMode { get { return buildModeOn; } set { buildModeOn = value; } }
     private bool canBuild = false;
+    [SerializeField]
+    private List<GridCell> gridCells = new List<GridCell>();
+    #region gridcell list manager
+    public bool ValueEquals(int row, int column, int height)
+    {
+        foreach(GridCell gridCell in gridCells)
+        {
+            if(gridCell.Row == row && gridCell.Column == column && gridCell.Height == height)
+            {
+                return true;
+            }
+        }
+        return false;
 
+    }
+    public void AddValue(int row, int column, int height)
+    {
+        gridCells.Add(new GridCell(row, column, height));
+    }
+    public void RemoveValue(int row, int column, int height)
+    {
+        Debug.Log("Remove Value: " + row + " " + column + " " + height);
+        gridCells.RemoveAll(item => item.Row == row && item.Column == column && item.Height == height);
+    }
+    public void RemoveAll()
+    {
+        gridCells.Clear();
+    }
+    #endregion
     private BlockSO bSys;
 
     [SerializeField]
@@ -131,7 +161,7 @@ public class GridGenerator : MonoBehaviour
         {
             return;
         }
-
+        gridCells.Add(new GridCell(Mathf.CeilToInt(buildPos.x), Mathf.CeilToInt(buildPos.z), (int)buildPos.y));
         Ray ray = new Ray(shootingPoint.position, shootingPoint.forward);
         GameObject newBlock = Instantiate(gridManager.PlaceBlockObject, buildPos, Quaternion.identity, parent);
         BoxCollider boxCollider = newBlock.GetComponent<BoxCollider>();
@@ -152,7 +182,7 @@ public class GridGenerator : MonoBehaviour
         newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, gridManager.PlaceBlockObject.transform.position.x + gridManager.PlaceBlockObject.transform.position.z);
         newBlock.transform.position += offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-        gridData.SetPosition(buildPos+offsetPos);
+        gridData.SetPosition( new Vector3(buildPos.x+offsetPos.x, buildPos.y, buildPos.z + offsetPos.z));
         gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
         gridData.Scale = gridManager.PlaceBlockObject.transform.localScale;
         gridData.blockId = gridManager.CurrentBlockId;
@@ -210,6 +240,7 @@ public class GridGenerator : MonoBehaviour
                 {
                     gridManager.AddDefense(-1);
                 }
+                RemoveValue(Mathf.CeilToInt(gridData.cellX), Mathf.CeilToInt(gridData.cellY),(int)gridData.cellHeight);
                 Destroy(hit.transform.gameObject);
             }
             return;
@@ -229,6 +260,7 @@ public class GridGenerator : MonoBehaviour
     }
     bool boundState;
     private bool distanceState;
+    private bool repeatedState;
     private void ErrorMessage()
     {
 
@@ -236,12 +268,32 @@ public class GridGenerator : MonoBehaviour
         if (inventoryBehaviour == null) return;
         if (distanceState == false)
         {
+            if(inventoryBehaviour != null)
             inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Too close to build a block", Color.red);
+            else if(displayBehaviour!=null)
+            {
+                displayBehaviour.StartFadeInText("Unable to place block. Reason: Too close to build a block", Color.red);
+            }
         }
         if (boundState == false)
         {
+            if(inventoryBehaviour != null)
             inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Block out of bounds", Color.red);
-               
+            else if (displayBehaviour != null)
+            {
+                displayBehaviour.StartFadeInText("Unable to place block. Reason: Block out of bounds", Color.red);
+            }
+
+        }
+        if(repeatedState)
+        {
+            if(inventoryBehaviour != null)
+            inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Block Occupied", Color.red);
+            else if(displayBehaviour != null)
+            {
+                displayBehaviour.StartFadeInText("Unable to place block. Reason: Block Occupied!", Color.red);
+            }
+            repeatedState = false;
         }
 
         
@@ -253,11 +305,11 @@ public class GridGenerator : MonoBehaviour
                spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
                spawnPosition.z > -numColumns / 2f && spawnPosition.z < numColumns / 2f;
         distanceState = distance >= minBuildDistance;
-        
+        repeatedState = ValueEquals(Mathf.CeilToInt(spawnPosition.x), Mathf.CeilToInt(spawnPosition.z), (int)spawnPosition.y);
         // Check if the spawn position is within the valid range
         return spawnPosition.x > -numRows / 2f && spawnPosition.x < numRows / 2f &&
                spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
-               spawnPosition.z > -numColumns/2f && spawnPosition.z < numColumns/2f && distance >= minBuildDistance;
+               spawnPosition.z > -numColumns/2f && spawnPosition.z < numColumns/2f && distance >= minBuildDistance && !repeatedState;
     }
     GameObject lastOutlineBlock;
     private void PerformOutlineRaycast()

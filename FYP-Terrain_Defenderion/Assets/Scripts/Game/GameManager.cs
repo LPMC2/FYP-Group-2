@@ -215,7 +215,7 @@ public class GameManager : NetworkBehaviour
     private IEnumerator LoadFunction(LoadFunction loadFunction)
     {
         loadFunction.loadEvent.Invoke();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.75f);
     }
     
     #endregion

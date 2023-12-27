@@ -307,7 +307,7 @@ public class GridManager : MonoBehaviour
         {
             for (int col = 0; col < numColumns; col++)
             {
-                grid[row, col] = new GridCell(row, col);
+                grid[row, col] = new GridCell(row, col, 1);
             }
         }
     }
@@ -961,6 +961,10 @@ public class GridManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        if(gridGenerator != null)
+        {
+            gridGenerator.RemoveAll();
+        }
     }
     private void ToggleCellState(int row, int col)
     {
@@ -1194,6 +1198,10 @@ public class GridManager : MonoBehaviour
                 block.layer = LayerMask.NameToLayer("Grid");
                 gridData.originGameObjectId = structureStorage.originGameObjectId;
                 gridData.originInteractType = structureStorage.originInteractType;
+                if(gridGenerator != null)
+                {
+                    gridGenerator.AddValue(Mathf.CeilToInt(structureStorage.cellPos[0]), Mathf.CeilToInt(structureStorage.cellPos[1]), (int)structureStorage.cellPos[2]);
+                }
                 cost += structureStorage.tokenCost;
                 BoxCollider boxCollider = block.GetComponent<BoxCollider>();
                 if (boxCollider != null)
@@ -1266,6 +1274,25 @@ public class GridManager : MonoBehaviour
         ModelPictureSaver.CaptureAndSaveImage(captureCamera ,GenerateStructure(structureStorages), "/StructureData/StructureImg/", name);
         captureCamera.orthographicSize = initialCameraSize;
     }
+    public static void SaveStructureImg(TextAsset file, Camera camera, string name, string path = "")
+    {
+        StructureStorage[] structureStorages = StructureSerializer.LoadObject(file);
+        float initialCameraSize = camera.orthographicSize;
+        switch (structureStorages[0].gridSize)
+        {
+            case GridSize.Small:
+                camera.orthographicSize = 7.69f;
+                break;
+            case GridSize.Normal:
+                camera.orthographicSize = 14.15f;
+                break;
+            case GridSize.Large:
+                camera.orthographicSize = 26.3f;
+                break;
+        }
+        ModelPictureSaver.CaptureAndSaveImage(camera, StructureSerializer.GenerateStructure(structureStorages), path, name);
+        camera.orthographicSize = initialCameraSize;
+    }
     public void SaveTempStructureImg()
     {
         int oldMask = captureCamera.cullingMask;
@@ -1298,23 +1325,29 @@ public class GridManager : MonoBehaviour
     }
     #endregion
 }
-
+[Serializable]
 public class GridCell
 {
     public int Row { get; private set; }
     public int Column { get; private set; }
+    public int Height { get; private set; }
     public bool IsAlive { get; private set; }
 
-    public GridCell(int row, int column)
+    public GridCell(int row, int column, int height)
     {
         Row = row;
         Column = column;
+        Height = height;
         IsAlive = false;
     }
 
     public void ToggleState()
     {
         IsAlive = !IsAlive;
+    }
+    public void SetAliveState(bool value)
+    {
+        IsAlive = value;
     }
 }
 public enum GridSize

@@ -21,6 +21,9 @@ public class SlotBehaviour : MonoBehaviour
             case SlotType.InventorySlot:
                 button.onClick.AddListener(Equip);
                 break;
+            case SlotType.StructureEditor:
+                button.onClick.AddListener(SetSlotItem);
+                break;
         
         }
     }
@@ -32,11 +35,13 @@ public class SlotBehaviour : MonoBehaviour
     {
         inventoryBehaviour.EquipItem(itemID);
     }
+   
 }
 public enum SlotType 
 {
     Default,
     InventoryBag,
-    InventorySlot
+    InventorySlot,
+    StructureEditor
 }
 

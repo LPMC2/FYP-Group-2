@@ -4,24 +4,30 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StructureManager : MonoBehaviour
 {
     [Header("Note: Must contains StrcutureStorage data inside")]
     [SerializeField] private TextAsset[] defaultStructureFiles;
-    [SerializeField] private string filePath = "";
+    [SerializeField] private InventoryBagSO structureSO;
+    public InventoryBagSO StructureSO { get { return structureSO; } }
+    [SerializeField] private string structureFilePath = "/StructureData/StructureFile/";
+    [SerializeField] private string structureImgPath = "/StructureData/StructureImg/";
+    [SerializeField] private string DefaultStructureImgPath = "/StructureData/DefaultStructure/Img/";
     [SerializeField] private int maxStructures = 10;
     [SerializeField] private string[] structurePaths;
+    [SerializeField] private Camera captureCamera;
     public StructurePooling[] structurePoolings;
     private void Start()
     {
-        filePath = Application.persistentDataPath + filePath;
-        structurePoolings = new StructurePooling[Directory.GetFiles(filePath).Length + defaultStructureFiles.Length];
+        structureFilePath = Application.persistentDataPath + structureFilePath;
+        structurePoolings = new StructurePooling[Directory.GetFiles(structureFilePath).Length + defaultStructureFiles.Length];
         for (int i = 0; i < structurePoolings.Length; i++)
         {
             structurePoolings[i] = new StructurePooling();
         }
-        structurePaths = Directory.GetFiles(filePath);
+        structurePaths = Directory.GetFiles(structureFilePath);
         int count = 0;
         //Default Structures
         foreach(TextAsset textAsset in defaultStructureFiles)
@@ -29,18 +35,27 @@ public class StructureManager : MonoBehaviour
             StructureStorage[] structureStorages = StructureSerializer.LoadObject(textAsset);
             structurePoolings[count].StructureData = structureStorages;
             structurePoolings[count].isDefault = true;
-            structurePoolings[count].name = textAsset.name;
+            structurePoolings[count].name = StructureSerializer.SetStructureNameFromFile(textAsset.name, false);
+            GridManager.SaveStructureImg(textAsset, captureCamera, StructureSerializer.SetStructureNameFromFile(textAsset.name, true), DefaultStructureImgPath);
+            structurePoolings[count].structureImage = StructureSerializer.LoadSpriteFromFile(DefaultStructureImgPath + textAsset.name + ".png");
+            structurePoolings[count].structureSize = structureStorages[0].gridSize;
             count++;
         }
-        //Plauyer Created Structures
+        int defaultCount = count;
+        structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("System")].invMenus[0], count, true, true);
+        //Player Created Structures
         foreach(string structurePath in structurePaths)
         {
+            string name = "";
             StructureStorage[] structureStorages = StructureSerializer.LoadObject(structurePath, false);
             structurePoolings[count].StructureData = structureStorages;
-            structurePoolings[count].name = StructureSerializer.GetFileName(structurePath,1, false);
+            name = StructureSerializer.GetFileName(structurePath, 1, false);
+            structurePoolings[count].name = StructureSerializer.SetStructureNameFromFile(name, false);
+            structurePoolings[count].structureImage = StructureSerializer.LoadSpriteFromFile(structureImgPath + name + ".png");
+            structurePoolings[count].structureSize = structureStorages[0].gridSize;
             count++;
         }
-
+        structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("Custom")].invMenus[0], count-defaultCount, true, true, defaultCount++);
     }
     
     public void LoadAllStructures()
@@ -76,6 +91,8 @@ public class StructurePooling
 {
     public List<GameObject> structures = new List<GameObject>();
     private StructureStorage[] structureData;
+    public Sprite structureImage;
+    public GridSize structureSize;
     public StructureStorage[] StructureData { get { return structureData; } set { structureData = value; } }
     public string name;
     public int id = -1;

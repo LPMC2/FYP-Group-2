@@ -134,6 +134,25 @@ public static class StructureSerializer
             return null;
         }
     }
+    //public static Sprite FindImage(string filePath)
+    //{
+    //    string imagePath = Path.Combine(Application.persistentDataPath, filePath);
+
+    //    if (File.Exists(imagePath))
+    //    {
+    //        byte[] imageData = File.ReadAllBytes(imagePath);
+    //        Texture2D texture = new Texture2D(2, 2);
+    //        texture.LoadImage(imageData);
+
+    //        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+    //        return sprite;
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("Image file not found at path: " + imagePath);
+    //    }
+    //    return null;
+    //}
     #endregion
     public static string GetFileName(string savePath, int mode = 0, bool includeApplicationDataPath =  true)
     {
@@ -338,7 +357,7 @@ public static class StructureSerializer
     public static Sprite LoadSpriteFromFile(string filePath)
     {
         filePath = Application.persistentDataPath + filePath;
-
+        Debug.Log(filePath);
         byte[] imageData = File.ReadAllBytes(filePath);
 
         Texture2D texture = new Texture2D(2, 2);
