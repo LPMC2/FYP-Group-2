@@ -467,7 +467,10 @@ public class InventoryBehaviour : MonoBehaviour
                         gridManager.PlaceBlockObject = null;
                     }
                     gridManager.CurrentBlockId = inventory.slot[slotId].getId();
-                 break;
+                     break;
+                case InventoryType.Structure:
+                    structureManager.CurrentStructure = inventory.slot[slotId].getId();
+                    break;
             }
             if (targetItem != null)
             {
@@ -566,6 +569,7 @@ public class InventoryBehaviour : MonoBehaviour
                     image = instantiatedUI.AddComponent<Image>();
                 }
                 image.preserveAspect = true;
+                image.raycastTarget = false;
                 RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
                 if (invId != -1)
                 {
@@ -867,7 +871,6 @@ public class InventoryBehaviour : MonoBehaviour
         instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
         Image uiImg = instantiatedUI.GetComponent<Image>();
-        uiImg.raycastTarget = false;
         if (structureManager != null)
         {
 
@@ -875,6 +878,7 @@ public class InventoryBehaviour : MonoBehaviour
             InventoryBehaviour.SetRectTransformFromStructureSize(rectTransform, structureManager.structurePoolings[invId].structureSize);
         }
         uiImg.preserveAspect = true;
+        uiImg.raycastTarget = false;
     }
     public static void SetRectTransformFromStructureSize(RectTransform rectTransform, GridSize gridSize)
     {

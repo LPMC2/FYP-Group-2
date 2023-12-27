@@ -33,6 +33,16 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     public Image backHealthBar;
     private Animator MobAnimator;
     private AudioSource audioSource;
+    public void Initialize(float maxHealth = 100, bool isDynamicHP = false, Vector3 hpOffset = default, HealthBarType healthBarType = HealthBarType.WorldSpace, bool destroyOnDeath = true)
+    {
+        health = maxHealth;
+        initialHealth = maxHealth;
+        isDynamicHealthBar = isDynamicHP;
+        healthbarOffset = hpOffset;
+        m_healthBarType = healthBarType;
+        healthBarPrefab = GameManager.Singleton.HealthBarPrefab;
+        this.destroyOnDeath = destroyOnDeath;
+    }
     // Start is called before the first frame update
     void Start()
     {

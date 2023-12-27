@@ -4,12 +4,17 @@ using UnityEngine;
 using TMPro;
 public class DisplayBehaviour : MonoBehaviour
 {
+    public static DisplayBehaviour Singleton;
     [SerializeField] private TMP_Text DisplayText;
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private float fadeInDuration = 1f;
     [SerializeField] private float fadeOutDuration = 1f;
     [SerializeField] private Color defaultColor = Color.white;
     private Coroutine fadeCoroutine;
+    private void Awake()
+    {
+        Singleton = this;
+    }
     public void StartFadeInText(string text, Color color = default(Color), float duration = default)
     {
         if (color == default(Color))

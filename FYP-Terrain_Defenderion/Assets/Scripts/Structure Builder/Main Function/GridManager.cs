@@ -1200,7 +1200,7 @@ public class GridManager : MonoBehaviour
                 gridData.originInteractType = structureStorage.originInteractType;
                 if(gridGenerator != null)
                 {
-                    gridGenerator.AddValue(Mathf.CeilToInt(structureStorage.cellPos[0]), Mathf.CeilToInt(structureStorage.cellPos[1]), (int)structureStorage.cellPos[2]);
+                    gridGenerator.AddValue(GridGenerator.GridCeil(structureStorage.cellPos[0]), GridGenerator.GridCeil(structureStorage.cellPos[1]), (int)structureStorage.cellPos[2]);
                 }
                 cost += structureStorage.tokenCost;
                 BoxCollider boxCollider = block.GetComponent<BoxCollider>();

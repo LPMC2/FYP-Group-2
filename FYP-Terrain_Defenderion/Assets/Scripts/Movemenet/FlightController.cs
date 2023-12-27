@@ -18,6 +18,7 @@ public class FlightController : MonoBehaviour
     InputAction moveAction;
     InputAction lookAction;
     InputAction updownAction;
+    InputAction sprintAction;
     private Vector2 cameraInput;
     Vector2 movementInput;
     private Vector3 velocity;
@@ -33,7 +34,9 @@ public class FlightController : MonoBehaviour
         moveAction = playerInput.PlayerMovement.Movement;
         lookAction = playerInput.PlayerMovement.Camera;
         updownAction = playerInput.PlayerMovement.FlyUpDown;
+        sprintAction = playerInput.PlayerMovement.Sprint;
     }
+
     private void Start()
     {
         if(startMoveOnInitialize)
@@ -57,11 +60,24 @@ public class FlightController : MonoBehaviour
         //}
         if(playerInput != null)
         playerInput.Enable();
+        sprintAction.Enable();
+        sprintAction.started += Sprint;
+        sprintAction.canceled += SprintLeave;
     }
     private void OnDisable()
     {
         if (playerInput != null)
             playerInput.Disable();
+        sprintAction.started -= Sprint;
+        sprintAction.canceled -= SprintLeave;
+    }
+    private void Sprint(InputAction.CallbackContext context)
+    {
+        movementSpeedMultiplier = 1.5f;
+    }
+    private void SprintLeave(InputAction.CallbackContext context)
+    {
+        movementSpeedMultiplier = 1f;
     }
     private void Update()
     {

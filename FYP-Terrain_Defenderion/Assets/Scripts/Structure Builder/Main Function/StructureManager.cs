@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class StructureManager : MonoBehaviour
 {
+    private int currentStructure;
+    public int CurrentStructure { get { return currentStructure; } set { currentStructure = value; } }
     [Header("Note: Must contains StrcutureStorage data inside")]
     [SerializeField] private TextAsset[] defaultStructureFiles;
     [SerializeField] private InventoryBagSO structureSO;
@@ -57,7 +59,23 @@ public class StructureManager : MonoBehaviour
         }
         structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("Custom")].invMenus[0], count-defaultCount, true, true, defaultCount++);
     }
-    
+    public GameObject GetStructure(int id, bool isActivation = true)
+    {
+        if (id < 0 || id > structurePoolings.Length) return null; 
+        foreach(GameObject target in structurePoolings[id].structures)
+        {
+            if(target.activeInHierarchy == false)
+            {
+                if (isActivation)
+                {
+                    target.SetActive(true);
+                }
+                return target;
+            }
+
+        }
+        return null;
+    }
     public void LoadAllStructures()
     {
         //Place to rewrite into multiplayer
@@ -66,7 +84,7 @@ public class StructureManager : MonoBehaviour
         {
             GameObject child = new GameObject(structurePooling.name);
             child.transform.SetParent(main.transform);
-            GameObject structure = StructureSerializer.GenerateStructure(structurePooling.StructureData, default, true);
+            GameObject structure = StructureSerializer.GenerateStructure(structurePooling.StructureData, default, true, true);
 
             structure.SetActive(false);
             for (int i = 0; i < maxStructures; i++)

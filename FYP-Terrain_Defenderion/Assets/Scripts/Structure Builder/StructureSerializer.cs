@@ -307,7 +307,7 @@ public static class StructureSerializer
         ModelPictureSaver.CaptureAndSaveImage(camera, gameObject, filePath, name);
         camera.orthographicSize = initialCameraSize;
     }
-    public static GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3), bool combineObjects = false)
+    public static GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3), bool combineObjects = false, bool calculateStats = false)
     {
         List<GameObject> utilityList = new List<GameObject>();
         BlockSO blockData = BlockManager.BlockData;
@@ -316,6 +316,8 @@ public static class StructureSerializer
             position = Vector3.zero; // Set a default value here
         }
         int count = 0;
+        int cost = 0;
+        float totalHealth = 0f;
         GameObject structure = new GameObject();
         GridData gridData1 = structure.AddComponent<GridData>();
         structure.transform.localPosition = position;
@@ -328,6 +330,8 @@ public static class StructureSerializer
                 if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
                 {
                     block.transform.SetParent(structure.transform);
+                    cost += structureStorage[i].tokenCost;
+                    totalHealth += blockData.blockData[structureStorage[i].structureId].maxHealth;
                 } else
                 {
                     utilityList.Add(block);
@@ -346,6 +350,15 @@ public static class StructureSerializer
         if(combineObjects)
         {
             CombineGameObjects(structure);
+        }
+        if(calculateStats)
+        {
+            HealthBehaviour healthBehaviour = structure.AddComponent<HealthBehaviour>();
+            healthBehaviour.Initialize(totalHealth, true, new Vector3(0f,structure.GetComponent<Renderer>().bounds.size.y ,0f), HealthBarType.WorldSpace, false);
+            gridData1.tokenCost = cost;
+            BoxCollider boxCollider = structure.AddComponent<BoxCollider>();
+            boxCollider.isTrigger = true;
+            structure.layer = LayerMask.NameToLayer("Grid");
         }
         foreach(GameObject utility in utilityList)
         {

@@ -5,12 +5,18 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
+    [SerializeField] TemplateType templateType;
+    [SerializeField] private GridType gridType;
+    [SerializeField] private GameObject userObject;
     [SerializeField]
     private DisplayBehaviour displayBehaviour;
     [SerializeField]
     private Camera playerCamera;
+    private TokenManager tokenManager;
     [SerializeField]
     private float minBuildDistance = 1f;
+    [SerializeField]
+    private float maxBuildDistance = 10f;
     private bool buildModeOn = false;
     public bool BuildMode { get { return buildModeOn; } set { buildModeOn = value; } }
     private bool canBuild = false;
@@ -53,19 +59,30 @@ public class GridGenerator : MonoBehaviour
     private GameObject currentTemplateBlock;
 
     [SerializeField]
-    private GameObject blockTemplatePrefab;
+    private GameObject templateGameobject;
+    public GameObject TemplateGameObject { get { return templateGameobject; } }
     [SerializeField]
     private GameObject blockPrefab;
 
     [SerializeField]
     private Material templateMaterial;
+    [Header("Structure Settings")]
+    [SerializeField]
+    private StructureManager structureManager;
     private GridSize gridSize;
     private int blockSelectCounter = 0;
+    private int currentStructure = -1;
 
     private void Start()
     {
-
+        if (userObject == null)
+            userObject = gameObject;
         buildModeOn = true;
+        tokenManager = userObject.GetComponent<TokenManager>();
+        if(playerCamera !=null)
+        {
+            shootingPoint = playerCamera.transform;
+        }
     }
     public void SetGridSize(int row, int col, int h, GridSize gridSize)
     {
@@ -99,31 +116,81 @@ public class GridGenerator : MonoBehaviour
     {
         targetBlock = gameObject;
     }
+    public GameObject GetCurrentStructure()
+    {
+        GameObject gameObject = structureManager.GetStructure(structureManager.CurrentStructure, false);
+        if (gameObject == null)
+        {
+            reachMaxStructure = true;
+        }
+        else
+            reachMaxStructure = false;
+        return gameObject;
+    }
+    private GameObject GetTemplateGameObject()
+    {
+        GameObject templateGameobject = Instantiate(GetCurrentStructure(), buildPos, Quaternion.identity);
+        templateGameobject.SetActive(true);
+        templateGameobject.layer = LayerMask.NameToLayer("Default");
+        MeshRenderer meshRenderer = templateGameobject.GetComponent<MeshRenderer>();
+        Material[] materials = meshRenderer.materials;
+
+        for (int i = 0; i < materials.Length; i++)
+        {
+            materials[i] = templateMaterial;
+        }
+
+        meshRenderer.materials = materials;
+        return templateGameobject;
+    }
     private void Update()
     {
-       
         if (buildModeOn)
         {
+            if(templateType == TemplateType.Outline)
             PerformOutlineRaycast();
             RaycastHit buildPosHit;
 
-            if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, 10, buildableSurfacesLayer))
+            if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out buildPosHit, maxBuildDistance, buildableSurfacesLayer))
             {
                 Vector3 point = buildPosHit.point;
                 buildPos = new Vector3(Mathf.Round(point.x), Mathf.Round(point.y), Mathf.Round(point.z));
 
                 if (IsValidPosition(buildPos))
+                {
                     canBuild = true;
+                    if (templateType == TemplateType.GameObject && templateGameobject == null && GetCurrentStructure() != null)
+                    {
+                        templateGameobject = GetTemplateGameObject();
+
+                    }
+                    if(templateGameobject !=null)
+                    templateGameobject.transform.position = buildPos;
+                }
                 else
+                {
                     canBuild = false;
+                    Destroy(templateGameobject);
+                    templateGameobject = null;
+                }
             }
             else
             {
                 canBuild = false;
+                Destroy(templateGameobject);
+                templateGameobject = null;
             }
             if (Input.GetMouseButtonDown(0))
             {
                 DestroyBlock(shootingPoint, range);
+            }
+            if(gridType == GridType.Structure && templateGameobject != null)
+            {
+                if(structureManager.CurrentStructure == -1)
+                {
+                    Destroy(templateGameobject);
+                    templateGameobject = null;
+                }
             }
         }
 
@@ -150,46 +217,91 @@ public class GridGenerator : MonoBehaviour
                 ErrorMessage();
             }
         }
+        if(gridType == GridType.Structure)
+        {
+            if(structureManager.CurrentStructure != currentStructure)
+            {
+                Destroy(templateGameobject);
+                templateGameobject = null;
+                currentStructure = structureManager.CurrentStructure;
+            }
+        }
     }
     private void PlaceBlock()
     {
-        if (gridManager.PlaceBlockObject == null || gridManager.CurrentBlockId == -1) return;
-        if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
+        if (gridManager != null && gridType == GridType.Block)
         {
-            return;
-        } else if(gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
-        {
-            return;
+            if (gridManager.PlaceBlockObject == null || gridManager.CurrentBlockId == -1) return;
+            if (!gridManager.isTokenAffordable(TokenManager.GetTokenCost(gridManager.CurrentBlockId), null))
+            {
+                return;
+            }
+            else if (gridManager.IsMaxDefenseReached(gridManager.CurrentBlockId))
+            {
+                return;
+            }
         }
-        gridCells.Add(new GridCell(Mathf.CeilToInt(buildPos.x), Mathf.CeilToInt(buildPos.z), (int)buildPos.y));
+        if(gridType == GridType.Structure && GetCurrentStructure()!=null)
+        {
+           if(tokenManager.isTokenAffordable(GetCurrentStructure().GetComponent<GridData>().tokenCost, structureManager.structurePoolings[structureManager.CurrentStructure].name) || templateGameobject == null)
+            {
+                return;
+            }
+        }
         Ray ray = new Ray(shootingPoint.position, shootingPoint.forward);
-        GameObject newBlock = Instantiate(gridManager.PlaceBlockObject, buildPos, Quaternion.identity, parent);
+        GameObject newBlock = null;
+        switch (gridType) 
+        {
+            case GridType.Block:
+                newBlock = Instantiate(gridManager.PlaceBlockObject, buildPos, Quaternion.identity, parent);
+                break;
+            case GridType.Structure:
+                newBlock = structureManager.GetStructure(structureManager.CurrentStructure);
+                newBlock.transform.position = buildPos;
+                break;
+        }
         BoxCollider boxCollider = newBlock.GetComponent<BoxCollider>();
         if(boxCollider != null)
         {
             boxCollider.size += new Vector3(0.0001f, 0.0001f, 0.0001f);
         }
         Quaternion direction = GetDirection(ray);
-        GridData gridData = newBlock.AddComponent<GridData>();
-        gridData.gridSize = gridSize;
+        GridData gridData = newBlock.GetComponent<GridData>();
+        if(gridData == null)
+        {
+            gridData = newBlock.AddComponent<GridData>();
+        }
         Vector3 eulerRotation = direction.eulerAngles;
         //newBlock.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
         eulerRotation.x = GridManager.NormalizeAngle(eulerRotation.x);
         eulerRotation.y = GridManager.NormalizeAngle(eulerRotation.y);
         eulerRotation.z = GridManager.NormalizeAngle(eulerRotation.z);
-        Vector3 offsetPos = GetOffsetPosFromDir(eulerRotation ,gridManager.PlaceBlockObject.transform.position);
-        if(newBlock.GetComponent<BoxCollider>()!=null)
-        newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, gridManager.PlaceBlockObject.transform.position.x + gridManager.PlaceBlockObject.transform.position.z);
+        Vector3 offsetPos = Vector3.zero;
+        if (gridType == GridType.Block)
+            offsetPos = GetOffsetPosFromDir(eulerRotation, gridManager.PlaceBlockObject.transform.position);
+        if (gridType == GridType.Structure && GetCurrentStructure() != null)
+            offsetPos = GetOffsetPosFromDir(eulerRotation, GetCurrentStructure().transform.position);
+        if (newBlock.GetComponent<BoxCollider>() != null)
+        {
+            if(gridType == GridType.Block)
+            newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, gridManager.PlaceBlockObject.transform.position.x + gridManager.PlaceBlockObject.transform.position.z);
+            if(gridType == GridType.Structure)
+                newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, GetCurrentStructure().transform.position.x + GetCurrentStructure().transform.position.z);
+        }
         newBlock.transform.position += offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-        gridData.SetPosition( new Vector3(buildPos.x+offsetPos.x, buildPos.y, buildPos.z + offsetPos.z));
-        gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-        gridData.Scale = gridManager.PlaceBlockObject.transform.localScale;
-        gridData.blockId = gridManager.CurrentBlockId;
-        gridData.isDefense = blockSO.blockData[gridManager.CurrentBlockId].isDefense;
-        gridData.isUtility = blockSO.blockData[gridManager.CurrentBlockId].isUtility;
-        gridData.tokenCost = blockSO.blockData[gridManager.CurrentBlockId].tokenCost;
-        gridData.gridSize = gridSize;
+        gridData.SetPosition(new Vector3(buildPos.x + offsetPos.x, buildPos.y, buildPos.z + offsetPos.z));
+        gridCells.Add(new GridCell(GridCeil(buildPos.x + offsetPos.x), GridCeil(buildPos.z + offsetPos.z), (int)buildPos.y));
+        if (gridData != null && gridType == GridType.Block)
+        {
+            gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+            gridData.Scale = gridManager.PlaceBlockObject.transform.localScale;
+            gridData.blockId = gridManager.CurrentBlockId;
+            gridData.isDefense = blockSO.blockData[gridManager.CurrentBlockId].isDefense;
+            gridData.isUtility = blockSO.blockData[gridManager.CurrentBlockId].isUtility;
+            gridData.tokenCost = blockSO.blockData[gridManager.CurrentBlockId].tokenCost;
+            gridData.gridSize = gridSize;
+        }
         newBlock.tag = "Grid";
         newBlock.layer = LayerMask.NameToLayer("Grid");
         MeshRenderer meshRenderer = newBlock.GetComponent<MeshRenderer>();
@@ -233,15 +345,23 @@ public class GridGenerator : MonoBehaviour
         if (Physics.Raycast(shootingPoint.position, shootingPoint.forward, out hit, range, buildableSurfacesLayer))
         {
             GridData gridData = hit.transform.GetComponent<GridData>();
-            if (gridData != null)
+            if (gridData != null && gridType == GridType.Block)
             {
                 gridManager.UpdateToken(gridData.tokenCost);
                 if(gridData.isDefense)
                 {
                     gridManager.AddDefense(-1);
                 }
-                RemoveValue(Mathf.CeilToInt(gridData.cellX), Mathf.CeilToInt(gridData.cellY),(int)gridData.cellHeight);
+               
                 Destroy(hit.transform.gameObject);
+            }
+            if(gridType == GridType.Structure)
+            {
+                hit.transform.gameObject.SetActive(false);
+            }
+            if (gridData != null)
+            {
+                RemoveValue(GridCeil(gridData.cellX), GridCeil(gridData.cellY), (int)gridData.cellHeight);
             }
             return;
         }
@@ -261,6 +381,7 @@ public class GridGenerator : MonoBehaviour
     bool boundState;
     private bool distanceState;
     private bool repeatedState;
+    private bool reachMaxStructure;
     private void ErrorMessage()
     {
 
@@ -272,7 +393,7 @@ public class GridGenerator : MonoBehaviour
             inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Too close to build a block", Color.red);
             else if(displayBehaviour!=null)
             {
-                displayBehaviour.StartFadeInText("Unable to place block. Reason: Too close to build a block", Color.red);
+                displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Too close to build a block", Color.red);
             }
         }
         if (boundState == false)
@@ -281,7 +402,7 @@ public class GridGenerator : MonoBehaviour
             inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Block out of bounds", Color.red);
             else if (displayBehaviour != null)
             {
-                displayBehaviour.StartFadeInText("Unable to place block. Reason: Block out of bounds", Color.red);
+                displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Block out of bounds", Color.red);
             }
 
         }
@@ -291,9 +412,16 @@ public class GridGenerator : MonoBehaviour
             inventoryBehaviour.StartFadeInText("Unable to place block. Reason: Block Occupied", Color.red);
             else if(displayBehaviour != null)
             {
-                displayBehaviour.StartFadeInText("Unable to place block. Reason: Block Occupied!", Color.red);
+                displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Block Occupied!", Color.red);
             }
             repeatedState = false;
+        }
+        if(reachMaxStructure)
+        {
+            if(displayBehaviour != null)
+            {
+                displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Max repeated Structures reached! (10)", Color.red);
+            }
         }
 
         
@@ -305,7 +433,7 @@ public class GridGenerator : MonoBehaviour
                spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
                spawnPosition.z > -numColumns / 2f && spawnPosition.z < numColumns / 2f;
         distanceState = distance >= minBuildDistance;
-        repeatedState = ValueEquals(Mathf.CeilToInt(spawnPosition.x), Mathf.CeilToInt(spawnPosition.z), (int)spawnPosition.y);
+        repeatedState = ValueEquals(GridCeil(spawnPosition.x), GridCeil(spawnPosition.z), (int)spawnPosition.y);
         // Check if the spawn position is within the valid range
         return spawnPosition.x > -numRows / 2f && spawnPosition.x < numRows / 2f &&
                spawnPosition.y >= 0 && spawnPosition.y < numHeight &&
@@ -399,6 +527,17 @@ public class GridGenerator : MonoBehaviour
             outline.OutlineWidth = 0f;
         }
     }
+    public static int GridCeil(float value)
+    {
+        if (value >= 0)
+        {
+            return Mathf.CeilToInt(value);
+        }
+        else
+        {
+            return Mathf.FloorToInt(value);
+        }
+    }
 }
 
 public class BlockSystem : MonoBehaviour
@@ -441,4 +580,14 @@ public struct BlockType
 {
     public string blockName;
     public Material blockMat;
+}
+public enum GridType
+{
+    Block,
+    Structure
+}
+public enum TemplateType
+{
+    Outline,
+    GameObject
 }

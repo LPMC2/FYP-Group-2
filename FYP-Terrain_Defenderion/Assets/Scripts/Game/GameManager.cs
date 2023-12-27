@@ -35,6 +35,9 @@ public class GameManager : NetworkBehaviour
     private UnityEvent m_EnterLobbyEvent;
     [SerializeField]
     private UnityEvent m_EnterGameEvent;
+    [Header("Display Settings")]
+    [SerializeField] private GameObject healthBarPrefab;
+    public GameObject HealthBarPrefab { get { return healthBarPrefab; } }
     public void SetIpAddressText(string address)
     {
         ipAddress.text = "IP: " + address;

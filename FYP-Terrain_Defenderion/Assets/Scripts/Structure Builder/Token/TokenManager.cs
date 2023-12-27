@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class TokenManager : MonoBehaviour
 {
     [SerializeField] private int tokens = 0;
+    [SerializeField] private TMP_Text tokenDisplayText;
+    [SerializeField] private DisplayBehaviour displayBehaviour;
     public int initialTokens {get; private set; }
 # region Getter and Setter
   public int getTokens()
@@ -26,6 +28,7 @@ public class TokenManager : MonoBehaviour
     }
     private void Start()
     {
+        displayBehaviour = DisplayBehaviour.Singleton;
         initialTokens = tokens;
     }
     public static int GetTokenCost(int blockID)
@@ -39,5 +42,25 @@ public class TokenManager : MonoBehaviour
     void Update()
     {
         
+    }
+    public bool isTokenAffordable(int cost, string itemName = null)
+    {
+
+            if (getTokens() - cost >= 0)
+            {
+                addTokens(-cost);
+               
+                return true;
+            }
+            else
+            {
+
+                displayBehaviour.StartFadeInText("Unable to afford " + itemName + ". Need " + -(getTokens() - cost) + " more tokens", Color.red);
+
+                return false;
+            }
+        
+
+        return false;
     }
 }
