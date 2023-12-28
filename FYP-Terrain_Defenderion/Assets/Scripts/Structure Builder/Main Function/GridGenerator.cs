@@ -63,9 +63,11 @@ public class GridGenerator : MonoBehaviour
     public GameObject TemplateGameObject { get { return templateGameobject; } }
     [SerializeField]
     private GameObject blockPrefab;
-
+    [Header("Material Settings")]
     [SerializeField]
     private Material templateMaterial;
+    [SerializeField]
+    private Material deleteMaterial;
     [Header("Structure Settings")]
     [SerializeField]
     private StructureManager structureManager;
@@ -147,7 +149,6 @@ public class GridGenerator : MonoBehaviour
     {
         if (buildModeOn)
         {
-            if(templateType == TemplateType.Outline)
             PerformOutlineRaycast();
             RaycastHit buildPosHit;
 
@@ -243,12 +244,13 @@ public class GridGenerator : MonoBehaviour
         }
         if(gridType == GridType.Structure && GetCurrentStructure()!=null)
         {
-           if(tokenManager.isTokenAffordable(GetCurrentStructure().GetComponent<GridData>().tokenCost, structureManager.structurePoolings[structureManager.CurrentStructure].name) || templateGameobject == null)
+           if(!tokenManager.isTokenAffordable(GetCurrentStructure().GetComponent<GridData>().tokenCost, structureManager.structurePoolings[structureManager.CurrentStructure].name) || templateGameobject == null || GetCurrentStructure() == null)
             {
                 return;
             }
         }
         Ray ray = new Ray(shootingPoint.position, shootingPoint.forward);
+        Vector3 originPos = Vector3.zero;
         GameObject newBlock = null;
         switch (gridType) 
         {
@@ -257,9 +259,14 @@ public class GridGenerator : MonoBehaviour
                 break;
             case GridType.Structure:
                 newBlock = structureManager.GetStructure(structureManager.CurrentStructure);
-                newBlock.transform.position = buildPos;
+                if (newBlock != null)
+                {
+                    originPos = newBlock.transform.position;
+                    newBlock.transform.position = buildPos;
+                }
                 break;
         }
+        if (newBlock == null) return;
         BoxCollider boxCollider = newBlock.GetComponent<BoxCollider>();
         if(boxCollider != null)
         {
@@ -286,12 +293,12 @@ public class GridGenerator : MonoBehaviour
             if(gridType == GridType.Block)
             newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, gridManager.PlaceBlockObject.transform.position.x + gridManager.PlaceBlockObject.transform.position.z);
             if(gridType == GridType.Structure)
-                newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, GetCurrentStructure().transform.position.x + GetCurrentStructure().transform.position.z);
+                newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, originPos.x + originPos.z);
         }
         newBlock.transform.position += offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-        gridData.SetPosition(new Vector3(buildPos.x + offsetPos.x, buildPos.y, buildPos.z + offsetPos.z));
-        gridCells.Add(new GridCell(GridCeil(buildPos.x + offsetPos.x), GridCeil(buildPos.z + offsetPos.z), (int)buildPos.y));
+        gridData.SetPosition(new Vector3(buildPos.x + offsetPos.x, buildPos.y + offsetPos.y, buildPos.z + offsetPos.z));
+        gridCells.Add(new GridCell(GridCeil(buildPos.x + offsetPos.x), GridCeil(buildPos.z + offsetPos.z), (int)(buildPos.y + offsetPos.y)));
         if (gridData != null && gridType == GridType.Block)
         {
             gridData.Rotation = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
@@ -342,9 +349,9 @@ public class GridGenerator : MonoBehaviour
     public void DestroyBlock(Transform shootingPoint, float range)
     {
         RaycastHit hit;
-        if (Physics.Raycast(shootingPoint.position, shootingPoint.forward, out hit, range, buildableSurfacesLayer))
+        if (lastOutlineBlock != null)
         {
-            GridData gridData = hit.transform.GetComponent<GridData>();
+            GridData gridData = lastOutlineBlock.transform.GetComponent<GridData>();
             if (gridData != null && gridType == GridType.Block)
             {
                 gridManager.UpdateToken(gridData.tokenCost);
@@ -353,11 +360,12 @@ public class GridGenerator : MonoBehaviour
                     gridManager.AddDefense(-1);
                 }
                
-                Destroy(hit.transform.gameObject);
+                Destroy(lastOutlineBlock.transform.gameObject);
             }
             if(gridType == GridType.Structure)
             {
-                hit.transform.gameObject.SetActive(false);
+                tokenManager.addTokens(gridData.tokenCost);
+                lastOutlineBlock.transform.gameObject.SetActive(false);
             }
             if (gridData != null)
             {
@@ -385,8 +393,7 @@ public class GridGenerator : MonoBehaviour
     private void ErrorMessage()
     {
 
-        InventoryBehaviour inventoryBehaviour = gameObject.GetComponent<InventoryBehaviour>();
-        if (inventoryBehaviour == null) return;
+        InventoryBehaviour inventoryBehaviour = userObject.GetComponent<InventoryBehaviour>();
         if (distanceState == false)
         {
             if(inventoryBehaviour != null)
@@ -418,10 +425,13 @@ public class GridGenerator : MonoBehaviour
         }
         if(reachMaxStructure)
         {
-            if(displayBehaviour != null)
-            {
-                displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Max repeated Structures reached! (10)", Color.red);
-            }
+            if (inventoryBehaviour != null)
+                inventoryBehaviour.StartFadeInText("Unable to place Structure. Reason: Max repeated Structures reached! (10)", Color.red);
+            else
+                if (displayBehaviour != null)
+                {
+                    displayBehaviour.StartFadeInText("Unable to place Structure. Reason: Max repeated Structures reached! (10)", Color.red);
+                }
         }
 
         
@@ -444,10 +454,32 @@ public class GridGenerator : MonoBehaviour
     {
         GameObject newHitBlock = null;
         RaycastHit hit;
-        if(Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, range * range, buildableSurfacesLayer))
+        if(Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, maxBuildDistance, buildableSurfacesLayer))
         {
 
             newHitBlock = hit.collider.transform.gameObject;
+            if(newHitBlock.GetComponent<GridData>() == null)
+            {
+                switch (gridType)
+                {
+                    case GridType.Block:
+                        if(lastOutlineBlock != null)
+                            setOutline(lastOutlineBlock, false);
+                        break;
+                    case GridType.Structure:
+                        if (lastOutlineBlock != null)
+                        {
+                            MaterialBehaviour matBehNew = lastOutlineBlock.GetComponent<MaterialBehaviour>();
+                            if (matBehNew != null)
+                            {
+                                matBehNew.ResetMat();
+                            }
+                        }
+                        break;
+                }
+                lastOutlineBlock = null;
+                return;
+            }
         } else
         {
             newHitBlock = null;
@@ -455,22 +487,52 @@ public class GridGenerator : MonoBehaviour
 
         if (newHitBlock != lastOutlineBlock)
         {
-            if (lastOutlineBlock != null)
-            {
-                setOutline(lastOutlineBlock, false);
-            }
 
-            if (newHitBlock != null)
+            switch (gridType)
             {
-                setOutline(newHitBlock, true);
-            }
+                case GridType.Block:
+                    if (lastOutlineBlock != null)
+                    {
+                        setOutline(lastOutlineBlock, false);
+                    }
+                    if (newHitBlock != null)
+                    {
+                        setOutline(newHitBlock, true);
+                    }
+                    break;
+                case GridType.Structure:
+                    if (lastOutlineBlock != null)
+                    {
+                        MaterialBehaviour matBehOrigin = lastOutlineBlock.GetComponent<MaterialBehaviour>();
+                        if (matBehOrigin == null) { matBehOrigin = lastOutlineBlock.AddComponent<MaterialBehaviour>(); }
+                        matBehOrigin.ResetMat();
+                    }
+                    if (newHitBlock != null)
+                    {
+                        MaterialBehaviour matBehNew = newHitBlock.GetComponent<MaterialBehaviour>();
+                        if(matBehNew == null) { matBehNew = newHitBlock.AddComponent<MaterialBehaviour>(); }
+                        matBehNew.SetMaterial(deleteMaterial);
+                    }
+                    break;
 
+            }
             lastOutlineBlock = newHitBlock;
         }
         else if (lastOutlineBlock == null && newHitBlock != null)
         {
-            setOutline(newHitBlock, true);
+            switch(gridType) 
+            {
+                case GridType.Block:
+                    setOutline(newHitBlock, true);
+                    break;
+                case GridType.Structure:
+                    MaterialBehaviour matBehNew = newHitBlock.GetComponent<MaterialBehaviour>();
+                    if (matBehNew == null) { matBehNew = newHitBlock.AddComponent<MaterialBehaviour>(); }
+                    matBehNew.SetMaterial(deleteMaterial);
+                    break;
+            }
             lastOutlineBlock = newHitBlock;
+
         }
     }
     private void setOutline(GameObject target, bool state)

@@ -30,10 +30,9 @@ public class InventoryBagSO : ScriptableObject
     {
         int[] newItemID = new int[size];
         int index = 0;
-        foreach(int id in target.BlockID)
+        foreach(int id in newItemID)
         {
-            if (index < size)
-            {
+
                 if (!ignoreOriginValue)
                 {
                     newItemID[index] = id;
@@ -45,7 +44,7 @@ public class InventoryBagSO : ScriptableObject
                     newItemID[index] = 0;
                 }
                 index++;
-            }
+            
         }
         target.BlockID = newItemID;
         return  newItemID;

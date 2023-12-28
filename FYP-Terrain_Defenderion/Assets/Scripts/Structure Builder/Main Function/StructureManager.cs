@@ -70,6 +70,7 @@ public class StructureManager : MonoBehaviour
                 {
                     target.SetActive(true);
                 }
+                Debug.Log(target);
                 return target;
             }
 

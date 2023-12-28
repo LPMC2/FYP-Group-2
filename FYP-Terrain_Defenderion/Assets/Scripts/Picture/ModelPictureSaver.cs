@@ -10,6 +10,7 @@ public class ModelPictureSaver : MonoBehaviour
     private static GameObject modelInstance;
     public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false)
     {
+        if (camera == null || modelPrefab == null) return;
         FolderManager.CreateFolder("/StructureData/StructureImg");
         FolderManager.CreateFolder("/StructureData/Temp");
         FolderManager.CreateFolder(savePath);
@@ -94,14 +95,14 @@ public class ModelPictureSaver : MonoBehaviour
 
     private static void CaptureObjectImage(Camera cameraObj, GameObject modelInstance, string filePath)
     {
-        if(filePath == null || filePath == "")
+        if(filePath == null || filePath == "" || cameraObj == null)
         {
             return;
         } 
         RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
         cameraObj.targetTexture = renderTexture;
-        cameraObj.Render();
 
+        cameraObj.Render();
         Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
         RenderTexture.active = renderTexture;
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
