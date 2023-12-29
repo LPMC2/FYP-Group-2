@@ -9,6 +9,12 @@ public class MaterialBehaviour : MonoBehaviour
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        Material[] materials = meshRenderer.materials;
+
+        for (int i = 0; i < materials.Length; i++)
+        {
+            originalMats.Add(materials[i]);
+        }
     }
     public void SetMaterial(Material newMaterial)
     {
@@ -18,11 +24,18 @@ public class MaterialBehaviour : MonoBehaviour
 
         for (int i = 0; i < materials.Length; i++)
         {
-            originalMats.Add(materials[i]);
             materials[i] = newMaterial;
         }
 
         meshRenderer.materials = materials;
+    }
+    public void SetInitialMaterial(Material material)
+    {
+
+        for (int i = 0; i < originalMats.Count; i++)
+        {
+            originalMats[i] = material;
+        }
     }
     public void ResetMat()
     {

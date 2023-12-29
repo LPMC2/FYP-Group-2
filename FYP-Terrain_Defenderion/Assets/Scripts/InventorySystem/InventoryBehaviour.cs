@@ -47,6 +47,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private GameObject placeItemLocation;
     [SerializeField] private int[] initialSlotItem;
     [SerializeField] private StructureManager structureManager;
+    [SerializeField] private GridGenerator gridGenerator;
     [Header("Drop Settings")]
     [SerializeField] private GameObject dropItemPrefab;
     [SerializeField] private float dropForce = 10f;
@@ -850,6 +851,10 @@ public class InventoryBehaviour : MonoBehaviour
         if (gridManager != null)
         {
             gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
+        }
+        if(gridGenerator != null)
+        {
+            gridGenerator.BuildMode = invBagPanel.activeInHierarchy;
         }
         invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
         ToolTipGameobject.SetActive(invBagPanel.activeInHierarchy);

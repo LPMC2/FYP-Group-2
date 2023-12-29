@@ -96,6 +96,9 @@ public class StructureManager : MonoBehaviour
                 gameObject1.name = structurePooling.name + " - " + i;
                     gameObject1.transform.SetParent(child.transform);
                     structurePooling.structures.Add(gameObject1);
+                Rigidbody rigidbody = gameObject1.AddComponent<Rigidbody>();
+                rigidbody.isKinematic = true;
+                rigidbody.useGravity = false;
                     gameObject1.SetActive(false);
                 
             }

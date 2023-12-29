@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 using Unity.Netcode;
-public class TimeManager : MonoBehaviour
+public class TimeManager : NetworkBehaviour
 {
     [Header("Unit: second")]
     [SerializeField] private NetworkVariable<float> m_TimeRemain = new NetworkVariable<float>();
@@ -20,10 +20,11 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private string m_TimeDisplayHeader = "";
     public string m_ReturnDisplayHeader = "";
     [SerializeField] private float m_ResetTimer = 0f;
-    public void SetValueTimeDisplay(string value)
-    {
-        m_DisplayText.text = value;
-    } 
+    [Header("Debug Settings")]
+    [SerializeField] private bool debugActive = false;
+    [SerializeField] private bool debugEndTimer = false;
+    public delegate void CustomEvent();
+    public event CustomEvent EndTimeEvent;
     private void Start()
     {
         m_TimeRemain.Value = 0f;
@@ -55,7 +56,19 @@ public class TimeManager : MonoBehaviour
     }
     private void Update()
     {
-        if(isActive)
+        #if UNITY_EDITOR
+            if(debugActive)
+            {
+                ActiveTimer();
+                debugActive = false;
+            }
+            if(debugEndTimer)
+            {
+                EndTimeInvoke();
+                debugEndTimer = false;
+            }
+        #endif
+            if(isActive)
         {
             RunTimer();
         }
@@ -66,9 +79,9 @@ public class TimeManager : MonoBehaviour
         {
             m_TimeRemain.Value -= Time.deltaTime;
             if(!isReturning)
-                m_DisplayText.text = m_TimeDisplayHeader + "\n"+ TimeUnit.getTimeUnit(m_TimeRemain.Value);
+                SetDisplayText(m_TimeDisplayHeader + "\n" + TimeUnit.getTimeUnit(m_TimeRemain.Value));
             else
-                m_DisplayText.text = m_ReturnDisplayHeader +"\n"+ "Return in " + (int)(m_TimeRemain.Value) + "s";
+                SetDisplayText(m_DisplayText.text = m_ReturnDisplayHeader +"\n"+ "Return in " + (int)(m_TimeRemain.Value) + "s");
         } else
         {
 
@@ -81,6 +94,12 @@ public class TimeManager : MonoBehaviour
     {
         
         yield return new WaitForSeconds(m_ResetTimer);
-        m_DisplayText.text = "";
+        SetDisplayText("");
+    }
+    public void SetDisplayText(string value)
+    {
+        if(m_DisplayText != null) {
+            m_DisplayText.text = value;
+        }
     }
 }

@@ -707,6 +707,10 @@ public class GridManager : MonoBehaviour
         }
     }
     int count = 0;
+    public void AddToken(int value)
+    {
+        tokenManager.addTokens(value);
+    }
     public bool isTokenAffordable(int cost, GridData gridData = default(GridData), string name = null)
     {
             if (tokenManager != null)

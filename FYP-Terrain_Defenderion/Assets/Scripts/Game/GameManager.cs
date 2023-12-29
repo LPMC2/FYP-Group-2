@@ -207,13 +207,17 @@ public class GameManager : NetworkBehaviour
 
 
     #region loadFunctions
-    public void LoadStage()
+    public void StartLoadStage()
+    {
+        StartCoroutine(LoadStage());
+    }
+    public IEnumerator LoadStage()
     {
         foreach (LoadFunction load in loadState)
         {
-            StartCoroutine(LoadFunction(load));
+            yield return StartCoroutine(LoadFunction(load));
         }
-
+        AddStageLevel();
     }
     private IEnumerator LoadFunction(LoadFunction loadFunction)
     {

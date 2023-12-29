@@ -363,6 +363,7 @@ public static class StructureSerializer
         foreach(GameObject utility in utilityList)
         {
             utility.transform.SetParent(structure.transform);
+            utility.GetComponent<Collider>().isTrigger = true;
         }
         Debug.Log("Count: " + count);
         return structure;
