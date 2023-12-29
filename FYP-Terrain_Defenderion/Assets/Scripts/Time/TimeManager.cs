@@ -11,7 +11,11 @@ public class TimeManager : NetworkBehaviour
     public float TimeRemain { get { return m_TimeRemain.Value; } }
     [SerializeField] private float m_MaxTime = 600;
     [SerializeField] private bool isActive = false;
-    [SerializeField] private UnityEvent m_EndTimeEvent;
+    [SerializeField] public UnityEvent m_EndTimeEvent;
+    public void AddEndTimeEvent(UnityAction unityEvent)
+    {
+        m_EndTimeEvent.AddListener(unityEvent);
+    }
     [SerializeField] private float returnTime = 5f;
     public float ReturnTime { get { return returnTime; } }
     [SerializeField] private bool isReturning = false;
