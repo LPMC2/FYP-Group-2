@@ -4,7 +4,6 @@ using UnityEngine;
 using TMPro;
 public class DisplayBehaviour : MonoBehaviour
 {
-    public static DisplayBehaviour Singleton;
     [SerializeField] private TMP_Text DisplayText;
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private float fadeInDuration = 1f;
@@ -13,7 +12,7 @@ public class DisplayBehaviour : MonoBehaviour
     private Coroutine fadeCoroutine;
     private void Awake()
     {
-        Singleton = this;
+        DisplayText = gameObject.GetComponent<TMP_Text>();
     }
     public void StartFadeInText(string text, Color color = default(Color), float duration = default)
     {
@@ -31,11 +30,20 @@ public class DisplayBehaviour : MonoBehaviour
         // Start the fade coroutine
         fadeCoroutine = StartCoroutine(FadeText(text, color, duration));
     }
-    private IEnumerator FadeText(string text, Color color, float duration = default)
+    private IEnumerator FadeText(string text, Color color, float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
+        //Set Defualt Values
         if (duration == default)
         {
             duration = displayDuration;
+        }
+        if(fadeInDuration == default)
+        {
+            fadeInDuration = this.fadeInDuration;
+        }
+        if (fadeOutDuration == default)
+        {
+            fadeOutDuration = this.fadeOutDuration;
         }
         // Set the initial text and alpha value
         DisplayText.text = text;
@@ -64,11 +72,10 @@ public class DisplayBehaviour : MonoBehaviour
             yield return null;
         }
 
-        // Reset the text and alpha value
+        // Reset
         DisplayText.text = "";
         DisplayText.alpha = 0f;
 
-        // Reset the fade coroutine reference
         fadeCoroutine = null;
     }
 }

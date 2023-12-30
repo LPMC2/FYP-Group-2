@@ -9,7 +9,8 @@ public class GameManager : NetworkBehaviour
     public GManager gManager;
     public static GameManager Singleton;
     [SerializeField] private LoadFunction[] loadState;
-    [SerializeField] private NetworkVariable<GameState> gameState = new NetworkVariable<GameState>(); 
+    [SerializeField] private NetworkVariable<GameState> gameState = new NetworkVariable<GameState>();
+    [SerializeField] private DisplayBehaviour TargetDisplay;
     private float originMoveSpeed = default;
     //[SerializeField]
     //private NetworkManager m_networkManager = default;
@@ -129,9 +130,6 @@ public class GameManager : NetworkBehaviour
         timeUnit.ActiveReturnTimer();
         gameStarted = false;
         yield return new WaitForSeconds(timeUnit.ReturnTime);
-        //dynamicMove.moveSpeed = 0f;
-        //dynamicMove.leftControllerTransform.GetComponent<XRRayInteractor>().maxRaycastDistance = initialLeftRaycastDis;
-        //dynamicMove.rightControllerTransform.GetComponent<XRRayInteractor>().maxRaycastDistance = initialRightRaycastDis;
 
         animator.Play("FadeIn");
         StartCoroutine(DelayTeleport(player.GetComponent<PositionManager>().GetInitialPosition()));
@@ -143,8 +141,8 @@ public class GameManager : NetworkBehaviour
     }
     public void LoseGame()
     {
-        TimeManager timeManager = GetComponent<TimeManager>();
-        timeManager.m_ReturnDisplayHeader = "You ran out of time!";
+
+        TargetDisplay.StartFadeInText( "You Lose!", Color.red);
         if (gameState.Value == GameState.Default)
         {
             gameState.Value = GameState.Lose;
@@ -154,12 +152,21 @@ public class GameManager : NetworkBehaviour
     }
     public void WinGame()
     {
-        TimeManager timeManager = GetComponent<TimeManager>();
-        timeManager.m_ReturnDisplayHeader = "You escaped and won the game!";
+        TargetDisplay.StartFadeInText( "You won the game!", Color.green);
         if (gameState.Value == GameState.Default)
         {
             gameState.Value = GameState.Win;
             isEnded= true;
+        }
+    }
+    public void DetectGameState()
+    {
+        if(StageManager.Singleton.WinStage)
+        {
+            WinGame();
+        }else
+        {
+            LoseGame();
         }
     }
     public static void InvokeUnityEvent(UnityEvent unityEvent)

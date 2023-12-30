@@ -9,12 +9,17 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
 {
     [SerializeField] private HealthBarType m_healthBarType;
     [SerializeField] private bool isDynamicHealthBar = false;
+    [SerializeField] private bool showHPBaronStart = false;
     [SerializeField] private float health = 100f;
     [SerializeField] private float hitTime = 0.1f;
     private float initialHealth;
     private float damage = 0;
+    [Header("Health Bar Settings")]
     public GameObject healthBarPrefab;
     [SerializeField] private Vector3 healthbarOffset;
+    [SerializeField] private Vector3 healthBarSize = Vector3.one;
+    [SerializeField] private Color healthBarColor = Color.red;
+    [Header("Death & Respawn Settings")]
     [SerializeField] private float DeathTime = 0f;
     [SerializeField] private bool destroyOnDeath = true;
     [SerializeField] private bool isRespawn = false;
@@ -53,6 +58,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
 #if UNITY_EDITOR
             Debug.LogError("Respawn will not work as the object is destroyed!");
             #endif
+        }
+        if(showHPBaronStart)
+        {
+            UpdateHealthBar();
         }
     }
 
@@ -186,6 +195,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 healthBarUI = Instantiate(healthBarPrefab, transform.position, Quaternion.identity) as GameObject;
                 healthBarUI.transform.SetParent(transform);
                 healthBarUI.transform.localPosition = new Vector3(healthbarOffset.x, healthbarOffset.y, healthbarOffset.z); // Set the position to be above the enemy's head
+                healthBarUI.transform.localScale = healthBarSize;
                 healthBarSlider = healthBarUI.transform.GetChild(0).GetComponent<Slider>();
                 if (!isDynamicHealthBar)
                 {
@@ -195,6 +205,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 else
                 {
                     frontHealthBar = GameObjectExtension.GetGameObjectWithTagFromChilds(healthBarUI, "FrontHP").GetComponent<Image>();
+                    frontHealthBar.color = healthBarColor;
                     backHealthBar = GameObjectExtension.GetGameObjectWithTagFromChilds(healthBarUI, "BackHP").GetComponent<Image>();
                 }
                 healthBarUI.GetComponent<Canvas>().worldCamera = Camera.main;
@@ -226,10 +237,13 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
 
             if (m_healthBarType == HealthBarType.WorldSpace)
             {
-                Vector3 cameraForward = Camera.main.transform.forward;
-                cameraForward.y = 0f; // Set the y-component to 0 to remove rotation along the y-axis
+                if (Camera.main != null)
+                {
+                    Vector3 cameraForward = Camera.main.transform.forward;
+                    cameraForward.y = 0f; // Set the y-component to 0 to remove rotation along the y-axis
 
-                healthBarUI.transform.LookAt(healthBarUI.transform.position + cameraForward,Vector3.up);
+                    healthBarUI.transform.LookAt(healthBarUI.transform.position + cameraForward, Vector3.up);
+                }
             }
         }
 

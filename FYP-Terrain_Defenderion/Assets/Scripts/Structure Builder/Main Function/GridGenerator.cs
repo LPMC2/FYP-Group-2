@@ -13,6 +13,7 @@ public class GridGenerator : MonoBehaviour
     [SerializeField]
     private Camera playerCamera;
     private TokenManager tokenManager;
+    [SerializeField] private Vector3 buildOffset = Vector3.zero;
     [SerializeField]
     private float minBuildDistance = 1f;
     [SerializeField]
@@ -204,7 +205,7 @@ public class GridGenerator : MonoBehaviour
                     }
                     if (templateGameobject != null)
                     {
-                        templateGameobject.transform.position = buildPos;
+                        templateGameobject.transform.position = buildPos + buildOffset;
                         Quaternion direction = GetDirection(playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)));
                         Vector3 eulerRotation = direction.eulerAngles;
                         //newBlock.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
@@ -351,7 +352,7 @@ public class GridGenerator : MonoBehaviour
             if(gridType == GridType.Structure)
                 newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, originPos.x + originPos.z);
         }
-        newBlock.transform.position += offsetPos;
+        newBlock.transform.position += offsetPos + offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
         gridData.SetPosition(new Vector3(buildPos.x + offsetPos.x, buildPos.y + offsetPos.y, buildPos.z + offsetPos.z));
         if (ValueEquals(GridCeil(gridData.cellX), GridCeil(gridData.cellY), GridCeil(gridData.cellHeight)))
@@ -515,6 +516,17 @@ public class GridGenerator : MonoBehaviour
                 {
                     displayBehaviour.StartFadeInText("Unable to place " + gridType.ToString() + ". Reason: Max repeated Structures reached! (10)", Color.red);
                 }
+        }
+        if(gridType == GridType.Structure && structureManager.CurrentStructure == -1)
+        {
+            if (inventoryBehaviour != null)
+                inventoryBehaviour.StartFadeInText("There is no " + gridType.ToString() + " for you to place!", Color.white);
+            else
+                  if (displayBehaviour != null)
+            {
+                displayBehaviour.StartFadeInText("There is no " + gridType.ToString() + " for you to place!", Color.white);
+            }
+
         }
         //if(rayhitStructure)
         //{

@@ -28,7 +28,6 @@ public class TokenManager : MonoBehaviour
     }
     private void Start()
     {
-        displayBehaviour = DisplayBehaviour.Singleton;
         initialTokens = tokens;
     }
     public static int GetTokenCost(int blockID)

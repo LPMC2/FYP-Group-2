@@ -6,7 +6,8 @@ using UnityEngine;
 public class PositionManager : MonoBehaviour
 {
     [SerializeField] private bool m_SetValueAtStart = true;
-    [SerializeField] private Vector3 initialPos;
+    [SerializeField] protected Vector3 initialPos;
+    public Vector3 InitialPos { get; }
     [SerializeField] private Quaternion initialRotation;
     [SerializeField] private Vector3 initialScale;
     //public NetworkVariable<bool> isCloned = new NetworkVariable<bool>();
@@ -22,6 +23,11 @@ public class PositionManager : MonoBehaviour
             initialPos = gameObject.transform.position;
             initialRotation = gameObject.transform.rotation;
             initialScale = gameObject.transform.localScale;
+        }else
+        {
+            gameObject.transform.position = initialPos;
+            gameObject.transform.rotation = initialRotation;
+            gameObject.transform.localScale = initialScale;
         }
     }
 
