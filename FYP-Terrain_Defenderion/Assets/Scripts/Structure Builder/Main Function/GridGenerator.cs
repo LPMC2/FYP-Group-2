@@ -373,7 +373,7 @@ public class GridGenerator : MonoBehaviour
             if(gridType == GridType.Structure)
                 newBlock.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, originPos.x + originPos.z);
         }
-        newBlock.transform.position += offsetPos + offsetPos;
+        newBlock.transform.position += offsetPos;
         newBlock.transform.eulerAngles = new Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z);
         gridData.SetPosition(new Vector3(buildPos.x + offsetPos.x, buildPos.y + offsetPos.y, buildPos.z + offsetPos.z));
         if (ValueEquals(GridCeil(gridData.cellX), GridCeil(gridData.cellY), GridCeil(gridData.cellHeight)))
