@@ -8,6 +8,19 @@ using UnityEngine.Events;
 public class StageManager : MonoBehaviour
 {
     public static StageManager Singleton;
+    [SerializeField] private bool isActive = false;
+    public void SetActive(bool state)
+    {
+        isActive = state;
+        if (state == true)
+        {
+            if (StageGoal.TimeLimit > -2 && StageGoal.TimeManager != null)
+            {
+                Debug.Log("Time");
+                m_StageGoal[m_currentStage.Value].TimeManager.ActiveTimer(StageGoal.TimeLimit);
+            }
+        }
+    }
     [SerializeField] private NetworkVariable<int> m_currentStage = new NetworkVariable<int>();
     public void ResetStage()
     {
@@ -18,16 +31,24 @@ public class StageManager : MonoBehaviour
             
         }
         WinStage = false;
+        isActive = false;
     }
     public void AddStage()
     {
-        if(CurrentStage >=0 && CurrentStage < m_StageGoal.Length)
+        isActive = false;
+        if (CurrentStage != -1 && m_StageGoal[CurrentStage].MainGoalType == Goal.GoalType.Time)
+        {
+            StageGoal.TimeManager.m_EndTimeEvent.RemoveAllListeners();
+        }
+        if (CurrentStage >=0 && CurrentStage < m_StageGoal.Length)
         m_StageGoal[CurrentStage].goalCompleted = false;
         m_currentStage.Value++;
-        if (m_StageGoal[CurrentStage].MainGoalType == Goal.GoalType.Time)
+        m_StageGoal[m_currentStage.Value].goalCompleted = false;
+        if (m_StageGoal[CurrentStage].TimeLimit > 0 && m_StageGoal[CurrentStage].TimeManager != null)
         {
             StageGoal.TimeManager.m_EndTimeEvent.AddListener(StageGoal.GoalComplete);
         }
+
     }
     public int CurrentStage
     {
@@ -47,6 +68,7 @@ public class StageManager : MonoBehaviour
     }
     private void GoalDetection()
     {
+        if (!isActive) return;
         if (CurrentStage < 0 || CurrentStage > m_StageGoal.Length) return;
         if (StageGoal.goalCompleted) return;
         switch (StageGoal.MainGoalType)
@@ -66,6 +88,7 @@ public class StageManager : MonoBehaviour
                         break;
                     }
                 }
+
                 break;
             case Goal.GoalType.Time:
 
@@ -75,7 +98,35 @@ public class StageManager : MonoBehaviour
                 break;
         }
     }
-    
+    public void TimeOutDetection()
+    {
+        if (StageGoal.TimeManager.TimeRemain > 0f) return;
+        int count = 0;
+        GoalGameObject goalGameObject = StageGoal.TargetGameObject[0];
+        HealthBehaviour goalHealthGameObject = null;
+        foreach (GoalGameObject target in m_StageGoal[CurrentStage].TargetGameObject)
+        {
+
+            HealthBehaviour healthBehaviour = target.Target.GetComponent<HealthBehaviour>();
+            if (healthBehaviour != null)
+            {
+                if (goalHealthGameObject == null || goalHealthGameObject.GetHealth() > healthBehaviour.GetHealth())
+                {
+                    goalGameObject = target;
+                    goalHealthGameObject = healthBehaviour;
+                }
+            }
+
+            count++;
+        }
+        if (count == m_StageGoal[CurrentStage].TargetGameObject.Length)
+        {
+            if (!goalGameObject.IsOwnSide)
+            {
+                WinStage = true;
+            }
+        }
+    }
 }
 [Serializable]
 public struct Goal
@@ -96,8 +147,11 @@ public struct Goal
             return gameObjects;
         }
     }
+
     [Header("Goal Type: Time")]
     [SerializeField] private TimeManager m_TimeManager;
+    [SerializeField] private int m_TimeLimit;
+    public int TimeLimit { get { return m_TimeLimit; } }
     public TimeManager TimeManager { get { return m_TimeManager; } }
     [Header("Goal Type: Custom")]
     [SerializeField] private UnityEvent customGoalEvent;
@@ -119,6 +173,10 @@ public struct Goal
     public bool goalCompleted;
     public void Reset()
     {
+        foreach(GoalGameObject gameObject in m_goalGameObject)
+        {
+            gameObject.SetActive(true);
+        }
         goalCompleted = false;
 
     }
@@ -136,4 +194,8 @@ public struct GoalGameObject
         set => isOwnSide = value;
     }
     public GameObject Target { get { return targetObj; } }
+    public void SetActive(bool state)
+    {
+        targetObj.SetActive(state);
+    }
 }

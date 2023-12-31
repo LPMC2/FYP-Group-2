@@ -20,7 +20,8 @@ public class StructureManager : MonoBehaviour
     [SerializeField] private int maxStructures = 10;
     [SerializeField] private string[] structurePaths;
     [SerializeField] private Camera captureCamera;
-    public StructurePooling[] structurePoolings;
+    public StructurePooling[] structurePoolings { get; private set; }
+    private GameObject structureStorage;
     private void Start()
     {
         structureFilePath = Application.persistentDataPath + structureFilePath;
@@ -70,7 +71,7 @@ public class StructureManager : MonoBehaviour
                 {
                     target.SetActive(true);
                 }
-                Debug.Log(target);
+                //Debug.Log(target);
                 return target;
             }
 
@@ -79,6 +80,7 @@ public class StructureManager : MonoBehaviour
     }
     public void LoadAllStructures()
     {
+        if (structureStorage != null) return;
         //Place to rewrite into multiplayer
         GameObject main = new GameObject("Structure Storage");
         foreach(StructurePooling structurePooling in structurePoolings)
@@ -90,22 +92,33 @@ public class StructureManager : MonoBehaviour
             structure.SetActive(false);
             for (int i = 0; i < maxStructures; i++)
             {
-               
-                
-                    GameObject gameObject1 = Instantiate(structure, Vector3.zero, Quaternion.identity);
+
+                GameObject gameObject1 = Instantiate(structure, Vector3.zero, Quaternion.identity);
                 gameObject1.name = structurePooling.name + " - " + i;
-                    gameObject1.transform.SetParent(child.transform);
-                    structurePooling.structures.Add(gameObject1);
+                gameObject1.transform.SetParent(child.transform);
+                structurePooling.structures.Add(gameObject1);
                 Rigidbody rigidbody = gameObject1.AddComponent<Rigidbody>();
                 rigidbody.isKinematic = true;
                 rigidbody.useGravity = false;
-                    gameObject1.SetActive(false);
-                
+                gameObject1.SetActive(false);
+
             }
             Destroy(structure);
         }
         //NetworkManager.Singleton.AddNetworkPrefab(gameObject);
-
+        structureStorage = main;
+    }
+    public void ResetStorage()
+    {
+        foreach(StructurePooling structurePooling in structurePoolings)
+        {
+            foreach(GameObject structure in structurePooling.structures)
+            {
+                structure.transform.position = Vector3.zero;
+                structure.transform.rotation = Quaternion.identity;
+                structure.SetActive(false);
+            }
+        }
     }
 }
 [Serializable]

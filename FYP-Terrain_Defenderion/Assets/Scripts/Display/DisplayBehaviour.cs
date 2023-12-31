@@ -5,6 +5,7 @@ using TMPro;
 public class DisplayBehaviour : MonoBehaviour
 {
     [SerializeField] private TMP_Text DisplayText;
+    public TMP_Text TMP_DisplayText { get { return DisplayText; } }
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private float fadeInDuration = 1f;
     [SerializeField] private float fadeOutDuration = 1f;
@@ -14,7 +15,7 @@ public class DisplayBehaviour : MonoBehaviour
     {
         DisplayText = gameObject.GetComponent<TMP_Text>();
     }
-    public void StartFadeInText(string text, Color color = default(Color), float duration = default)
+    public void StartFadeInText(string text, Color color = default(Color),float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
         if (color == default(Color))
         {
@@ -28,7 +29,7 @@ public class DisplayBehaviour : MonoBehaviour
 
         // Get the item name from the item data using the provided item ID
         // Start the fade coroutine
-        fadeCoroutine = StartCoroutine(FadeText(text, color, duration));
+        fadeCoroutine = StartCoroutine(FadeText(text, color, fadeInDuration, duration, fadeOutDuration));
     }
     private IEnumerator FadeText(string text, Color color, float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
@@ -55,7 +56,14 @@ public class DisplayBehaviour : MonoBehaviour
         {
             fadeInTimer += Time.deltaTime;
             float alpha = Mathf.Lerp(0f, 1f, fadeInTimer / fadeInDuration);
-            DisplayText.alpha = alpha;
+            if (fadeInDuration > 0f)
+            {
+                DisplayText.alpha = alpha;
+            } else
+            {
+                Debug.Log("Test");
+                DisplayText.alpha = 1f;
+            }
             yield return null;
         }
 
@@ -68,7 +76,14 @@ public class DisplayBehaviour : MonoBehaviour
         {
             fadeOutTimer += Time.deltaTime;
             float alpha = Mathf.Lerp(1f, 0f, fadeOutTimer / fadeOutDuration);
-            DisplayText.alpha = alpha;
+            if (fadeOutDuration > 0f)
+            {
+                DisplayText.alpha = alpha;
+            }
+            else
+            {
+                DisplayText.alpha = 1f;
+            }
             yield return null;
         }
 

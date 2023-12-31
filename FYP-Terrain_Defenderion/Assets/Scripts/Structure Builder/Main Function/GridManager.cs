@@ -1285,7 +1285,7 @@ public class GridManager : MonoBehaviour
         switch (structureStorages[0].gridSize)
         {
             case GridSize.Small:
-                camera.orthographicSize = 7.69f;
+                camera.orthographicSize = 10.35f;
                 break;
             case GridSize.Normal:
                 camera.orthographicSize = 14.15f;

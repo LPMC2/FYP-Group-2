@@ -10,7 +10,6 @@ public class GameManager : NetworkBehaviour
     public static GameManager Singleton;
     [SerializeField] private LoadFunction[] loadState;
     [SerializeField] private NetworkVariable<GameState> gameState = new NetworkVariable<GameState>();
-    [SerializeField] private DisplayBehaviour TargetDisplay;
     private float originMoveSpeed = default;
     //[SerializeField]
     //private NetworkManager m_networkManager = default;
@@ -36,8 +35,12 @@ public class GameManager : NetworkBehaviour
     private UnityEvent m_EnterLobbyEvent;
     [SerializeField]
     private UnityEvent m_EnterGameEvent;
+    [SerializeField]
+    private UnityEvent m_Custom_EndGameEvent;
     [Header("Display Settings")]
     [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private DisplayManager m_DisplayManager;
+    [SerializeField] private TimeManager m_TimeManager;
     public GameObject HealthBarPrefab { get { return healthBarPrefab; } }
     public void SetIpAddressText(string address)
     {
@@ -95,6 +98,7 @@ public class GameManager : NetworkBehaviour
         //player.transform.position = startPosition;
         AddStageLevel();
         gameStarted = true;
+        gameState.Value = GameState.Default;
         if (m_UIObject != null)
         {
             Animator animator = m_UIObject.GetComponent<Animator>();
@@ -121,28 +125,36 @@ public class GameManager : NetworkBehaviour
 
     public IEnumerator EndGame()
     {
-        Animator animator = m_UIObject.GetComponent<Animator>();
-        animator.Play("GameEnd");
-        TimeManager timeUnit = GetComponent<TimeManager>();
-        timeUnit.Reset();
-        yield return new WaitForSeconds(0.5f);
+        Animator animator = null;
+        if (m_UIObject != null)
+        {
+            animator = m_UIObject.GetComponent<Animator>();
+            animator.Play("GameEnd");
+        }
+        m_TimeManager.Reset();
+        TMP_Text initialText = m_TimeManager.DisplayText;
+        m_TimeManager.SetDisplayTMP_Text(m_DisplayManager.GetDisplay("Subtitle").DisplayController.TMP_DisplayText);
+        yield return new WaitForSeconds(0.1f);
 
-        timeUnit.ActiveReturnTimer();
+        m_TimeManager.ActiveReturnTimer();
         gameStarted = false;
-        yield return new WaitForSeconds(timeUnit.ReturnTime);
-
-        animator.Play("FadeIn");
+        yield return new WaitForSeconds(m_TimeManager.ReturnTime);
+        m_TimeManager.SetDisplayTMP_Text(initialText);
+        if(animator != null)
+            animator.Play("FadeIn");
+        if(player != null && player.GetComponent<PositionManager>() != null)
         StartCoroutine(DelayTeleport(player.GetComponent<PositionManager>().GetInitialPosition()));
         gManager.StageLevel.Value = 0;
        
-        gameState.Value = GameState.Default;
+        gameState.Value = GameState.UI;
         m_EnterLobbyEvent.Invoke();
+        m_Custom_EndGameEvent.Invoke();
         //NetworkManager.Singleton.Shutdown();
     }
     public void LoseGame()
     {
 
-        TargetDisplay.StartFadeInText( "You Lose!", Color.red);
+        m_DisplayManager.GetDisplay("Title").DisplayController.StartFadeInText( "You Lose!", Color.red, 0.5f, 5f,0.5f );
         if (gameState.Value == GameState.Default)
         {
             gameState.Value = GameState.Lose;
@@ -152,7 +164,7 @@ public class GameManager : NetworkBehaviour
     }
     public void WinGame()
     {
-        TargetDisplay.StartFadeInText( "You won the game!", Color.green);
+        m_DisplayManager.GetDisplay("Title").DisplayController.StartFadeInText( "You won the game!", Color.green, 0.5f, 5f, 0.5f);
         if (gameState.Value == GameState.Default)
         {
             gameState.Value = GameState.Win;

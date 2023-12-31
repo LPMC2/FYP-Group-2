@@ -77,7 +77,7 @@ public class GridGenerator : MonoBehaviour
     private GridSize gridSize;
     private int blockSelectCounter = 0;
     private int currentStructure = -1;
-
+    CollisionDetector colDetector;
     private void Start()
     {
         if (userObject == null)
@@ -87,6 +87,19 @@ public class GridGenerator : MonoBehaviour
         if(playerCamera !=null)
         {
             shootingPoint = playerCamera.transform;
+        }
+    }
+    private void OnDisable()
+    {
+        if (lastOutlineBlock != null)
+        {
+            setOutline(lastOutlineBlock, false);
+            lastOutlineBlock = null;
+        }
+        if (templateGameobject != null)
+        {
+            Destroy(templateGameobject);
+            templateGameobject = null;
         }
     }
     public void SetGridSize(int row, int col, int h, GridSize gridSize)
@@ -146,6 +159,7 @@ public class GridGenerator : MonoBehaviour
         CollisionDetector collisionDetector = templateGameobject.AddComponent<CollisionDetector>();
         collisionDetector.SetCollsiionType(CollisionType.Trigger);
         collisionDetector.OnCollision += SetCollisionHit;
+        colDetector = collisionDetector;
         //Remove Rigidbody
         Rigidbody rigidbody = templateGameobject.GetComponent<Rigidbody>();
         Destroy(rigidbody);
@@ -244,6 +258,13 @@ public class GridGenerator : MonoBehaviour
                 {
                     Destroy(templateGameobject);
                     templateGameobject = null;
+                }
+            }
+            if(colDetector != null)
+            {
+                if(hitStructure != colDetector.isHit)
+                {
+                    hitStructure = colDetector.isHit;
                 }
             }
         }
@@ -391,7 +412,7 @@ public class GridGenerator : MonoBehaviour
         newBlock.tag = "Grid";
         newBlock.layer = LayerMask.NameToLayer("Grid");
         MeshRenderer meshRenderer = newBlock.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
+        if (meshRenderer != null && gridType != GridType.Structure)
         {
             meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
             meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

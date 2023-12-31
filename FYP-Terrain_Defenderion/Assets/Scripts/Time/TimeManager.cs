@@ -21,9 +21,11 @@ public class TimeManager : NetworkBehaviour
     [SerializeField] private bool isReturning = false;
     [Header("Display Settings")]
     [SerializeField] private TMP_Text m_DisplayText;
+    public TMP_Text DisplayText { get { return m_DisplayText; } }
     [SerializeField] private string m_TimeDisplayHeader = "";
     public string m_ReturnDisplayHeader = "";
     [SerializeField] private float m_ResetTimer = 0f;
+    DisplayBehaviour displayBehaviour;
     [Header("Debug Settings")]
     [SerializeField] private bool debugActive = false;
     [SerializeField] private bool debugEndTimer = false;
@@ -33,17 +35,30 @@ public class TimeManager : NetworkBehaviour
     {
         m_TimeRemain.Value = 0f;
     }
-    public void ActiveTimer()
+    public void ActiveTimer(float customTime = default)
     {
-        m_TimeRemain.Value = m_MaxTime;
-        isActive = true;
-
+        if (customTime == default)
+            m_TimeRemain.Value = m_MaxTime;
+        else if (customTime > 0)
+        {
+            m_TimeRemain.Value = customTime;
+            Debug.Log(customTime);
+        }
+        if (customTime > 0 || customTime == default)
+        {
+            Debug.Log("Active!");
+            isActive = true;
+        }
+        if(m_DisplayText != null)
+            displayBehaviour = m_DisplayText.GetComponent<DisplayBehaviour>();
     }
     public void ActiveReturnTimer()
     {
         m_TimeRemain.Value = returnTime;
         isActive = true;
         isReturning = true;
+        if (m_DisplayText != null)
+            displayBehaviour = m_DisplayText.GetComponent<DisplayBehaviour>();
     }
     public void Reset()
     {
@@ -82,10 +97,16 @@ public class TimeManager : NetworkBehaviour
         if (m_TimeRemain.Value > 0)
         {
             m_TimeRemain.Value -= Time.deltaTime;
-            if(!isReturning)
+            if (!isReturning)
                 SetDisplayText(m_TimeDisplayHeader + "\n" + TimeUnit.getTimeUnit(m_TimeRemain.Value));
             else
-                SetDisplayText(m_DisplayText.text = m_ReturnDisplayHeader +"\n"+ "Return in " + (int)(m_TimeRemain.Value) + "s");
+            {
+                string text = m_DisplayText.text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain.Value) + "s";
+                if (displayBehaviour == null)
+                    SetDisplayText(text);
+                else
+                    displayBehaviour.StartFadeInText(text, Color.white, -1f, 1f, 0.5f);
+            }
         } else
         {
 
@@ -105,5 +126,9 @@ public class TimeManager : NetworkBehaviour
         if(m_DisplayText != null) {
             m_DisplayText.text = value;
         }
+    }
+    public void SetDisplayTMP_Text(TMP_Text text)
+    {
+        m_DisplayText = text;
     }
 }

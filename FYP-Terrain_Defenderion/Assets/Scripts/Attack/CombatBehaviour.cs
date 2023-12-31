@@ -86,13 +86,16 @@ public class CombatBehaviour : MonoBehaviour
     private Animator mainAnimator;
     private void Awake()
     {
-        mainAnimator = GetComponent<Animator>();
-        body = gameObject.GetComponent<BodyManager>();
-        pressed.Enable();
-        axis.Enable();
-        pressed.performed += _ => { StartCoroutine(Rotate()); };
-        pressed.canceled += _ => { rotateAllowed = false;  SetRotateState(true); };
-        axis.performed += context => { rotation = context.ReadValue<Vector2>(); }; ;
+        if (gameObject.activeInHierarchy == true)
+        {
+            mainAnimator = GetComponent<Animator>();
+            body = gameObject.GetComponent<BodyManager>();
+            pressed.Enable();
+            axis.Enable();
+            pressed.performed += _ => { StartCoroutine(Rotate()); };
+            pressed.canceled += _ => { rotateAllowed = false; SetRotateState(true); };
+            axis.performed += context => { rotation = context.ReadValue<Vector2>(); }; ;
+        }
     }
     private void SetRotateState(bool value)
     {
