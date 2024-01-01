@@ -101,7 +101,7 @@ public class TimeManager : NetworkBehaviour
                 SetDisplayText(m_TimeDisplayHeader + "\n" + TimeUnit.getTimeUnit(m_TimeRemain.Value));
             else
             {
-                string text = m_DisplayText.text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain.Value) + "s";
+                string text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain.Value) + "s";
                 if (displayBehaviour == null)
                     SetDisplayText(text);
                 else

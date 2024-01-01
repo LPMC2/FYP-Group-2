@@ -112,11 +112,41 @@ public class StructureManager : MonoBehaviour
     {
         foreach(StructurePooling structurePooling in structurePoolings)
         {
-            foreach(GameObject structure in structurePooling.structures)
+            int count = 0;
+            foreach (GameObject structure in structurePooling.structures)
             {
                 structure.transform.position = Vector3.zero;
                 structure.transform.rotation = Quaternion.identity;
                 structure.SetActive(false);
+                if (structurePooling.collider.Length == structurePooling.structures.Count)
+                {
+                    if(structurePooling.collider[count] != null)
+                    {
+                        structurePooling.collider[count].enabled = true;
+                    }
+                }
+
+                count++;
+            }
+        }
+    }
+    public void SetStorageCollider()
+    {
+
+        foreach (StructurePooling structurePooling in structurePoolings)
+        {
+            structurePooling.collider = new BoxCollider[maxStructures];
+            int count = 0;
+            foreach (GameObject structure in structurePooling.structures)
+            {
+                if (!structure.activeInHierarchy) break;
+                BoxCollider boxCollider = structure.GetComponent<BoxCollider>();
+                if(boxCollider != null)
+                {
+                    structurePooling.collider[count] = boxCollider;
+                    boxCollider.enabled = false;
+                }
+                count++;
             }
         }
     }
@@ -132,4 +162,5 @@ public class StructurePooling
     public string name;
     public int id = -1;
     public bool isDefault = false;
+    public BoxCollider[] collider;
 }

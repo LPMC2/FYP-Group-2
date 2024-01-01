@@ -100,7 +100,7 @@ public class StageManager : MonoBehaviour
     }
     public void TimeOutDetection()
     {
-        if (StageGoal.TimeManager.TimeRemain > 0f) return;
+        if (StageGoal.TimeManager.TimeRemain > 0f || StageGoal.MainGoalType == Goal.GoalType.Time) return;
         int count = 0;
         GoalGameObject goalGameObject = StageGoal.TargetGameObject[0];
         HealthBehaviour goalHealthGameObject = null;

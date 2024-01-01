@@ -27,6 +27,27 @@ public class GridManager : MonoBehaviour
     public Camera captureCamera;
     [Header("Token Settings")]
     [SerializeField] private GameObject tokenAmountTextDisplay;
+    [SerializeField] private int m_SmallGridTokenAmount = 500;
+    [SerializeField] private int m_NormalGridTokenAmount = 1000;
+    [SerializeField] private int m_LargeGridTokenAmount = 2000;
+    public int GridTokenAmount 
+    {
+        get
+        {
+            switch(gridSize)
+            {
+                case GridSize.Small:
+                    return m_SmallGridTokenAmount;
+                    
+                case GridSize.Normal:
+                    return m_NormalGridTokenAmount;
+                case GridSize.Large:
+                    return m_LargeGridTokenAmount;
+                default:
+                    return 1000;
+            }
+        }
+    }
     [Header("Menu Settings")]
     private bool isMenuOpen = true;
     public bool isMainMenu = true;
@@ -68,9 +89,32 @@ public class GridManager : MonoBehaviour
                 break;
         }
     }
-    [SerializeField] private int m_MaxDefenseCount = 10;
+    [Header("Defense Settings")]
+    private int m_MaxDefenseCount = 5;
+    [SerializeField] private int m_MaxSmallDefenseCount = 5;
+    [SerializeField] private int m_MaxNormalDefenseCount = 10;
+    [SerializeField] private int m_MaxLargeDefenseCount = 20;
     private int defenseCount = 0;
-    public int MaxDefenseCount { get { return m_MaxDefenseCount; } }
+    public int MaxDefenseCount { get { switch(gridSize)
+            {
+                case GridSize.Small:
+                    return m_MaxSmallDefenseCount;
+                    break;
+                case GridSize.Normal:
+                    return m_MaxNormalDefenseCount;
+                    break;
+                case GridSize.Large:
+                    return m_MaxLargeDefenseCount;
+                    break;
+                default:
+                    return 10;
+                    break;
+            } 
+        } 
+    }
+    public int MaxSDefenseCount { get { return m_MaxSmallDefenseCount; } }
+    public int MaxNDefenseCount { get { return m_MaxNormalDefenseCount; } }
+    public int MaxLDefenseCount { get { return m_MaxLargeDefenseCount; } }
     public GameObject gridContainer;
     [SerializeField] private GameObject gridBlockObj;
     [SerializeField] private GameObject gridVisualLayer;
@@ -880,12 +924,17 @@ public class GridManager : MonoBehaviour
         Debug.Log("Placed blocks: " + count);
         Destroy(hitObject.transform.GetChild(0).gameObject);
     }
-    public void UpdateToken(int amount)
+    public void UpdateToken(int amount, bool isAddictive = true)
     {
         TokenManager tokenManager = player.GetComponent<TokenManager>();
         if (tokenManager != null)
         {
+            if(isAddictive)
             tokenManager.addTokens(amount);
+            else
+            {
+                tokenManager.setTokens(amount);
+            }
             UpdateTokenDisplay(tokenManager.getTokens());
         }
     }
@@ -957,8 +1006,9 @@ public class GridManager : MonoBehaviour
     }
     public void ResetGrid()
     {
-        tokenManager.setTokens(tokenManager.initialTokens);
-        UpdateTokenDisplay(tokenManager.initialTokens);
+        
+        tokenManager.setTokens(GridTokenAmount);
+        UpdateTokenDisplay(GridTokenAmount);
         defenseCount = 0;
         UpdateDefenseCount();
         foreach (Transform child in gridContainer.transform)
@@ -1035,14 +1085,15 @@ public class GridManager : MonoBehaviour
         TMP_Text text = displayDefenseCount.GetComponent<TMP_Text>();
         if(text!=null)
         {
-            text.text = "Defense Left: " + (m_MaxDefenseCount - defenseCount); 
+            text.text = "Defense Left: " + (MaxDefenseCount - defenseCount);
+
         }
     }
     public bool IsMaxDefenseReached(int blockId)
     {
         if(blockData.blockData[blockId].isDefense)
         {
-            if (defenseCount < m_MaxDefenseCount)
+            if (defenseCount < MaxDefenseCount)
             {
                 AddDefense(1);
                 return false;
@@ -1051,7 +1102,7 @@ public class GridManager : MonoBehaviour
             {
                 tokenManager.addTokens(blockData.blockData[currentBlockId].tokenCost);
                 UpdateTokenDisplay(tokenManager.getTokens());
-                SetFadeinText("Max Defense Reached! (" + m_MaxDefenseCount + ")");
+                SetFadeinText("Max Defense Reached! (" + MaxDefenseCount + ")");
                 return true;
             }
         }
@@ -1174,12 +1225,13 @@ public class GridManager : MonoBehaviour
         {
             return;
         }
-        tokenManager.setTokens(tokenManager.initialTokens);
         int cost = 0;
-        ResetGrid();
         StructureStorage[] structureStorages = StructureSerializer.LoadObject(filePath);
         if (structureStorages == null) return;
-            foreach (StructureStorage structureStorage in structureStorages)
+        gridSize = structureStorages[0].gridSize;
+        ResetGrid();
+        tokenManager.setTokens(GridTokenAmount);
+        foreach (StructureStorage structureStorage in structureStorages)
             {
             if (structureStorage.structureId >= 0)
             {
@@ -1194,7 +1246,7 @@ public class GridManager : MonoBehaviour
                 gridSize = gridData.gridSize;
                 if (gridData.isDefense)
                 {
-                    defenseCount--;
+                    defenseCount++;
                 }
                 gridData.blockId = structureStorage.structureId;
                 gridData.id = structureStorage.id;

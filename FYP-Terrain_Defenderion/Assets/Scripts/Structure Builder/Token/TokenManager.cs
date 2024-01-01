@@ -33,6 +33,7 @@ public class TokenManager : MonoBehaviour
     public static int GetTokenCost(int blockID)
     {
         BlockSO blockData = BlockManager.BlockData;
+        if (blockID < 0 || blockID > blockData.blockData.Length) return 0;
         int cost = 0;
         cost = blockData.blockData[blockID].tokenCost;
         return cost;

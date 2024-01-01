@@ -33,6 +33,10 @@ public class ScenesManager : MonoBehaviour
             yield return null;
         }
     }
-
+    public void ReloadScene()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
+    }
 }
 
