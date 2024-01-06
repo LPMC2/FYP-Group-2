@@ -6,8 +6,10 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 public class EnemyController : MonoBehaviour
 {
+    [SerializeField] private AIState enemyState;
     [SerializeField] private float lookRadius = 10f;
     [Header("Attack System")]
+    [SerializeField] private Transform target;
     [SerializeField] public AttackType attackType;
     [SerializeField] public ProjectileType projectileType;
     [SerializeField] private float damage;
@@ -53,10 +55,9 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
-    Transform target;
+
     NavMeshAgent agent;
-    private GameObject Siege1;
-    private GameObject Siege2;
+
     HealthBehaviour healthBehaviour;
     // Start is called before the first frame update
     void Start()
