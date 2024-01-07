@@ -7,7 +7,16 @@ using UnityEngine.Events;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private AIState enemyState;
+    [Header("Movement Settings")]
+    [SerializeField] private float patrolSpeed = 3f;
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] private float fleeSpeed = 10f;
+    [Header("Searching & Patrol Settings")]
     [SerializeField] private float lookRadius = 10f;
+    [SerializeField] private LayerMask targetLayer;
+    [SerializeField] private Vector3 m_PatrolDirection = Vector3.zero;
+    private int patrolState = 0;
+    private int maxPatrolState = 3;
     [Header("Attack System")]
     [SerializeField] private Transform target;
     [SerializeField] public AttackType attackType;
@@ -24,7 +33,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Vector3 ProjectileOffset;
     [SerializeField] private bool isAreaDamage = false;
     [SerializeField] private float AOERadius = 1f;
-    [SerializeField] private LayerMask targetLayer;
     [SerializeField] private int teamID = 0;
     [SerializeField]
     private LayerMask obstacleMask;
@@ -35,6 +43,14 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private AudioClip AttackSound;
     [SerializeField] private AudioClip DeathSound;
     private AudioSource audioSource;
+    bool isInRange = false;
+    [Header("Debug")]
+    [SerializeField] private bool DebugMode = false;
+    private void DebugLog(string text)
+    {
+        if (!DebugMode) return;
+        Debug.Log(text);
+    }
     private float closestDistance;
     public enum AttackType
     {
@@ -120,9 +136,15 @@ public class EnemyController : MonoBehaviour
     GameObject currentTarget;
     private void FindTarget()
     {
+        if(target != null && !target.gameObject.activeInHierarchy)
+        {
+            target = null;
+        }
         Collider[] colliders = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
+        DebugLog(colliders.Length.ToString());
         if (colliders.Length > 0)
         {
+            if (target != null) return;
             float closestDistance = Mathf.Infinity;
             GameObject closestObject = null;
 
@@ -155,6 +177,7 @@ public class EnemyController : MonoBehaviour
         {
             target = null;
             currentTarget = null;
+            isInRange = false;
         }
     }
     private void SetTarget(GameObject targetObj)
@@ -184,12 +207,22 @@ public class EnemyController : MonoBehaviour
                 return;
             }
         }
-        target = targetObj.transform;
-        currentTarget = targetObj;
+        if (targetObj != gameObject)
+        {
+            target = targetObj.transform;
+            currentTarget = targetObj;
+            enemyState.CurrentAIState = enemyState.MainAIState;
+            isPatrol = false;
+            patrolState = -1;
+            agent.SetDestination(target.position);
+            agent.speed = chaseSpeed;
+            isInRange = true;
+        }
     }
     // Update is called once per frame
     void Update()
     {
+        Patrol();
         if (enemyState.CurrentAIState == AIState.State.Attack || enemyState.CurrentAIState == AIState.State.Defend || enemyState.CurrentAIState == AIState.State.Patrol)
         {
             FindTarget();
@@ -200,17 +233,87 @@ public class EnemyController : MonoBehaviour
         }
         ChaseTarget();
     }
+    bool isPatrol = false;
+    Vector3 initialPatrolPos = Vector3.zero;
+    private void Patrol()
+    {
+        //Set State as patrol if the mainState is attack or defend
+        if((enemyState.MainAIState == AIState.State.Attack || enemyState.MainAIState == AIState.State.Defend) && target == null && enemyState.CurrentAIState != AIState.State.Patrol)
+        {
+            enemyState.CurrentAIState = AIState.State.Patrol;
+            initialPatrolPos = gameObject.transform.position;
+            patrolState = 0;
+            SetDestination();
+            agent.speed = patrolSpeed;
+        }
+        //Prevent from Non-Patrol state 
+        if (enemyState.CurrentAIState != AIState.State.Patrol) return;
+        if (isPatrol)
+        {
+            if (agent.remainingDistance <= agent.stoppingDistance && agent.destination != initialPatrolPos)
+            {
+                patrolState++;
+                if (patrolState > maxPatrolState)
+                {
+                    patrolState = 0;
+                }
+                isPatrol = false;
+            }
+        }
+        if (!isPatrol)
+        {
+           SetDestination();
+            DebugLog(initialPatrolPos.ToString());
+            isPatrol = true;
+        }
+        
+    }
+    private void SetDestination()
+    {
+        switch (patrolState)
+        {
+            case -1:
+                patrolState = 0;
+                break;
+            case 0:
+                agent.SetDestination(initialPatrolPos + new Vector3(m_PatrolDirection.x, 0, m_PatrolDirection.z));
+                break;
+            case 1:
+                agent.SetDestination(initialPatrolPos + new Vector3(m_PatrolDirection.x, 0, -m_PatrolDirection.z));
+                break;
+            case 2:
+                agent.SetDestination(initialPatrolPos + new Vector3(-m_PatrolDirection.x, 0, -m_PatrolDirection.z));
+                break;
+            case 3:
+                agent.SetDestination(initialPatrolPos + new Vector3(-m_PatrolDirection.x, 0, m_PatrolDirection.z));
+                break;
+        }
+    }
+    private Vector3 LastTargetPosition;
     private void ChaseTarget()
     {
-        if (target == null) return;
-        float distance = Vector3.Distance(target.position, transform.position);
-        
-        if (distance <= lookRadius)
+        /* Note: agent.SetDestination() requires network update(Server & Client) when in multiplayer 
+         * 
+        */
+        if (target == null)
         {
-            agent.SetDestination(target.position);
-            if (distance <= agent.stoppingDistance )
+            if(enemyState.CurrentAIState != AIState.State.Patrol)
+                agent.SetDestination(gameObject.transform.position);
+            return;
+        }
+        float distance = Vector3.Distance(target.position, transform.position);
+        //DebugLog(distance.ToString());
+        if (distance <= lookRadius || isInRange)
+        {
+            if (LastTargetPosition != target.position)
             {
-
+                LastTargetPosition = target.position;
+                agent.SetDestination(target.position);
+            }
+            if (distance <= agent.stoppingDistance || agent.remainingDistance == 0f)
+            {
+                
+                //Debug.Log("Attack");
                 //Attack the target
                 FaceTarget();
                 StartAttack();
@@ -231,6 +334,13 @@ public class EnemyController : MonoBehaviour
             if (enemyAnimator != null && attackType != AttackType.Custom)
             {
                 enemyAnimator.Play("Idle");
+            }
+            DebugLog("Out of Range");
+            target = null;
+            currentTarget = null;
+            LastTargetPosition = Vector3.zero;
+            if(AttackCor != null) {
+                StopCoroutine(AttackCor);
             }
         }
     }
@@ -263,6 +373,7 @@ public class EnemyController : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
+    private Coroutine AttackCor;
     private void StartAttack()
     {
 
@@ -271,7 +382,7 @@ public class EnemyController : MonoBehaviour
         if (AttackTime >= attackCD)
         {
 
-            StartCoroutine(AttackCoroutine());
+            AttackCor = StartCoroutine(AttackCoroutine());
             AttackTime = 0;
         }
     }

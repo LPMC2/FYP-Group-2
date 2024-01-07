@@ -340,7 +340,7 @@ public class GridGenerator : MonoBehaviour
                 if (newBlock != null)
                 {
                     originPos = newBlock.transform.position;
-                    newBlock.transform.position = buildPos;
+                    newBlock.transform.position = buildPos + buildOffset;
                     if(TeamBehaviour.Singleton != null)
                     {
                         TeamBehaviour.Singleton.TeamManager[0].AddMember(newBlock);

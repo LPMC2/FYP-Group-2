@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using System;
 
 public class HealthBehaviour : MonoBehaviour, IDamageable
 {
@@ -25,6 +26,17 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private bool isRespawn = false;
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private UnityEvent m_DeathEvents;
+    //private event Action deathEvent;
+
+    //public event Action DeathEvent
+    //{
+    //    add { deathEvent += value; }
+    //    remove { deathEvent -= value; }
+    //}
+    public void AddDeathEvents(UnityAction action)
+    {
+        m_DeathEvents.AddListener(action);
+    }
     [SerializeField]
     private GameObject healthBarUI;
     private Slider healthBarSlider;

@@ -60,7 +60,7 @@ public class StructureManager : MonoBehaviour
         }
         structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("Custom")].invMenus[0], count-defaultCount, true, true, defaultCount++);
     }
-    public GameObject GetStructure(int id, bool isActivation = true)
+    public virtual GameObject GetStructure(int id, bool isActivation = true)
     {
         if (id < 0 || id > structurePoolings.Length) return null; 
         foreach(GameObject target in structurePoolings[id].structures)
@@ -78,7 +78,7 @@ public class StructureManager : MonoBehaviour
         }
         return null;
     }
-    public void LoadAllStructures()
+    public virtual void LoadAllStructures()
     {
         if (structureStorage != null) return;
         //Place to rewrite into multiplayer
@@ -101,14 +101,31 @@ public class StructureManager : MonoBehaviour
                 rigidbody.isKinematic = true;
                 rigidbody.useGravity = false;
                 gameObject1.SetActive(false);
-
+                HealthBehaviour healthBehaviour = gameObject1.GetComponent<HealthBehaviour>();
+                if(healthBehaviour != null)
+                {
+                    healthBehaviour.AddDeathEvents(ScenesManager.Singleton.UpdateNavMeshSurface);
+                }
             }
             Destroy(structure);
         }
         //NetworkManager.Singleton.AddNetworkPrefab(gameObject);
         structureStorage = main;
     }
-    public void ResetStorage()
+    public virtual void SetDefense()
+    {
+        foreach (StructurePooling structurePooling in structurePoolings)
+        {
+            foreach (GameObject structure in structurePooling.structures)
+            {
+                if(structure.activeInHierarchy)
+                {
+                    structure.layer = LayerMask.NameToLayer("Defense");
+                }
+            }
+        }
+    }
+    public virtual void ResetStorage()
     {
         foreach(StructurePooling structurePooling in structurePoolings)
         {
@@ -130,7 +147,7 @@ public class StructureManager : MonoBehaviour
             }
         }
     }
-    public void SetStorageCollider()
+    public virtual void SetStorageCollider()
     {
 
         foreach (StructurePooling structurePooling in structurePoolings)

@@ -2,14 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
+using Unity.AI.Navigation;
 
 public class ScenesManager : MonoBehaviour
 {
+    public static ScenesManager Singleton;
     public string SceneName = "";
     public bool isAsync = false;
     public LoadSceneMode loadSceneMode;
     [SerializeField]
     private float progressValue = 0f;
+    [Header("AI Settings")]
+    [SerializeField] private NavMeshSurface navMeshSurface;
+    public void UpdateNavMeshSurface()
+    {
+        navMeshSurface.BuildNavMesh();
+    }
+    private void Awake()
+    {
+        Singleton = this;
+    }
     public void SetSceneName(string value)
     {
         SceneName = value;
