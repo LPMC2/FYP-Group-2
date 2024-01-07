@@ -55,7 +55,10 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
-
+    public void ChangeAIState(AIState.State state)
+    {
+        enemyState.CurrentAIState = state;
+    }
     NavMeshAgent agent;
 
     HealthBehaviour healthBehaviour;
@@ -73,7 +76,8 @@ public class EnemyController : MonoBehaviour
     }
     public void setAggro(GameObject originTarget)
     {
-        target = originTarget.transform;
+        SetTarget(originTarget);
+        
     }
     public void setViewRadius(float value)
     {
@@ -140,8 +144,7 @@ public class EnemyController : MonoBehaviour
                 {
                     if (currentTarget != closestObject)
                     {
-                        target = closestObject.transform;
-                        currentTarget = closestObject;
+                        SetTarget(closestObject);
                     }
 
                 }
@@ -154,26 +157,65 @@ public class EnemyController : MonoBehaviour
             currentTarget = null;
         }
     }
+    private void SetTarget(GameObject targetObj)
+    {
+        if(TeamBehaviour.Singleton != null)
+        {
+            int selfId = -1;
+            int newId = -1;
+            TeamBehaviour tB = TeamBehaviour.Singleton;
+            foreach(Team team in tB.TeamManager)
+            {
+                if (team.TeamList.Contains(gameObject))
+                {
+                    selfId = team.ID;
+
+                }
+            }
+            foreach (Team team in tB.TeamManager)
+            {
+                if (team.TeamList.Contains(targetObj))
+                {
+                    newId = team.ID;
+                }
+            }
+            if((selfId != -1 && newId != -1) && selfId == newId)
+            {
+                return;
+            }
+        }
+        target = targetObj.transform;
+        currentTarget = targetObj;
+    }
     // Update is called once per frame
     void Update()
     {
-
-        float distance = Vector3.Distance(target.position, transform.position);
-        float destDistance = 0;
-        if (nearestDestructible != null)
+        if (enemyState.CurrentAIState == AIState.State.Attack || enemyState.CurrentAIState == AIState.State.Defend || enemyState.CurrentAIState == AIState.State.Patrol)
         {
-            destDistance = Vector3.Distance(transform.position, nearestDestructible.transform.position);
+            FindTarget();
+        } else
+        {
+            target = null;
+            currentTarget = null;
         }
+        ChaseTarget();
+    }
+    private void ChaseTarget()
+    {
+        if (target == null) return;
+        float distance = Vector3.Distance(target.position, transform.position);
+        
         if (distance <= lookRadius)
         {
             agent.SetDestination(target.position);
-            if (distance <= agent.stoppingDistance ||(nearestDestructible != null && (destDistance <= closestDistance)))
+            if (distance <= agent.stoppingDistance )
             {
 
                 //Attack the target
                 FaceTarget();
                 StartAttack();
-            } else if (distance > agent.stoppingDistance)
+            }
+            else if (distance > agent.stoppingDistance)
             {
                 if (AnimateObject != null)
                 {

@@ -6,7 +6,9 @@ using UnityEngine;
 public class AIState
 {
     [SerializeField] private State m_AIState = State.Idle;
-    public State AiState { get { return m_AIState;} set { m_AIState = value; } }
+    public State CurrentAIState { get { return m_AIState;} set { m_AIState = value; } }
+    [SerializeField] private State m_DefaultAIState = State.Idle;
+    public State DefaultAIState { get { return m_DefaultAIState; } }
     public enum State
     {
         Idle,

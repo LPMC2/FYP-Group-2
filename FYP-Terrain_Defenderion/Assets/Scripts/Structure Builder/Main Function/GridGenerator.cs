@@ -341,6 +341,10 @@ public class GridGenerator : MonoBehaviour
                 {
                     originPos = newBlock.transform.position;
                     newBlock.transform.position = buildPos;
+                    if(TeamBehaviour.Singleton != null)
+                    {
+                        TeamBehaviour.Singleton.TeamManager[0].AddMember(newBlock);
+                    }
                 }
                 break;
         }
@@ -468,6 +472,10 @@ public class GridGenerator : MonoBehaviour
             {
                 tokenManager.addTokens(gridData.tokenCost);
                 lastOutlineBlock.transform.position = Vector3.zero;
+                if (TeamBehaviour.Singleton != null)
+                {
+                    TeamBehaviour.Singleton.TeamManager[0].RemoveMember(lastOutlineBlock.transform.gameObject);
+                }
                 lastOutlineBlock.transform.gameObject.SetActive(false);
             }
             if (gridData != null)
