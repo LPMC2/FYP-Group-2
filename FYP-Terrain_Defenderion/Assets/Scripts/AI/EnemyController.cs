@@ -4,9 +4,13 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using System.Linq;
+
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private AIState enemyState;
+    [Header("Team Settings")]
+    [SerializeField] private int m_DefaultTeamId = -1;
     [Header("Movement Settings")]
     [SerializeField] private float patrolSpeed = 3f;
     [SerializeField] private float chaseSpeed = 5f;
@@ -15,6 +19,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float lookRadius = 10f;
     [SerializeField] private LayerMask targetLayer;
     [SerializeField] private Vector3 m_PatrolDirection = Vector3.zero;
+    [SerializeField] private float stopTimer = 1f;
     private int patrolState = 0;
     private int maxPatrolState = 3;
     [Header("Attack System")]
@@ -89,6 +94,10 @@ public class EnemyController : MonoBehaviour
         {
             enemyAnimator = AnimateObject.GetComponent<Animator>();
         }
+        if(m_DefaultTeamId != -1)
+        {
+            TeamBehaviour.Singleton.TeamManager[m_DefaultTeamId].AddMember(gameObject);
+        }
     }
     public void setAggro(GameObject originTarget)
     {
@@ -140,9 +149,32 @@ public class EnemyController : MonoBehaviour
         {
             target = null;
         }
-        Collider[] colliders = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
-        DebugLog(colliders.Length.ToString());
-        if (colliders.Length > 0)
+        Collider[] colliderArray = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
+        List<Collider> colliders = new List<Collider>(colliderArray);
+        if (DebugMode)
+        {
+            string Debug = "Collider List(Before):\n";
+            foreach (Collider collider in colliders)
+            {
+                Debug += collider.gameObject.name + "\n";
+            }
+            DebugLog(Debug);
+        }
+        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
+        if (teamID != -1)
+        {
+            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+        }
+        if(DebugMode)
+        {
+            string Debug = "Collider List:\n";
+            foreach (Collider collider in colliders)
+            {
+               Debug+= collider.gameObject.name + "\n";
+            }
+            DebugLog(Debug);
+        }
+        if (colliders.Count > 0)
         {
             if (target != null) return;
             float closestDistance = Mathf.Infinity;
@@ -162,6 +194,7 @@ public class EnemyController : MonoBehaviour
 
             if (closestObject != null)
             {
+                DebugLog("Closest Obj:" + closestObject.name);
                 if (target == null || target.gameObject.activeInHierarchy == false || target.GetComponent<Collider>().enabled == false)
                 {
                     if (currentTarget != closestObject)
@@ -182,31 +215,31 @@ public class EnemyController : MonoBehaviour
     }
     private void SetTarget(GameObject targetObj)
     {
-        if(TeamBehaviour.Singleton != null)
-        {
-            int selfId = -1;
-            int newId = -1;
-            TeamBehaviour tB = TeamBehaviour.Singleton;
-            foreach(Team team in tB.TeamManager)
-            {
-                if (team.TeamList.Contains(gameObject))
-                {
-                    selfId = team.ID;
+        //if(TeamBehaviour.Singleton != null)
+        //{
+        //    int selfId = -1;
+        //    int newId = -1;
+        //    TeamBehaviour tB = TeamBehaviour.Singleton;
+        //    foreach(Team team in tB.TeamManager)
+        //    {
+        //        if (team.TeamList.Contains(gameObject))
+        //        {
+        //            selfId = team.ID;
 
-                }
-            }
-            foreach (Team team in tB.TeamManager)
-            {
-                if (team.TeamList.Contains(targetObj))
-                {
-                    newId = team.ID;
-                }
-            }
-            if((selfId != -1 && newId != -1) && selfId == newId)
-            {
-                return;
-            }
-        }
+        //        }
+        //    }
+        //    foreach (Team team in tB.TeamManager)
+        //    {
+        //        if (team.TeamList.Contains(targetObj))
+        //        {
+        //            newId = team.ID;
+        //        }
+        //    }
+        //    if((selfId != -1 && newId != -1) && selfId == newId)
+        //    {
+        //        return;
+        //    }
+        //}
         if (targetObj != gameObject)
         {
             target = targetObj.transform;
@@ -219,13 +252,20 @@ public class EnemyController : MonoBehaviour
             isInRange = true;
         }
     }
+    private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
+    private float cacheExpirationTimer; // Timer to track cache expiration
     // Update is called once per frame
     void Update()
     {
         Patrol();
         if (enemyState.CurrentAIState == AIState.State.Attack || enemyState.CurrentAIState == AIState.State.Defend || enemyState.CurrentAIState == AIState.State.Patrol)
         {
-            FindTarget();
+            if (Time.time >= cacheExpirationTimer)
+            {
+                FindTarget();
+                cacheExpirationTimer = Time.time + cacheExpirationTime;
+            }
+            
         } else
         {
             target = null;
@@ -235,6 +275,7 @@ public class EnemyController : MonoBehaviour
     }
     bool isPatrol = false;
     Vector3 initialPatrolPos = Vector3.zero;
+    private float pauseTimer = 0f;
     private void Patrol()
     {
         //Set State as patrol if the mainState is attack or defend
@@ -242,7 +283,7 @@ public class EnemyController : MonoBehaviour
         {
             enemyState.CurrentAIState = AIState.State.Patrol;
             initialPatrolPos = gameObject.transform.position;
-            patrolState = 0;
+            patrolState = UnityEngine.Random.Range(0, 4);
             SetDestination();
             agent.speed = patrolSpeed;
         }
@@ -262,9 +303,16 @@ public class EnemyController : MonoBehaviour
         }
         if (!isPatrol)
         {
-           SetDestination();
-            DebugLog(initialPatrolPos.ToString());
-            isPatrol = true;
+            if (pauseTimer < stopTimer)
+            {
+                pauseTimer += Time.deltaTime;
+            } else
+            {
+                pauseTimer = 0f;
+                SetDestination();
+                DebugLog(initialPatrolPos.ToString());
+                isPatrol = true;
+            }
         }
         
     }
@@ -297,8 +345,8 @@ public class EnemyController : MonoBehaviour
         */
         if (target == null)
         {
-            if(enemyState.CurrentAIState != AIState.State.Patrol)
-                agent.SetDestination(gameObject.transform.position);
+            //if(enemyState.CurrentAIState != AIState.State.Patrol)
+            //    agent.SetDestination(gameObject.transform.position);
             return;
         }
         float distance = Vector3.Distance(target.position, transform.position);
@@ -368,10 +416,12 @@ public class EnemyController : MonoBehaviour
     }
     void FaceTarget()
     {
-
         Vector3 direction = (target.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
     }
     private Coroutine AttackCor;
     private void StartAttack()

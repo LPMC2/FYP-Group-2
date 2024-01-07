@@ -163,7 +163,6 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 {
                     gameObject.GetComponent<Collider>().enabled = false;
                 }
-                GameObjectExtension.DisableMeshFromTime(this, gameObject, DeathTime);
                 GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
             }
         }
@@ -173,7 +172,6 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 Destroy(gameObject);
             else
             {
-                GameObjectExtension.DisableMeshFromTime(this, gameObject, 0f);
                 GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
             }
         }
