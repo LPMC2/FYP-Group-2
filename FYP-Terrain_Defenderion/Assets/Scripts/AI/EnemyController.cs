@@ -18,11 +18,13 @@ public class EnemyController : MonoBehaviour
     [Header("Searching & Patrol Settings")]
     [SerializeField] private float lookRadius = 10f;
     [SerializeField] private LayerMask targetLayer;
+    [SerializeField, Layer] private int preferredTargetLayer = 0;
     [SerializeField] private Vector3 m_PatrolDirection = Vector3.zero;
     [SerializeField] private float stopTimer = 1f;
     private int patrolState = 0;
     private int maxPatrolState = 3;
     [Header("Attack System")]
+    [SerializeField] private float AttackDistance = 1f;
     [SerializeField] private Transform target;
     [SerializeField] public AttackType attackType;
     [SerializeField] public ProjectileType projectileType;
@@ -98,6 +100,7 @@ public class EnemyController : MonoBehaviour
         {
             TeamBehaviour.Singleton.TeamManager[m_DefaultTeamId].AddMember(gameObject);
         }
+        agent.stoppingDistance = AttackDistance;
     }
     public void setAggro(GameObject originTarget)
     {
@@ -143,14 +146,17 @@ public class EnemyController : MonoBehaviour
         }
     }
     GameObject currentTarget;
+    Collider excludedTarget = null;
     private void FindTarget()
     {
-        if(target != null && !target.gameObject.activeInHierarchy)
-        {
-            target = null;
-        }
         Collider[] colliderArray = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
         List<Collider> colliders = new List<Collider>(colliderArray);
+        if (target != null && (!target.gameObject.activeInHierarchy || !colliders.Contains(target.GetComponent<Collider>())))
+        {
+            DebugLog("Target is inactive!");
+            excludedTarget = null;
+            target = null;
+        }
         if (DebugMode)
         {
             string Debug = "Collider List(Before):\n";
@@ -165,6 +171,10 @@ public class EnemyController : MonoBehaviour
         {
             colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
         }
+        if(excludedTarget != null)
+        {
+            colliders.Remove(excludedTarget);
+        }
         if(DebugMode)
         {
             string Debug = "Collider List:\n";
@@ -176,18 +186,47 @@ public class EnemyController : MonoBehaviour
         }
         if (colliders.Count > 0)
         {
-            if (target != null) return;
             float closestDistance = Mathf.Infinity;
             GameObject closestObject = null;
+            ////Find preferred target
+            //foreach (Collider collider in colliders)
+            //{
+            //    float distance = Vector3.Distance(transform.position, collider.transform.position);
+
+            //    if (distance < closestDistance)
+            //    {      
+            //        DebugLog("Target Object: " + collider.gameObject + "Layer: " + collider.gameObject.layer.ToString() + " / PreferredTargetLayer: " + preferredTargetLayer + "\nPath Reachable? " + agent.path.status.ToString());
+            //        if (collider.gameObject.layer == preferredTargetLayer)
+            //        {
+            //            if (currentTarget != closestObject)
+            //            {
+            //                closestDistance = distance;
+            //                closestObject = collider.gameObject;
+            //                DebugLog("IsPrferredTarget");
+            //                SetTarget(closestObject);
+            //                return;
+            //            }
+                        
+            //        }
+
+            //    }
+            //}
+            if (target != null) return;
 
             foreach (Collider collider in colliders)
             {
                 float distance = Vector3.Distance(transform.position, collider.transform.position);
 
+                if ((collider.gameObject.layer == preferredTargetLayer))
+                {
+                    closestObject = collider.gameObject;
+                    break;
+                }
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
                     closestObject = collider.gameObject;
+                    
 
                 }
             }
@@ -208,38 +247,22 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
+            DebugLog("No Target Found!");
             target = null;
             currentTarget = null;
             isInRange = false;
+            excludedTarget = null;
         }
+    }
+    bool PathIsReachable(Transform targetDestination)
+    {
+        NavMeshPath path = new NavMeshPath();
+        bool hasPath = agent.CalculatePath(targetDestination.position, path);
+        DebugLog(path.status.ToString());
+        return hasPath/* && path.status == NavMeshPathStatus.PathComplete*/;
     }
     private void SetTarget(GameObject targetObj)
     {
-        //if(TeamBehaviour.Singleton != null)
-        //{
-        //    int selfId = -1;
-        //    int newId = -1;
-        //    TeamBehaviour tB = TeamBehaviour.Singleton;
-        //    foreach(Team team in tB.TeamManager)
-        //    {
-        //        if (team.TeamList.Contains(gameObject))
-        //        {
-        //            selfId = team.ID;
-
-        //        }
-        //    }
-        //    foreach (Team team in tB.TeamManager)
-        //    {
-        //        if (team.TeamList.Contains(targetObj))
-        //        {
-        //            newId = team.ID;
-        //        }
-        //    }
-        //    if((selfId != -1 && newId != -1) && selfId == newId)
-        //    {
-        //        return;
-        //    }
-        //}
         if (targetObj != gameObject)
         {
             target = targetObj.transform;
@@ -250,6 +273,7 @@ public class EnemyController : MonoBehaviour
             agent.SetDestination(target.position);
             agent.speed = chaseSpeed;
             isInRange = true;
+
         }
     }
     private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
@@ -337,6 +361,10 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+    public void ResetExcludedTarget()
+    {
+        excludedTarget = null;
+    }
     private Vector3 LastTargetPosition;
     private void ChaseTarget()
     {
@@ -349,8 +377,16 @@ public class EnemyController : MonoBehaviour
             //    agent.SetDestination(gameObject.transform.position);
             return;
         }
+        if(!agent.pathPending && agent.pathStatus == NavMeshPathStatus.PathPartial && excludedTarget == null && target.gameObject.layer == preferredTargetLayer)
+        {
+            DebugLog(agent.pathStatus.ToString());
+            excludedTarget = target.GetComponent<Collider>();
+            target = null;
+            currentTarget = null;
+            return;
+        }
         float distance = Vector3.Distance(target.position, transform.position);
-        //DebugLog(distance.ToString());
+        DebugLog("Distance:" + Mathf.RoundToInt(distance).ToString() + "\nRemaining Distance: " + Mathf.RoundToInt(agent.remainingDistance).ToString());
         if (distance <= lookRadius || isInRange)
         {
             if (LastTargetPosition != target.position)
@@ -358,7 +394,7 @@ public class EnemyController : MonoBehaviour
                 LastTargetPosition = target.position;
                 agent.SetDestination(target.position);
             }
-            if (distance <= agent.stoppingDistance || agent.remainingDistance == 0f)
+            if (distance <= agent.stoppingDistance || agent.remainingDistance <= AttackDistance)
             {
                 
                 //Debug.Log("Attack");
@@ -417,7 +453,7 @@ public class EnemyController : MonoBehaviour
     void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
-        if (direction != Vector3.zero)
+        if (direction.x != 0f || direction.z != 0f)
         {
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);

@@ -26,13 +26,18 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private bool isRespawn = false;
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private UnityEvent m_DeathEvents;
-    //private event Action deathEvent;
+    [SerializeField] private UnityEvent OnDisableEvent;
+    private event Action deathEvent;
 
-    //public event Action DeathEvent
-    //{
-    //    add { deathEvent += value; }
-    //    remove { deathEvent -= value; }
-    //}
+    public event Action DeathEvent
+    {
+        add { deathEvent += value; }
+        remove { deathEvent -= value; }
+    }
+    public void AddDisableEvent(UnityAction action)
+    {
+        OnDisableEvent.AddListener(action);
+    }
     public void AddDeathEvents(UnityAction action)
     {
         m_DeathEvents.AddListener(action);
@@ -76,7 +81,11 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             UpdateHealthBar();
         }
     }
-
+    private void OnDisable()
+    {
+        OnDisableEvent.Invoke();
+        OnDisableEvent.RemoveAllListeners();
+    }
     public void SetDamage(float damageAmount)
     {
         damage = damageAmount;
@@ -145,7 +154,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     }
     private void Death()
     {
-        m_DeathEvents.Invoke();
+        deathEvent?.Invoke();
         if(isRespawn)
         StartCoroutine(RespawnTimer());
         if (DeathTime > 0)
@@ -156,6 +165,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 {
                     Destroy(gameObject.GetComponent<Collider>());
                 }
+                m_DeathEvents.Invoke();
                 Destroy(gameObject, DeathTime);
             } else
             {
@@ -163,16 +173,18 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 {
                     gameObject.GetComponent<Collider>().enabled = false;
                 }
-                GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
+                m_DeathEvents.Invoke();
+                GameObjectExtension.DisableFromTime(this, gameObject, DeathTime);
             }
         }
         else
         {
+            m_DeathEvents.Invoke();
             if (destroyOnDeath)
                 Destroy(gameObject);
             else
             {
-                GameObjectExtension.DisableFromTime(this, GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar"), DeathTime);
+                gameObject.SetActive(false);
             }
         }
     }

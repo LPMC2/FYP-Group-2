@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Unity.AI.Navigation.Samples;
+using Unity.AI.Navigation;
 public class GridGenerator : MonoBehaviour
 {
     [SerializeField] TemplateType templateType;
@@ -162,7 +163,12 @@ public class GridGenerator : MonoBehaviour
         colDetector = collisionDetector;
         //Remove Rigidbody
         Rigidbody rigidbody = templateGameobject.GetComponent<Rigidbody>();
-        Destroy(rigidbody);
+        if (rigidbody != null)
+        {
+            Destroy(templateGameobject.GetComponent<DynamicNavMeshObject>());
+            Destroy(templateGameobject.GetComponent<NavMeshModifier>());
+            Destroy(rigidbody);
+        }
         //Adjust the collider
         MeshCollider meshCollider = templateGameobject.GetComponent<MeshCollider>();
         meshCollider.enabled = false;

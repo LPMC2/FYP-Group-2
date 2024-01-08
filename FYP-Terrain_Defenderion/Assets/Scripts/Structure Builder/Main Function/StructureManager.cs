@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.AI.Navigation.Samples;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -97,7 +98,7 @@ public class StructureManager : MonoBehaviour
                 gameObject1.name = structurePooling.name + " - " + i;
                 gameObject1.transform.SetParent(child.transform);
                 structurePooling.structures.Add(gameObject1);
-                Rigidbody rigidbody = gameObject1.AddComponent<Rigidbody>();
+                Rigidbody rigidbody = gameObject1.GetComponent<Rigidbody>();
                 rigidbody.isKinematic = true;
                 rigidbody.useGravity = false;
                 gameObject1.SetActive(false);
@@ -121,6 +122,10 @@ public class StructureManager : MonoBehaviour
                 if(structure.activeInHierarchy)
                 {
                     structure.layer = LayerMask.NameToLayer("Defense");
+                    DynamicNavMeshObject dynamicNavMeshObject = structure.GetComponent<DynamicNavMeshObject>();
+                    HealthBehaviour healthBehaviour = structure.GetComponent<HealthBehaviour>();
+                    if(dynamicNavMeshObject != null && healthBehaviour != null)
+                    healthBehaviour.AddDeathEvents(dynamicNavMeshObject.UpdateNavMesh);
                 }
             }
         }

@@ -17,6 +17,7 @@ public class ScenesManager : MonoBehaviour
     [SerializeField] private NavMeshSurface navMeshSurface;
     public void UpdateNavMeshSurface()
     {
+        if (navMeshSurface == null) return;
         navMeshSurface.BuildNavMesh();
     }
     private void Awake()

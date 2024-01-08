@@ -3,6 +3,9 @@ using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
+using Unity.AI.Navigation.Samples;
+using Unity.AI.Navigation;
+
 public struct StructureTypeFile
 {
     public string FileName;
@@ -359,6 +362,8 @@ public static class StructureSerializer
             BoxCollider boxCollider = structure.AddComponent<BoxCollider>();
             boxCollider.isTrigger = true;
             structure.layer = LayerMask.NameToLayer("Grid");
+            structure.AddComponent<NavMeshModifier>();
+            structure.AddComponent<DynamicNavMeshObject>();
         }
         foreach(GameObject utility in utilityList)
         {
