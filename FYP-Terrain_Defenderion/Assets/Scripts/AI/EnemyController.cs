@@ -24,6 +24,7 @@ public class EnemyController : MonoBehaviour
     private int patrolState = 0;
     private int maxPatrolState = 3;
     [Header("Attack System")]
+    private bool isAggro = false;
     [SerializeField] private float AttackDistance = 1f;
     [SerializeField] private Transform target;
     [SerializeField] public AttackType attackType;
@@ -105,6 +106,7 @@ public class EnemyController : MonoBehaviour
     public void setAggro(GameObject originTarget)
     {
         SetTarget(originTarget);
+        isAggro = true;
         
     }
     public void setViewRadius(float value)
@@ -156,6 +158,7 @@ public class EnemyController : MonoBehaviour
             DebugLog("Target is inactive!");
             excludedTarget = null;
             target = null;
+            isAggro = false;
         }
         if (DebugMode)
         {
@@ -166,6 +169,7 @@ public class EnemyController : MonoBehaviour
             }
             DebugLog(Debug);
         }
+        if (isAggro) return;
         int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
         if (teamID != -1)
         {
@@ -188,29 +192,6 @@ public class EnemyController : MonoBehaviour
         {
             float closestDistance = Mathf.Infinity;
             GameObject closestObject = null;
-            ////Find preferred target
-            //foreach (Collider collider in colliders)
-            //{
-            //    float distance = Vector3.Distance(transform.position, collider.transform.position);
-
-            //    if (distance < closestDistance)
-            //    {      
-            //        DebugLog("Target Object: " + collider.gameObject + "Layer: " + collider.gameObject.layer.ToString() + " / PreferredTargetLayer: " + preferredTargetLayer + "\nPath Reachable? " + agent.path.status.ToString());
-            //        if (collider.gameObject.layer == preferredTargetLayer)
-            //        {
-            //            if (currentTarget != closestObject)
-            //            {
-            //                closestDistance = distance;
-            //                closestObject = collider.gameObject;
-            //                DebugLog("IsPrferredTarget");
-            //                SetTarget(closestObject);
-            //                return;
-            //            }
-                        
-            //        }
-
-            //    }
-            //}
             if (target != null) return;
 
             foreach (Collider collider in colliders)
@@ -270,10 +251,11 @@ public class EnemyController : MonoBehaviour
             enemyState.CurrentAIState = enemyState.MainAIState;
             isPatrol = false;
             patrolState = -1;
-            agent.SetDestination(target.position);
+            if(agent.isActiveAndEnabled)
+                agent.SetDestination(target.position);
             agent.speed = chaseSpeed;
             isInRange = true;
-
+            agent.stoppingDistance = AttackDistance;
         }
     }
     private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
@@ -307,6 +289,7 @@ public class EnemyController : MonoBehaviour
         {
             enemyState.CurrentAIState = AIState.State.Patrol;
             initialPatrolPos = gameObject.transform.position;
+            agent.stoppingDistance = 1f;
             patrolState = UnityEngine.Random.Range(0, 4);
             SetDestination();
             agent.speed = patrolSpeed;
@@ -453,9 +436,9 @@ public class EnemyController : MonoBehaviour
     void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
-        if (direction.x != 0f || direction.z != 0f)
+        if (direction.x != 0f && direction.z != 0f)
         {
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0f, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
     }
@@ -497,6 +480,9 @@ public class EnemyController : MonoBehaviour
             {
                 damageable.TakeDamage(damage);
             }
+            //Set Aggro to Target
+            EnemyController enemy = target.GetComponent<EnemyController>();
+            if(enemy != null) { enemy.setAggro(gameObject); }
           
 
         }
@@ -517,14 +503,19 @@ public class EnemyController : MonoBehaviour
                 enemyAnimator.Play("AttackRanged");
             }
             yield return new WaitForSeconds(preAttackCD);
-
+            if (projectileType != ProjectileType.Raycast)
+            {
                 GameObject projectileInstance = Instantiate(projectileObject, transform.position + transform.TransformDirection(ProjectileOffset), Quaternion.identity);
                 Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
                 if (projectileScript != null)
                 {
-                    projectileScript.InitializeProjectile(gameObject.transform.forward,ProjectileSpeed, damage, projectileType);
+                    projectileScript.InitializeProjectile(gameObject.transform.forward, ProjectileSpeed, damage, projectileType, gameObject);
 
                 }
+            } else
+            {
+                FireLaser();
+            }
            
           
         }
@@ -549,6 +540,14 @@ public class EnemyController : MonoBehaviour
         }
             // Wait for the attack animation to complete before exiting the coroutine
             yield return new WaitForSeconds(attackCD);
+    }
+    private void FireLaser()
+    {
+        LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
+        if (laserBehaviour != null)
+        {
+            laserBehaviour.fire(damage);
+        }
     }
     private void OnDrawGizmosSelected()
     {

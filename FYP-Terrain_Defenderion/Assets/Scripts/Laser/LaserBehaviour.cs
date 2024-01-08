@@ -18,6 +18,7 @@ public class LaserBehaviour : MonoBehaviour
     [SerializeField] private LayerMask hitLayerMask;
     [SerializeField] private bool isPiercing = true;
     [SerializeField] private bool canHitMultipleTimes = true;
+    [SerializeField] private bool oneShotOnly = false;
     [SerializeField]
     private LineRenderer lineRenderer;
     [SerializeField]
@@ -60,7 +61,7 @@ public class LaserBehaviour : MonoBehaviour
     public void fire(float damageMultiplier = 1f)
     {
         //Damage Multiplier
-        damage *= damageMultiplier;
+        damage = damageMultiplier;
 
         // Start a timer for preFireCD seconds before firing the laser
         StartCoroutine(FireLaserAfterDelay(preFireCD));
@@ -86,6 +87,7 @@ public class LaserBehaviour : MonoBehaviour
     {
         setLaserTimer = fireTime/1.5f* laserClosingTime;
     }
+    bool isShot = false;
 private IEnumerator FireLaserForDuration(float duration)
     {
         float laserTimer = 0f;
@@ -115,49 +117,55 @@ private IEnumerator FireLaserForDuration(float duration)
             float time = laserTimer / duration;
             if (laserTimer > laserClosingTime * duration)
             {
-                float curveTime = (laserTimer - laserClosingTime * duration) / ((1- laserClosingTime) * duration);
-                float widthMultiplier = laserCurve.Evaluate(curveTime) * initialWidth ;
+                float curveTime = (laserTimer - laserClosingTime * duration) / ((1 - laserClosingTime) * duration);
+                float widthMultiplier = laserCurve.Evaluate(curveTime) * initialWidth;
                 lineRenderer.widthMultiplier = widthMultiplier;
             }
-            hits = Physics.RaycastAll(raycastStart, raycastDirection, laserLength, hitLayerMask);
+                hits = Physics.RaycastAll(raycastStart, raycastDirection, laserLength, hitLayerMask);
 
-            if (hits.Length > 0)
-            {
-                foreach (RaycastHit hit in hits)
+                if (hits.Length > 0)
                 {
-                    if (hitObjects.Contains(hit.collider.gameObject))
+                    foreach (RaycastHit hit in hits)
                     {
-                        continue;
+                        if (hitObjects.Contains(hit.collider.gameObject))
+                        {
+                            continue;
+                        }
+                    if (!isShot)
+                    {
+                        HitTakeDamage(hit.collider.gameObject);
+                        hitObjects.Add(hit.collider.gameObject);
+                        EnemyController enemy = hit.collider.GetComponent<EnemyController>();
+                        if (enemy != null) { enemy.setAggro(gameObject); }
+                        if (oneShotOnly)
+                            isShot = true;
                     }
-
-                    HitTakeDamage(hit.collider.gameObject);
-                    hitObjects.Add(hit.collider.gameObject);
-
-                    // If the raycast hits an object, do something
+                        // If the raycast hits an object, do something
 
 
-                    if (!isPiercing)
+                        if (!isPiercing)
+                        {
+                            lineRenderer.SetPosition(0, raycastStart);
+                            lineRenderer.SetPosition(1, hit.point);
+                            break;
+                        }
+                    }
+                    if (isPiercing)
                     {
                         lineRenderer.SetPosition(0, raycastStart);
-                        lineRenderer.SetPosition(1, hit.point);
-                        break;
+                        lineRenderer.SetPosition(1, raycastStart + raycastDirection * laserLength);
                     }
                 }
-                if (isPiercing)
+                else
                 {
+                    // If the raycast doesn't hit anything, update the end point of the line renderer to the maximum range of the raycast
                     lineRenderer.SetPosition(0, raycastStart);
                     lineRenderer.SetPosition(1, raycastStart + raycastDirection * laserLength);
                 }
-            }
-            else
-            {
-                // If the raycast doesn't hit anything, update the end point of the line renderer to the maximum range of the raycast
-                lineRenderer.SetPosition(0, raycastStart);
-                lineRenderer.SetPosition(1, raycastStart + raycastDirection * laserLength);
-            }
-            if(canHitMultipleTimes)
-            hitObjects.Clear();
-            yield return null;
+                if (canHitMultipleTimes)
+                    hitObjects.Clear();
+                yield return null;
+            
         }
         if (!canHitMultipleTimes)
             hitObjects.Clear();
@@ -166,7 +174,7 @@ private IEnumerator FireLaserForDuration(float duration)
         lineRenderer.SetPosition(1, transform.position + laserOffset + transform.forward * laserLength);
         lineRenderer.enabled = false;
         lineRenderer.widthMultiplier = initialWidth;
-
+        isShot = false;
     }
     private void HitTakeDamage(GameObject hit)
     {

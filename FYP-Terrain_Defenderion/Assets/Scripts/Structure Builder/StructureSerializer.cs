@@ -357,7 +357,20 @@ public static class StructureSerializer
         if(calculateStats)
         {
             HealthBehaviour healthBehaviour = structure.AddComponent<HealthBehaviour>();
-            healthBehaviour.Initialize(totalHealth, true, new Vector3(0f,structure.GetComponent<Renderer>().bounds.size.y ,0f), HealthBarType.WorldSpace, false);
+            healthBehaviour.Initialize(totalHealth, true, new Vector3(0f,structure.GetComponent<Renderer>().bounds.size.y * 1.3f ,0f), HealthBarType.WorldSpace, false,false);
+            switch(gridData1.gridSize)
+            {
+                case GridSize.Small:
+                    healthBehaviour.SetHPBarSize(new Vector3(5f, 5f, 5f));
+                    break;
+                case GridSize.Normal:
+                    healthBehaviour.SetHPBarSize(new Vector3(7.5f, 7.5f, 7.5f));
+                    break;
+                case GridSize.Large:
+                    healthBehaviour.SetHPBarSize(new Vector3(10f, 10f, 10f));
+                    break;
+            }
+            
             gridData1.tokenCost = cost;
             BoxCollider boxCollider = structure.AddComponent<BoxCollider>();
             boxCollider.isTrigger = true;

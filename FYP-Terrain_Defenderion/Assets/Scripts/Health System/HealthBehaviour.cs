@@ -10,7 +10,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
 {
     [SerializeField] private HealthBarType m_healthBarType;
     [SerializeField] private bool isDynamicHealthBar = false;
-    [SerializeField] private bool showHPBaronStart = false;
+    [SerializeField] private bool showHPBarOnStart = false;
     [SerializeField] private float health = 100f;
     [SerializeField] private float hitTime = 0.1f;
     private float initialHealth;
@@ -55,7 +55,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     public Image backHealthBar;
     private Animator MobAnimator;
     private AudioSource audioSource;
-    public void Initialize(float maxHealth = 100, bool isDynamicHP = false, Vector3 hpOffset = default, HealthBarType healthBarType = HealthBarType.WorldSpace, bool destroyOnDeath = true)
+    public void Initialize(float maxHealth = 100, bool isDynamicHP = false, Vector3 hpOffset = default, HealthBarType healthBarType = HealthBarType.WorldSpace, bool destroyOnDeath = true, bool showHPBarOnStart = false)
     {
         health = maxHealth;
         initialHealth = maxHealth;
@@ -64,6 +64,15 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
         m_healthBarType = healthBarType;
         healthBarPrefab = GameManager.Singleton.HealthBarPrefab;
         this.destroyOnDeath = destroyOnDeath;
+        if(showHPBarOnStart)
+        {
+            healthBarSize = Vector3.one;
+            UpdateHealthBar();
+        }
+    }
+    public void SetHPBarSize(Vector3 size)
+    {
+        healthBarSize = size;
     }
     // Start is called before the first frame update
     void Start()
@@ -76,15 +85,15 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             Debug.LogError("Respawn will not work as the object is destroyed!");
             #endif
         }
-        if(showHPBaronStart)
+        if(showHPBarOnStart)
         {
             UpdateHealthBar();
         }
     }
     private void OnDisable()
     {
-        OnDisableEvent.Invoke();
-        OnDisableEvent.RemoveAllListeners();
+        //OnDisableEvent.Invoke();
+        //OnDisableEvent.RemoveAllListeners();
     }
     public void SetDamage(float damageAmount)
     {

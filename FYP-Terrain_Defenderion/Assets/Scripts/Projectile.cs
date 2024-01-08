@@ -31,6 +31,7 @@ public class Projectile : MonoBehaviour
     private ProjectileType projectileType;
     public ProjectileType Type => projectileType;
     private Vector3 direction;
+    private GameObject owner;
     private void Start()
     {
         if(m_isTravelAtStart)
@@ -77,7 +78,7 @@ public class Projectile : MonoBehaviour
         this.obstacleMask = obstacleMask;
     }
 
-    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default)
+    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default, GameObject owner = null)
     {
         if(projectileType != default)
         {
@@ -87,6 +88,7 @@ public class Projectile : MonoBehaviour
         {
             damage *= damageMultiplier;
         }
+        this.owner = owner;
         this.direction = direction;
          speed *= speedMultiplier;
         switch (this.projectileType)
@@ -145,18 +147,20 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer))
+        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer) || other.gameObject == owner)
         {
             return;
         }
         m_HitFunction.Invoke(other.gameObject);
-        HealthBehaviour healthBehaviour = other.GetComponent<HealthBehaviour>();
-        if (healthBehaviour != null)
+        IDamageable iDamageable = other.GetComponent<IDamageable>();
+        if (iDamageable != null)
         {
-            Debug.Log("HIt");
-            healthBehaviour.TakeDamage(damage);
+            //Debug.Log("HIt");
+            iDamageable.TakeDamage(damage);
         }
-      if(!m_isPiercing)
+        EnemyController enemy = other.GetComponent<EnemyController>();
+        if (enemy != null && owner != null) { enemy.setAggro(owner); }
+        if (!m_isPiercing)
         {
             Destroy(gameObject);
         }
@@ -168,5 +172,6 @@ public enum ProjectileType
 {
     Default,
     StraightForward,
-    InstantForce
+    InstantForce,
+    Raycast
 }
