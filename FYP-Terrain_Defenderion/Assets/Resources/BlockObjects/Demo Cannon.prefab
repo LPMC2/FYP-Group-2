@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5758054749942120788}
   - component: {fileID: 2910484625424886871}
   - component: {fileID: 313929091189323795}
+  - component: {fileID: 2977052707409316536}
   m_Layer: 8
   m_Name: Demo Cannon
   m_TagString: Untagged
@@ -63,6 +64,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2977052707409316536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2342362351553313624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ebd0ce3ac8eafb4c8f6ca1b7dbc0868, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShooterObject: {fileID: 5571252540562026198}
+  m_shooterBehaviour: {fileID: 7459455593191074501}
 --- !u!1 &5510987206503980884
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,6 +214,7 @@ MonoBehaviour:
   originShooter: {fileID: 5510987206503980884}
   shootObject: {fileID: 3760000531308150246, guid: ee4747e3dab28a94ea3b22dcd3f9d847, type: 3}
   HeadObject: {fileID: 5571252540562026198}
+  structure: {fileID: 0}
   preFireCd: 0.1
   shootingSpeed: 1
   objectSpeed: 1
@@ -207,7 +223,7 @@ MonoBehaviour:
   shootSpeedPerCount: 0.1
   rotateDuration: 1
   isActive: 1
-  range: 10
+  range: 100
   target: {fileID: 0}
   damageMultiplier: 1
   targetLayer:

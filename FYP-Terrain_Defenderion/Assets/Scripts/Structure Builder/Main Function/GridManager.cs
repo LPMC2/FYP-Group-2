@@ -1283,6 +1283,7 @@ public class GridManager : MonoBehaviour
         isTokenAffordable(cost, default, StructureSerializer.GetFileName(filePath));
         inventoryBehaviour.StartFadeInText("Successfully loaded Structure: " + StructureSerializer.GetFileName(path, 1), Color.green, 5f);
         CreateVisualGrid();
+        UpdateDefenseCount();
     }
     public void UpdateTokenDisplay(int newAmount)
     {
