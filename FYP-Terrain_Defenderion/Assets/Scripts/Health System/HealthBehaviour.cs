@@ -158,7 +158,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             }
         
         }
-        if(health > 0)
+        if(health > 0 && gameObject.activeInHierarchy)
         StartCoroutine(HitEnumerator());
     }
     private void Death()
@@ -183,7 +183,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                     gameObject.GetComponent<Collider>().enabled = false;
                 }
                 m_DeathEvents.Invoke();
-                GameObjectExtension.DisableFromTime(this, gameObject, DeathTime);
+                Invoke("DisableObject", DeathTime);
             }
         }
         else
@@ -193,9 +193,18 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
                 Destroy(gameObject);
             else
             {
-                gameObject.SetActive(false);
+                DisableObject();
             }
         }
+    }
+    private void DisableObject()
+    {
+        if (gameObject.GetComponent<Collider>() != null)
+        {
+            gameObject.GetComponent<Collider>().enabled = true;
+        }
+        health = initialHealth;
+        gameObject.SetActive(false);
     }
     public void ResetHealth()
     {

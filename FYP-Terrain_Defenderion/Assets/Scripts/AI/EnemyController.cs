@@ -105,8 +105,11 @@ public class EnemyController : MonoBehaviour
     }
     public void setAggro(GameObject originTarget)
     {
-        SetTarget(originTarget);
-        isAggro = true;
+        if (!isAggro)
+        {
+            SetTarget(originTarget);
+            isAggro = true;
+        }
         
     }
     public void setViewRadius(float value)
@@ -458,7 +461,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AttackCoroutine()
     {
-
+        if (target == null) { StopCoroutine(AttackCor); }
         if (attackType == AttackType.Melee)
         {
                 if (DeathSound != null && audioSource != null)
@@ -509,7 +512,9 @@ public class EnemyController : MonoBehaviour
                 Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
                 if (projectileScript != null)
                 {
-                    projectileScript.InitializeProjectile(gameObject.transform.forward, ProjectileSpeed, damage, projectileType, gameObject);
+                    Vector3 direction = target.position - transform.position;
+                    direction.Normalize(); 
+                    projectileScript.InitializeProjectile(direction, ProjectileSpeed, damage, projectileType, gameObject);
 
                 }
             } else

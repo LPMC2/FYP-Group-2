@@ -64,7 +64,6 @@ public class DoorBehaviour : PositionManager
             {
                 StopAllCoroutines();
             }
-            Debug.Log("Test");
             yield return null;
         }
     }

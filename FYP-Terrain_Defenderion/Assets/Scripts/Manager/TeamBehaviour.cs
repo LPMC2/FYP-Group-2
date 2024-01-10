@@ -26,6 +26,18 @@ public class TeamBehaviour : MonoBehaviour
         }
         return -1;
     }
+    public bool isOwnTeam(GameObject origin, Collider target)
+    {
+        int teamID = TeamBehaviour.Singleton.GetTeamID(origin);
+        if (teamID != -1)
+        {
+            return TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(target);
+        }
+        else
+        {
+            return false;
+        }
+    }
     public void SortTeamID()
     {
         for(int i=0; i< m_TeamManager.Length;i++)

@@ -42,7 +42,6 @@ public class TimeManager : NetworkBehaviour
         else if (customTime > 0)
         {
             m_TimeRemain.Value = customTime;
-            Debug.Log(customTime);
         }
         if (customTime > 0 || customTime == default)
         {

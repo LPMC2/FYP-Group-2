@@ -1,0 +1,220 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1041480380044611380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6231905350765234474}
+  - component: {fileID: 8335538545545331519}
+  - component: {fileID: 3458176951029380178}
+  - component: {fileID: 7956217165938737947}
+  - component: {fileID: 7482121732473324052}
+  - component: {fileID: 6426352171962008246}
+  - component: {fileID: -2253377312320502005}
+  m_Layer: 7
+  m_Name: TestDummy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6231905350765234474
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 48.3, y: -0, z: 52.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 30
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &8335538545545331519
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &3458176951029380178
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7956217165938737947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e37831b5d5ba643b9e62c5bf9713ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyState:
+    m_AIState: 0
+    m_MainAIState: 2
+  m_DefaultTeamId: -1
+  patrolSpeed: 5
+  chaseSpeed: 10
+  fleeSpeed: 15
+  lookRadius: 100
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 6528
+  preferredTargetLayer: 12
+  m_PatrolDirection: {x: 20, y: 0, z: 20}
+  stopTimer: 1
+  AttackDistance: 5
+  target: {fileID: 0}
+  attackType: 0
+  projectileType: 0
+  damage: 100
+  preAttackCD: 0
+  attackCD: 1
+  customAttackEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  projectileObject: {fileID: 0}
+  ProjectileSpeed: 5
+  AttackAngleMultiplier: 1
+  maxTime: 0
+  ProjectileOffset: {x: 0, y: 0, z: 0}
+  isAreaDamage: 0
+  AOERadius: 1
+  teamID: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  AnimateObject: {fileID: 0}
+  AttackSound: {fileID: 0}
+  DeathSound: {fileID: 0}
+  DebugMode: 0
+--- !u!65 &7482121732473324052
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!195 &6426352171962008246
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 70
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &-2253377312320502005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041480380044611380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9963e530a8565df44a76ba02fd59d2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_healthBarType: 2
+  isDynamicHealthBar: 1
+  showHPBarOnStart: 0
+  health: 1000
+  hitTime: 0.1
+  healthBarPrefab: {fileID: 7817960711757863714, guid: 14471a63829ad374c971348f47ad3c16, type: 3}
+  healthbarOffset: {x: 0, y: 1, z: 0}
+  healthBarSize: {x: 1, y: 1, z: 1}
+  healthBarColor: {r: 1, g: 0, b: 0, a: 1}
+  DeathTime: 0
+  destroyOnDeath: 0
+  isRespawn: 0
+  respawnTime: 5
+  m_DeathEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisableEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  healthBarUI: {fileID: 0}
+  chipSpeed: 2
+  HurtSound: {fileID: 0}
+  Invincible: 0
+  frontHealthBar: {fileID: 0}
+  backHealthBar: {fileID: 0}

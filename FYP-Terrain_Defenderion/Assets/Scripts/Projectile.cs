@@ -147,7 +147,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer) || other.gameObject == owner)
+        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer) || other.gameObject == owner || isOwnTeam(owner, other))
         {
             return;
         }
@@ -164,6 +164,10 @@ public class Projectile : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private bool isOwnTeam(GameObject origin, Collider target)
+    {
+        return TeamBehaviour.Singleton.isOwnTeam(origin, target);
     }
 
 

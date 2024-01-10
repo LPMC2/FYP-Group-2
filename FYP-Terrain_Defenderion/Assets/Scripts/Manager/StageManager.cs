@@ -16,7 +16,6 @@ public class StageManager : MonoBehaviour
         {
             if (StageGoal.TimeLimit > -2 && StageGoal.TimeManager != null)
             {
-                Debug.Log("Time");
                 m_StageGoal[m_currentStage.Value].TimeManager.ActiveTimer(StageGoal.TimeLimit);
             }
         }
