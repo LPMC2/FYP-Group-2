@@ -8,6 +8,8 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private GameObject originShooter;
     [SerializeField] private GameObject shootObject;
     [SerializeField] private GameObject HeadObject;
+    [SerializeField] private GameObject structure;
+    public GameObject Structure { set { structure = value; } }
     public GameObject ShootObject { get { return shootObject; } private set { shootObject = value; } }
     [SerializeField] private float preFireCd = 0.1f;
     [SerializeField] private float shootingSpeed = 1f;
@@ -54,11 +56,17 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField]
     private float cooldownDuration = 0.5f; // Cooldown duration
     private GameObject currentTarget = null;
+    private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
+    private float cacheExpirationTimer; // Timer to track cache expiration
     void Update()
     {
         if (isActive && rotateObject != null)
         {
-            FindTarget();
+            if (Time.time >= cacheExpirationTimer)
+            {
+                FindTarget();
+                cacheExpirationTimer = Time.time + cacheExpirationTime;
+            }
             if (target != null && IsTargetInRange(target))
             {
                 Quaternion newRotation = Quaternion.LookRotation( target.transform.position - rotateObject.transform.position);
@@ -111,8 +119,14 @@ public class ShooterBehaviour : MonoBehaviour
     }
     private void FindTarget()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, range, targetLayer);
-        if (colliders.Length > 0)
+        Collider[] collidersArray = Physics.OverlapSphere(transform.position, range, targetLayer);
+        List<Collider> colliders = new List<Collider>(collidersArray);
+        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
+        if (teamID != -1)
+        {
+            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+        }
+        if (colliders.Count > 0)
         {
             float closestDistance = Mathf.Infinity;
             GameObject closestObject = null;
@@ -227,10 +241,10 @@ public class ShooterBehaviour : MonoBehaviour
                     switch(bulletType)
                     {
                         case ShootType.ForwardObject:
-                            FireBullet(ProjectileType.StraightForward);
+                            FireBullet(ProjectileType.StraightForward, structure);
                             break;
                         case ShootType.MotionObject:
-                            FireBullet(ProjectileType.InstantForce);
+                            FireBullet(ProjectileType.InstantForce, structure);
                             break;
                         case ShootType.Ray:
                             LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
@@ -260,11 +274,11 @@ public class ShooterBehaviour : MonoBehaviour
         target = null;
         isRotating = false;
     }
-    private void FireBullet(ProjectileType projectileType)
+    private void FireBullet(ProjectileType projectileType, GameObject owner = null)
     {
         GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
         Projectile projectile = bullet.GetComponent<Projectile>();
-        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType);
+        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner);
 
     }
 }

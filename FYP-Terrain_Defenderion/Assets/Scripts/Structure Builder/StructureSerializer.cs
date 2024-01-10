@@ -338,6 +338,18 @@ public static class StructureSerializer
                 } else
                 {
                     utilityList.Add(block);
+                    //Disable collider
+                    Collider collider = block.GetComponent<Collider>();
+                    if(collider != null)
+                    {
+                        collider.enabled = false;
+                    }
+                    //Set Origin Gameobject for shooter
+                    ShooterManager shooterManager = block.GetComponent<ShooterManager>();
+                    if(shooterManager != null)
+                    {
+                        shooterManager.shooterBehaviour.Structure = structure;
+                    }
                 }
                 count++;
                 block.transform.position = new Vector3((structureStorage[i].cellPos[0]) , (structureStorage[i].cellPos[1]) , (structureStorage[i].cellPos[2]) );
