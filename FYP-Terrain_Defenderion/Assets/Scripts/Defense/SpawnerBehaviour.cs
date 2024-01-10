@@ -63,6 +63,10 @@ public class SpawnerBehaviour : MonoBehaviour
         return false;
 
     }
+    public virtual void StartSpawn()
+    {
+        InvokeRepeating("Spawn", 0f, Random.Range(minSpawnTime, maxSpawnTime));
+    }
     public virtual void SetTeam(int id)
     {
         TeamBehaviour teamBehaviour = TeamBehaviour.Singleton;
