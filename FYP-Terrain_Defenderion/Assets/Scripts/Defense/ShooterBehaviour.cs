@@ -119,6 +119,7 @@ public class ShooterBehaviour : MonoBehaviour
     }
     private void FindTarget()
     {
+        if (TeamBehaviour.Singleton == null) return;
         Collider[] collidersArray = Physics.OverlapSphere(transform.position, range, targetLayer);
         List<Collider> colliders = new List<Collider>(collidersArray);
         int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);

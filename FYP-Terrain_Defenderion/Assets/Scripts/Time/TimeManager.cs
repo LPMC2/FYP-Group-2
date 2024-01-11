@@ -45,7 +45,6 @@ public class TimeManager : NetworkBehaviour
         }
         if (customTime > 0 || customTime == default)
         {
-            Debug.Log("Active!");
             isActive = true;
         }
         if(m_DisplayText != null)
@@ -91,15 +90,16 @@ public class TimeManager : NetworkBehaviour
             RunTimer();
         }
     }
-    public virtual IEnumerator RunTimer(float duration, DisplayBehaviour display = null, string displayText = "")
+    public virtual IEnumerator RunTimer(float duration, DisplayBehaviour display = null, string displayText = "", Color color = default)
     {
+        if(color == default) { color = Color.white; }
        float TimeRemain = duration;
         while(TimeRemain > 0f)
         {
             TimeRemain -= Time.deltaTime;
             if(display != null)
             {
-                display.SetText(displayText + Mathf.CeilToInt(TimeRemain) + "s");
+                display.SetText(displayText + Mathf.CeilToInt(TimeRemain) + "s", color);
             }
             yield return null;
         }
@@ -112,7 +112,7 @@ public class TimeManager : NetworkBehaviour
         {
             m_TimeRemain.Value -= Time.deltaTime;
             if (!isReturning)
-                SetDisplayText(m_TimeDisplayHeader + "\n" + TimeUnit.getTimeUnit(m_TimeRemain.Value));
+                SetDisplayText(m_TimeDisplayHeader + TimeUnit.getTimeUnit(m_TimeRemain.Value));
             else
             {
                 string text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain.Value) + "s";

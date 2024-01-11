@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class DisplayBehaviour : MonoBehaviour
 {
     [SerializeField] private TMP_Text DisplayText;
@@ -10,6 +13,7 @@ public class DisplayBehaviour : MonoBehaviour
     [SerializeField] private float fadeInDuration = 1f;
     [SerializeField] private float fadeOutDuration = 1f;
     [SerializeField] private Color defaultColor = Color.white;
+    public float TotalDuration { get { return displayDuration + fadeInDuration + fadeOutDuration; } }
     private Coroutine fadeCoroutine;
     private void Awake()
     {
@@ -31,7 +35,7 @@ public class DisplayBehaviour : MonoBehaviour
         DisplayText.color = Color.white;
         DisplayText.text = "";
     }
-    public virtual void StartFadeInText(string text, Color color = default(Color),float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
+    public void StartFadeInText(string text, Color color = default(Color),float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
         if (color == default(Color))
         {
@@ -46,6 +50,18 @@ public class DisplayBehaviour : MonoBehaviour
         // Get the item name from the item data using the provided item ID
         // Start the fade coroutine
         fadeCoroutine = StartCoroutine(FadeText(text, color, fadeInDuration, duration, fadeOutDuration));
+    }
+    public void StartFadeInText(string text)
+    {
+        // Stop any ongoing fade coroutine
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+        }
+
+        // Get the item name from the item data using the provided item ID
+        // Start the fade coroutine
+        fadeCoroutine = StartCoroutine(FadeText(text, defaultColor, fadeInDuration, displayDuration, fadeOutDuration));
     }
     private IEnumerator FadeText(string text, Color color, float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
@@ -109,4 +125,13 @@ public class DisplayBehaviour : MonoBehaviour
 
         fadeCoroutine = null;
     }
+#if UNITY_EDITOR
+
+
+    [ContextMenu("Start Coroutine")]
+    public void StartCoroutineInEditor()
+    {
+    }
+
+#endif
 }

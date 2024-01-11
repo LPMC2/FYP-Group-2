@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,8 @@ public class InventorySystem : MonoBehaviour
         [SerializeField] int count;
         [SerializeField] string name;
         [SerializeField] int itemId;
+        [SerializeField] private TMP_Text itemDisplay;
+        public TMP_Text ItemDisplay { get { return itemDisplay; } set { itemDisplay = value; } }
         public int getCount()
         {
             return count;

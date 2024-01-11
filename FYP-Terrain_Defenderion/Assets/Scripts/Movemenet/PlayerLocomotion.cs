@@ -151,6 +151,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         if(Physics.SphereCast(rayCastOrigin, fallingCollisionRadius, -Vector3.up, out hit, groundLayer))
         {
+            Debug.Log(hit.collider.gameObject + "\n" + rayCastOrigin + -Vector3.up);
             animatorManager.animator.SetBool("isInteracting", false);
             if (!isGrounded)
             {

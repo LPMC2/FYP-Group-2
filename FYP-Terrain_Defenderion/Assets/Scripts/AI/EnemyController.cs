@@ -391,6 +391,7 @@ public class EnemyController : MonoBehaviour
             }
             else if (distance > agent.stoppingDistance)
             {
+                AttackTime = 0f;
                 if (AnimateObject != null)
                 {
                     if (!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))

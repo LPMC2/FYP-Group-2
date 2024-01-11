@@ -7,12 +7,13 @@ public class SlotBehaviour : MonoBehaviour
     InventoryBehaviour inventoryBehaviour;
     private int itemID=-1;
     Button button;
+    public SlotType itemSlotType { get; private set; }
     public void Initialize(InventoryBehaviour inventoryBehaviour, int itemID = default, SlotType slotType = default)
     {
         button = gameObject.GetComponent<Button>();
         this.inventoryBehaviour = inventoryBehaviour;
         this.itemID = itemID;
-        
+        itemSlotType = slotType;
         switch (slotType) 
         {
             case SlotType.InventoryBag:

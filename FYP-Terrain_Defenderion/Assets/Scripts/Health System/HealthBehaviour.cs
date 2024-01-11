@@ -27,6 +27,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private UnityEvent m_DeathEvents;
     [SerializeField] private UnityEvent OnDisableEvent;
+    [SerializeField] private UnityEvent m_RespawnEvents;
     [Header("Respawn Display Settings")]
     [SerializeField] private DisplayBehaviour m_RespawnDisplay;
     [SerializeField] private string m_RespawnText = "Respawn in ";
@@ -73,6 +74,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             healthBarSize = Vector3.one;
             UpdateHealthBar();
         }
+    }
+    public void DeezNuts(bool state)
+    {
+        Invincible = state;
     }
     public void SetHPBarSize(Vector3 size)
     {
@@ -169,7 +174,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     {
         deathEvent?.Invoke();
         if (isRespawn)
-            RespawnBehaviour.Singleton.AddRespawnObject(gameObject, respawnTime, m_RespawnDisplay, m_RespawnText, respawnCamera);
+            RespawnBehaviour.Singleton.AddRespawnObject(gameObject, respawnTime, m_RespawnDisplay, m_RespawnText, respawnCamera, m_RespawnEvents);
         if (DeathTime > 0)
         {
             if (destroyOnDeath)

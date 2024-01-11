@@ -367,7 +367,7 @@ public class InventoryBehaviour : MonoBehaviour
                 break;
         }
        
-        setSlotObjUI(id, SlotPlaceHolder, slotObject);
+        setSlotObjUI(id, SlotPlaceHolder, slotObject, item);
         if (id == selectedSlot)
         {
             if(equipItem)
@@ -489,7 +489,7 @@ public class InventoryBehaviour : MonoBehaviour
         StartFadeInText(slotId);
 
     }
-    private void setSlotObjUI(int id, GameObject slotPH, GameObject slotObj)
+    private void setSlotObjUI(int id, GameObject slotPH, GameObject slotObj, int item = -1)
     {
         if (id < slotPH.transform.childCount)
         {
@@ -524,6 +524,7 @@ public class InventoryBehaviour : MonoBehaviour
                    
                     int invId = inventory.slot[id].getId();
                     GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
+                    TMP_Text displayText = instantiatedUI.transform.GetChild(0).GetComponent<TMP_Text>();
                     instantiatedUI.transform.SetParent(targetUI.transform);
                     if (instantiatedUI.GetComponent<Image>() == null)
                     {
@@ -547,6 +548,10 @@ public class InventoryBehaviour : MonoBehaviour
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
                         uiImg.raycastTarget = false;
                         gridManager.captureCamera.orthographicSize = cameraSize;
+                        if (item != -1 )
+                        {
+                            displayText.text = "Cost: " + blockData.blockData[invId].tokenCost;
+                        }
                     } else
                     {
                         float width = rectTransform.rect.width * 1.5f;
@@ -565,6 +570,7 @@ public class InventoryBehaviour : MonoBehaviour
                 int invId = inventory.slot[id].getId();
                 GameObject instantiatedUI = Instantiate(slotObj, targetUI.transform.position, Quaternion.identity, targetUI.transform);
                 Image image = instantiatedUI.GetComponent<Image>();
+                TMP_Text displayText = instantiatedUI.transform.GetChild(0).GetComponent<TMP_Text>();
                 if (image == null)
                 {
                     image = instantiatedUI.AddComponent<Image>();
@@ -581,7 +587,15 @@ public class InventoryBehaviour : MonoBehaviour
                         SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();
                         if (simpleTooltip != null)
                             simpleTooltip.infoLeft = structureManager.structurePoolings[invId].name;
+                        if (item != -1)
+                        {
+                            displayText.text = "Cost: " + structureManager.structurePoolings[invId].structures[0].GetComponent<GridData>().tokenCost;
+                        }
                     }
+                } else
+                {
+
+                        displayText.text = "";
                 }
                 if(image.sprite == null)
                 {
@@ -619,6 +633,10 @@ public class InventoryBehaviour : MonoBehaviour
 
             uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
             gridManager.captureCamera.orthographicSize = cameraSize;
+            if(instantiatedUI.transform.childCount > 0)
+            {
+                Destroy(instantiatedUI.transform.GetChild(0).gameObject);
+            }
         }
         else
         {
@@ -817,13 +835,13 @@ public class InventoryBehaviour : MonoBehaviour
                 if (inventoryType == InventoryType.block)
                 {
                     SetBlockSlotUI(itemID, slotObject, slotItem.transform);
-                    simpleTooltip.infoLeft = blockData.blockData[itemID].blockModel.name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
+                    simpleTooltip.infoLeft = blockData.blockData[itemID].blockModel.name + "\n\nStats:" + "\nType: " + invMenu.MenuName  + "\nHealth: " + blockData.blockData[itemID].maxHealth + "\nToken Cost: " + blockData.blockData[itemID].tokenCost + "\n\n-Click to select-";
                     slotBehaviour.Initialize(this, itemID, SlotType.InventoryBag);
                 }
                 if(inventoryType == InventoryType.Structure)
                 {
                     SetStructureSlotUI(itemID, slotObject, slotItem.transform);
-                    simpleTooltip.infoLeft = structureManager.structurePoolings[itemID].name + "\n\nType: " + invMenu.MenuName + "\nClick to select";
+                    simpleTooltip.infoLeft = structureManager.structurePoolings[itemID].name + "\n\nStats:" + "\nType: " + invMenu.MenuName + "\nHealth: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<HealthBehaviour>().GetHealth() + "\nToken Cost: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<GridData>().tokenCost + "\n-Click to select-";
                     slotBehaviour.Initialize(this, itemID, SlotType.StructureEditor);
                 }
             }
@@ -881,6 +899,10 @@ public class InventoryBehaviour : MonoBehaviour
 
             uiImg.sprite = structureManager.structurePoolings[invId].structureImage;
             InventoryBehaviour.SetRectTransformFromStructureSize(rectTransform, structureManager.structurePoolings[invId].structureSize);
+        }
+        if (instantiatedUI.transform.childCount > 0)
+        {
+            Destroy(instantiatedUI.transform.GetChild(0).gameObject);
         }
         uiImg.preserveAspect = true;
         uiImg.raycastTarget = false;

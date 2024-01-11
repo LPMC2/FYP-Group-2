@@ -69,7 +69,16 @@ public class InputManager : MonoBehaviour
     }
     private void OnDisable()
     {
+        movementInput = Vector2.zero;
+        cameraInput = Vector2.zero;
+        moveAmount = 0f;
+        jump_Input = false;
+        verticalInput = 0f;
+        horizontalInput = 0f;
+        cameraInputX = 0f;
+        cameraInputY = 0f;
         playerInputs.Disable();
+
     }
 
     public void HandleAllInputs()
