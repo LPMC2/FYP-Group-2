@@ -15,7 +15,23 @@ public class DisplayBehaviour : MonoBehaviour
     {
         DisplayText = gameObject.GetComponent<TMP_Text>();
     }
-    public void StartFadeInText(string text, Color color = default(Color),float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
+    public virtual void SetText(string text, Color color = default(Color), float resetDuration = -1)
+    {
+        if(color == default(Color))
+        {
+            color = Color.white;
+        }
+        DisplayText.text = text;
+        if(resetDuration > 0)
+            Invoke("ResetText", resetDuration);
+            
+    }
+    private void ResetText()
+    {
+        DisplayText.color = Color.white;
+        DisplayText.text = "";
+    }
+    public virtual void StartFadeInText(string text, Color color = default(Color),float fadeInDuration = default, float duration = default, float fadeOutDuration = default)
     {
         if (color == default(Color))
         {

@@ -35,7 +35,7 @@ public class TimeManager : NetworkBehaviour
     {
         m_TimeRemain.Value = 0f;
     }
-    public void ActiveTimer(float customTime = default)
+    public virtual void ActiveTimer(float customTime = default)
     {
         if (customTime == default)
             m_TimeRemain.Value = m_MaxTime;
@@ -64,7 +64,7 @@ public class TimeManager : NetworkBehaviour
         isActive = false;
         m_TimeRemain.Value = 0f;
     }
-    private void EndTimeInvoke()
+    public virtual void EndTimeInvoke()
     {
         if(!isReturning)
          m_EndTimeEvent.Invoke();
@@ -90,6 +90,21 @@ public class TimeManager : NetworkBehaviour
         {
             RunTimer();
         }
+    }
+    public virtual IEnumerator RunTimer(float duration, DisplayBehaviour display = null, string displayText = "")
+    {
+       float TimeRemain = duration;
+        while(TimeRemain > 0f)
+        {
+            TimeRemain -= Time.deltaTime;
+            if(display != null)
+            {
+                display.SetText(displayText + Mathf.CeilToInt(TimeRemain) + "s");
+            }
+            yield return null;
+        }
+        if(display != null)
+        display.SetText("");
     }
     private void RunTimer()
     {

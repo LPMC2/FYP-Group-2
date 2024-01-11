@@ -27,6 +27,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private UnityEvent m_DeathEvents;
     [SerializeField] private UnityEvent OnDisableEvent;
+    [Header("Respawn Display Settings")]
+    [SerializeField] private DisplayBehaviour m_RespawnDisplay;
+    [SerializeField] private string m_RespawnText = "Respawn in ";
+    [SerializeField] private Camera respawnCamera;
     private event Action deathEvent;
 
     public event Action DeathEvent
@@ -164,8 +168,8 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     private void Death()
     {
         deathEvent?.Invoke();
-        if(isRespawn)
-        StartCoroutine(RespawnTimer());
+        if (isRespawn)
+            RespawnBehaviour.Singleton.AddRespawnObject(gameObject, respawnTime, m_RespawnDisplay, m_RespawnText, respawnCamera);
         if (DeathTime > 0)
         {
             if (destroyOnDeath)
@@ -221,8 +225,8 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     private IEnumerator RespawnTimer()
     {
 
-        yield return new WaitForSeconds(DeathTime + respawnTime);
-        ResetHealth();
+        yield return new WaitForSeconds(DeathTime);
+        
     }
     private void UpdateHealthBar()
     {

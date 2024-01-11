@@ -161,6 +161,7 @@ public class EnemyController : MonoBehaviour
             DebugLog("Target is inactive!");
             excludedTarget = null;
             target = null;
+            currentTarget = null;
             isAggro = false;
         }
         if (DebugMode)
@@ -478,14 +479,18 @@ public class EnemyController : MonoBehaviour
                 enemyAnimator.Play("AttackMelee");
             }
             yield return new WaitForSeconds(preAttackCD);
-            IDamageable damageable = target.gameObject.GetComponent<IDamageable>();
-            if (damageable != null)
+            if (target != null)
             {
-                damageable.TakeDamage(damage);
+                IDamageable damageable = target.gameObject.GetComponent<IDamageable>();
+                if (damageable != null)
+                {
+                    damageable.TakeDamage(damage);
+                }
+
+                //Set Aggro to Target
+                EnemyController enemy = target.GetComponent<EnemyController>();
+                if (enemy != null) { enemy.setAggro(gameObject); }
             }
-            //Set Aggro to Target
-            EnemyController enemy = target.GetComponent<EnemyController>();
-            if(enemy != null) { enemy.setAggro(gameObject); }
           
 
         }
