@@ -1,0 +1,204 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1719598565401989821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3773285791066968284}
+  - component: {fileID: 3340968599667044025}
+  - component: {fileID: 8205448148089867952}
+  - component: {fileID: 6251979933078100231}
+  - component: {fileID: 6950167304147782630}
+  m_Layer: 0
+  m_Name: Sword
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3773285791066968284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719598565401989821}
+  m_LocalRotation: {x: -0.04272152, y: 0.8286316, z: 0.5483119, w: -0.104396746}
+  m_LocalPosition: {x: 0.081, y: -0.306, z: 0.088}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6281075580589345481}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -64.129, y: 210.256, z: -25.127}
+--- !u!114 &3340968599667044025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719598565401989821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50cbfd1f9ded796428e757a6bb9a3dfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackMethod: 1
+  hitLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  areaAttack: 1
+  AttackSpeed: 0.7
+  AttackCD: 1
+  Damage: 50
+  hitboxSizeX: 1
+  hitboxSizeY: 1
+  maxDistance: 1
+  AttackSound: {fileID: 0}
+  AttackFunction:
+    m_PersistentCalls:
+      m_Calls: []
+  HitFunction:
+    m_PersistentCalls:
+      m_Calls: []
+  debugMode: 0
+  animationBehaviour:
+    animationLayer: 2
+    playAttackAnimation:
+    - SwordSwing1
+    - SwordSwing2
+    - SwordSwing3
+    - SwordSwing4
+  Weapon: {fileID: 0}
+  AttackMode: 0
+  SpeedMultiplier: 1
+--- !u!95 &8205448148089867952
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719598565401989821}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6251979933078100231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719598565401989821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e573400315cdc644bf85e471ae2aac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  includedLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  collisionType: 1
+  isHit: 0
+--- !u!65 &6950167304147782630
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719598565401989821}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.22, y: 0.05, z: 1.21}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &5809755167969897762
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3773285791066968284}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_RootOrder
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Name
+      value: Sting-Sword lowpoly
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+--- !u!4 &6281075580589345481 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+  m_PrefabInstance: {fileID: 5809755167969897762}
+  m_PrefabAsset: {fileID: 0}

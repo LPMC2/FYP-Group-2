@@ -476,12 +476,20 @@ public class InventoryBehaviour : MonoBehaviour
             if (targetItem != null)
             {
                 targetItem.transform.SetParent(placeItemLocation.transform);
+                if (inventoryType == InventoryType.item)
+                {
+                    targetItem.transform.localPosition = itemData.item[invId].itemObject.transform.position;
+                    targetItem.transform.localRotation = itemData.item[invId].itemObject.transform.rotation;
+                    //targetItem.transform.position += itemData.item[invId].itemObject.transform.position;
+                } else
+                {
+                    targetItem.transform.rotation = new Quaternion(0, 0, 0, 0);
+                }
                 Collider itemCollider = targetItem.GetComponent<Collider>();
                 if (itemCollider != null)
                 {
                     itemCollider.isTrigger = true;
                 }
-                targetItem.transform.rotation = new Quaternion(0, 0, 0, 0);
             }
         }
         Image targetImg = SlotPlaceHolder.transform.GetChild(slotId).GetComponent<Image>();
@@ -489,6 +497,7 @@ public class InventoryBehaviour : MonoBehaviour
         StartFadeInText(slotId);
 
     }
+
     private void setSlotObjUI(int id, GameObject slotPH, GameObject slotObj, int item = -1)
     {
         if (id < slotPH.transform.childCount)
