@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ItemThrowerBehaviour : MonoBehaviour
 {
+    [SerializeField] private GameObject firePoint;
     [SerializeField] private GameObject throwItem;
     [SerializeField] private float ProjectileSpeed;
     [SerializeField] private Vector3 ProjectileOffset;
@@ -21,7 +22,7 @@ public class ItemThrowerBehaviour : MonoBehaviour
     public void shoot()
     {
        
-        GameObject projectileInstance = Instantiate(throwItem, Camera.main.transform.position + transform.TransformDirection(ProjectileOffset), Quaternion.LookRotation(Camera.main.transform.forward));
+        GameObject projectileInstance = Instantiate(throwItem, firePoint.transform.position + transform.TransformDirection(ProjectileOffset), Quaternion.LookRotation(firePoint.transform.forward));
         Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
         if (projectileScript != null)
         {

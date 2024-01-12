@@ -226,7 +226,7 @@ public class MeleeController : MonoBehaviour
             Animator weaponAnimator = Player.GetComponent<Animator>();
             if (weaponAnimator != null && animationBehaviour != null)
             {
-            animationBehaviour.StartAnimation(weaponAnimator, AttackSpeed);
+            animationBehaviour.StartAnimationRandom(weaponAnimator, AttackSpeed);
                 //if (playAttackAnimation.Length > currentAttackAnimation || playAttackAnimation.Length == 1)
                 //{
                 //    float speedMultiplier = (1.0f / AttackSpeed);

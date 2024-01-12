@@ -22,8 +22,9 @@ public class GunController : MonoBehaviour
     [SerializeField] private UnityEvent ReloadFunction;
 
     [Header("Gun Attack Settings")]
+    [SerializeField] private GameObject firePoint;
     [SerializeField] private float ShootingTime;
-
+    [SerializeField] private LayerMask hitLayer;
     [SerializeField] private float Damage;
     [SerializeField] private float Range;
     [SerializeField] private int bulletCount = 1;
@@ -54,6 +55,8 @@ public class GunController : MonoBehaviour
     [SerializeField] private float currentRecoilAngle = 0f;
     private Transform cameraTransform;
     private GameObject cameraObject;
+    [Header("Animation Settings")]
+    [SerializeField] private AnimationBehaviour animationBehaviour;
     [Header("Other Settings")]
     [SerializeField] private float SpeedMultiplier = 1f;
     [SerializeField] private GameObject hitFX;
@@ -157,10 +160,13 @@ public class GunController : MonoBehaviour
     {
         return recoilAngle;
     }
+    PlayerLocomotion playerLocomotion;
     private void Start()
     {
-        cameraTransform = transform.parent;
-        Player = GameObject.Find("FPSController");
+        //cameraTransform = transform.parent;
+        Player = gameObject.transform.parent.GetComponent<OriginManager>().OriginGameObject;
+        playerLocomotion = Player.GetComponent<PlayerLocomotion>();
+        anim = Player.GetComponent<Animator>();
         Inventory = Player.GetComponent<InventoryBehaviour>();
         GetSound();
         if (MuzzleFlash != null)
@@ -168,6 +174,7 @@ public class GunController : MonoBehaviour
             MuzzleFlash.Stop();
         }
         OriginalPosition = transform.localPosition;
+        animationBehaviour.StartAnimationConstant(anim, 0, 1f);
     }
     private void GetSound()
     {
@@ -184,55 +191,52 @@ public class GunController : MonoBehaviour
     }
     private void Update()
     {
-        if (!isRecoiling)
+        if (!playerLocomotion.getIsSprinting())
         {
-            currentRecoilAngle = Mathf.Lerp(currentRecoilAngle, 0f, recoilSpeed * Time.deltaTime);
+            //if (!isRecoiling)
+            //{
+            //    currentRecoilAngle = Mathf.Lerp(currentRecoilAngle, 0f, recoilSpeed * Time.deltaTime);
+            //}
+            //// Rotate the camera back to its original position if the camera is recoiling, but clamp the angle to the current recoil angle
+            //else
+            //{
+            //    currentRecoilAngle = Mathf.Clamp(currentRecoilAngle, 0f, maxRecoilAngle);
+            //    currentRecoilAngle = Mathf.Lerp(currentRecoilAngle, 0f, recoilSpeed * Time.deltaTime);
+            //    isRecoiling = currentRecoilAngle > 0f; // Set the flag to false if the recoil angle has reached 0
+            //}
+            //cameraTransform.Rotate(Vector3.left, currentRecoilAngle);
+            if (isOut == false && RemainAmmo <= 0 && TotalAmmo <= 0)
+            {
+                isOut = true;
+            }
+            else if (isOut == true)
+            {
+                isOut = false;
+            }
+            if (isActive == false && SwitchingCD > 0)
+            {
+                SetActive();
+            }
+            else if (isActive == false && SwitchingCD == 0)
+            {
+                isActive = true;
+            }
+            if (isActive == true)
+            {
+                ShootDetect();
+                ReloadDetect();
+                Reload();
+                Aim();
+            }
         }
-        // Rotate the camera back to its original position if the camera is recoiling, but clamp the angle to the current recoil angle
-        else
-        {
-            currentRecoilAngle = Mathf.Clamp(currentRecoilAngle, 0f, maxRecoilAngle);
-            currentRecoilAngle = Mathf.Lerp(currentRecoilAngle, 0f, recoilSpeed * Time.deltaTime);
-            isRecoiling = currentRecoilAngle > 0f; // Set the flag to false if the recoil angle has reached 0
-        }
-        cameraTransform.Rotate(Vector3.left, currentRecoilAngle);
-        if (isOut == false && RemainAmmo <=0 && TotalAmmo <= 0)
-        {
-            isOut = true;
-        } else if(isOut == true)
-        {
-            isOut = false;
-        }
-        if (isActive == false && SwitchingCD > 0) 
-        { 
-            SetActive(); 
-        } else if (isActive == false && SwitchingCD == 0) 
-        {
-            isActive = true;
-        }
-        if (isActive == true)
-        {
-            ShootDetect();
-            ReloadDetect();
-            Reload();
-            Aim();
-        }
-
+        
     }
 
     private void SetActive()
     {
         if(ActiveTime == 0)
         {
-            Animator gunAnimator = Gun.GetComponent<Animator>();
-            if (gunAnimator != null)
-            {
-
-                float speedMultiplier = 1.0f / SwitchingCD;
-                gunAnimator.SetFloat("SpeedMultiplier", speedMultiplier);
-
-                gunAnimator.Play("LoadUp");
-            }
+            animationBehaviour.StartAnimationConstant(anim, 1, SwitchingCD);
         }
         ActiveTime += Time.deltaTime;
         if(ActiveTime >= SwitchingCD)
@@ -241,7 +245,10 @@ public class GunController : MonoBehaviour
         }
         
     }
-
+    private void OnDestroy()
+    {
+        animationBehaviour.StartAnimationConstant(anim, 4, 1f);
+    }
     private void ReloadDetect()
     {
         if (Input.GetKey(KeyCode.R) && ReloadCD <= 0 && RemainAmmo < AmmoCount && isShoot == false && isReload == false)
@@ -282,10 +289,11 @@ public class GunController : MonoBehaviour
                 audioSource.Play();
                 hasSound = true;
             }
+
             
-            StartCoroutine(StartReload());
             if(ReloadCD == 0)
             {
+                StartReload();
                 ReloadFunction.Invoke();
             }
             ReloadCD += Time.deltaTime;
@@ -326,50 +334,15 @@ public class GunController : MonoBehaviour
 
     }
 
-    IEnumerator StartRecoil()
+    private void StartRecoil()
     {
-        Animator gunAnimatorRecoil = Gun.GetComponent<Animator>();
-        if (gunAnimatorRecoil != null)
-        {
-            if (ignoreAnimation == false)
-            {
-                gunAnimatorRecoil.GetComponent<Animator>().Play("GunRecoil");
-            } else
-            {
-                if (gunAnimatorRecoil.GetCurrentAnimatorStateInfo(0).normalizedTime > 1.0f)
-                {
-                    gunAnimatorRecoil.GetComponent<Animator>().Play("GunRecoil");
-                }
-            }
-        }
-        yield return new WaitForSeconds(ShootingTime);
-        if (gunAnimatorRecoil != null)
-        {
-            if (ignoreAnimation == false)
-            {
-                gunAnimatorRecoil.GetComponent<Animator>().Play("Recoil_idle");
-            } else
-            {
-                if (gunAnimatorRecoil.GetCurrentAnimatorStateInfo(0).normalizedTime > 1.0f)
-                {
-                    gunAnimatorRecoil.GetComponent<Animator>().Play("Recoil_idle");
-                }
-            }
-        }
-    }
-    IEnumerator StartReload()
-    {
+        animationBehaviour.StartAnimationConstant(anim, 3, 1f);
         
-        Animator gunAnimator = Gun.GetComponent<Animator>();
-        if (gunAnimator != null)
-        {
+    }
+    private void StartReload()
+    {
 
-            float speedMultiplier = 1.0f / ReloadingTime;
-            gunAnimator.SetFloat("SpeedMultiplier", speedMultiplier);
-
-            gunAnimator.Play("Reload");
-        }
-        yield return new WaitForSeconds(ReloadingTime);
+        animationBehaviour.StartAnimationConstant(anim, 2, ReloadingTime);
         
 
 
@@ -377,6 +350,7 @@ public class GunController : MonoBehaviour
 
     private void recoilMove()
     {
+        return;
         if (cameraTransform != null)
         {
             if (!isRecoiling)
@@ -424,16 +398,16 @@ public class GunController : MonoBehaviour
         recoilMove();
         UpdateInv();
 
-        Vector3 raycastOrigin = Camera.main.transform.position + Vector3.up * 0.1f;
-        LayerMask layerMask = LayerMask.GetMask("Default", "Wall", "Enemy","Obstacles");
+        Vector3 raycastOrigin = firePoint.transform.position + Vector3.up * 0.1f;
+        //LayerMask layerMask = LayerMask.GetMask("Default", "Wall", "Enemy","Obstacles");
 
         for (int i = 0; i < bulletCount; i++)
         {
             float randomHorizontalAngle = Random.Range(-horizontalSpreadAngle / 2, horizontalSpreadAngle / 2);
             float randomVerticalAngle = Random.Range(-verticalSpreadAngle / 2, verticalSpreadAngle / 2);
-            Vector3 cameraForward = Camera.main.transform.forward;
-            Vector3 cameraUp = Camera.main.transform.up;
-            Vector3 cameraRight = Camera.main.transform.right;
+            Vector3 cameraForward = firePoint.transform.forward;
+            Vector3 cameraUp = firePoint.transform.up;
+            Vector3 cameraRight = firePoint.transform.right;
             Quaternion horizontalRotation = Quaternion.AngleAxis(randomHorizontalAngle, cameraUp);
             Quaternion verticalRotation = Quaternion.AngleAxis(randomVerticalAngle, cameraRight);
             Quaternion spreadRotation = horizontalRotation * verticalRotation;
@@ -442,33 +416,23 @@ public class GunController : MonoBehaviour
             Vector3 spreadDirection = spreadRotation * cameraForward;
 
             // Draw a debug ray to show the direction of spreadDirection
-            Debug.DrawRay(Camera.main.transform.position, spreadDirection * Range, Color.blue, 2f);
+            Debug.DrawRay(firePoint.transform.position, spreadDirection * Range, Color.blue, 2f);
 
             RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.transform.position, spreadDirection, out hit, Range, layerMask))
+            if (Physics.Raycast(firePoint.transform.position, spreadDirection, out hit, Range, hitLayer))
             {
-                HitFunction.Invoke(hit.collider.gameObject);
-                if (hit.collider.CompareTag("Projectile"))
+                if (!hitEnemies.Contains(hit.collider.gameObject))
                 {
-                    continue;
-                }
-                
-               
-               
-                if (hit.collider.CompareTag("Enemy"))
-                {
-                    HealthBehaviour healthBehaviour = hit.collider.GetComponent<HealthBehaviour>();
+                    HitFunction.Invoke(hit.collider.gameObject);
+                    IDamageable healthBehaviour = hit.collider.GetComponent<IDamageable>();
                     if (healthBehaviour != null)
                     {
-                        if (!hitEnemies.Contains(hit.collider.gameObject))
-                        {
-                            healthBehaviour.TakeDamage(Damage);
-                            hitEnemies.Add(hit.collider.gameObject);
-                        }
+                        healthBehaviour.TakeDamage(Damage);
+                      
                         if (isPiercing == false)
                         {
-                            
+
                             hitEnemies.Clear();
                             if (bulletCount < 2)
                             {
@@ -481,6 +445,7 @@ public class GunController : MonoBehaviour
                             continue;
                         }
                     }
+                    hitEnemies.Add(hit.collider.gameObject);
 
                 }
 
@@ -489,7 +454,7 @@ public class GunController : MonoBehaviour
         }
         
         
-        StartCoroutine(StartRecoil());
+        StartRecoil();
         yield return new WaitForSeconds(ShootingTime*0.1f);
         if (MuzzleFlash != null)
         {
@@ -537,7 +502,7 @@ public class GunController : MonoBehaviour
             if (Input.GetButton("Fire2"))
             {
                 
-                transform.localPosition = Vector3.Lerp(transform.localPosition, AimPosition, Time.deltaTime * 5f);
+                //transform.localPosition = Vector3.Lerp(transform.localPosition, AimPosition, Time.deltaTime * 5f);
               
                 if (isAim == false)
                 {
@@ -548,7 +513,7 @@ public class GunController : MonoBehaviour
             }
             else
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, OriginalPosition, Time.deltaTime * 5f);
+                //transform.localPosition = Vector3.Lerp(transform.localPosition, OriginalPosition, Time.deltaTime * 5f);
 
                 if (isAim == true)
                 {

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8205448148089867952}
   - component: {fileID: 6251979933078100231}
   - component: {fileID: 6950167304147782630}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,6 +56,7 @@ MonoBehaviour:
   AttackSpeed: 0.7
   AttackCD: 1
   Damage: 50
+  StartHitTime: 0.5
   hitboxSizeX: 1
   hitboxSizeY: 1
   maxDistance: 1
@@ -74,6 +75,7 @@ MonoBehaviour:
     - SwordSwing2
     - SwordSwing3
     - SwordSwing4
+    switchAnimationTime: 0.25
   Weapon: {fileID: 0}
   AttackMode: 0
   SpeedMultiplier: 1
@@ -188,9 +190,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4804417135258681137, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -4380059132627658785, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -2685979608563545031, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
       propertyPath: m_Name
       value: Sting-Sword lowpoly
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4493862836236765305, guid: c1b0d90ae3cf4794a98c74b00109535f, type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
