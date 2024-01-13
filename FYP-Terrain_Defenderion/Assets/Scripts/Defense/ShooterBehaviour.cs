@@ -64,6 +64,7 @@ public class ShooterBehaviour : MonoBehaviour
         {
             if (Time.time >= cacheExpirationTimer)
             {
+                Debug.Log("Finding Target");
                 FindTarget();
                 cacheExpirationTimer = Time.time + cacheExpirationTime;
             }
@@ -117,15 +118,19 @@ public class ShooterBehaviour : MonoBehaviour
         }
 
     }
+    private List<Collider> test = new List<Collider>();
     private void FindTarget()
     {
-        if (TeamBehaviour.Singleton == null) return;
         Collider[] collidersArray = Physics.OverlapSphere(transform.position, range, targetLayer);
         List<Collider> colliders = new List<Collider>(collidersArray);
-        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
-        if (teamID != -1)
+        test = colliders;
+        if (TeamBehaviour.Singleton != null)
         {
-            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+            int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
+            if (teamID != -1)
+            {
+                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+            }
         }
         if (colliders.Count > 0)
         {

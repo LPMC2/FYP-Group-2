@@ -98,13 +98,13 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleRotation()
     {
-        if(isJumping)
-        {
-            return;
-        }
+        //if(isJumping || !isGrounded)
+        //{
+        //    return;
+        //}
         Vector3 targetDirection = Vector3.zero;
 
-        targetDirection = cameraObject.forward * inputManager.getVerticalInput();
+        targetDirection = cameraObject.forward /** inputManager.getVerticalInput()*/;
         targetDirection = targetDirection + cameraObject.right * inputManager.getHorizontalInput();
         targetDirection.Normalize();
         targetDirection.y = 0;
@@ -118,7 +118,38 @@ public class PlayerLocomotion : MonoBehaviour
 
         transform.rotation = playerRotation;
     }
+    private Coroutine coroutine;
+    private Coroutine startcoroutine;
+    public IEnumerator StartUpdateRotation()
+    {
+        if(coroutine != null)
+        {
+            StopAllCoroutines();
+        }
+        yield return coroutine = StartCoroutine(UpdateRotation());
+    }
+    public IEnumerator UpdateRotation()
+    {
+        Vector3 targetDirection = Vector3.zero;
 
+        targetDirection = cameraObject.forward;
+        targetDirection = targetDirection + cameraObject.right * inputManager.getHorizontalInput();
+        targetDirection.Normalize();
+        targetDirection.y = 0;
+
+        if (targetDirection == Vector3.zero)
+        {
+            targetDirection = transform.forward;
+        }
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        while (transform.rotation != targetRotation)
+        {
+            Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+            transform.rotation = playerRotation;
+            yield return null;
+        }
+    }
     public void HandleAllMovements()
     {
         HandleFallingAndLanding();

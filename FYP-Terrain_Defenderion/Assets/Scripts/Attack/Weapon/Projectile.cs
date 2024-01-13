@@ -17,6 +17,7 @@ public class Projectile : MonoBehaviour
     public GameObject ParticleEffect;
     [SerializeField]
     private float damage = 1f;
+
     private GameObject target;
     private LayerMask obstacleMask;
     private GameObject enemy;
@@ -65,6 +66,9 @@ public class Projectile : MonoBehaviour
         if(isAoe == true)
         {
             AOE = Aoe;
+        } else
+        {
+            AOE = -1f;
         }
     }
     public void SetTarget(GameObject target, GameObject enemy)
@@ -88,9 +92,13 @@ public class Projectile : MonoBehaviour
         {
             damage *= damageMultiplier;
         }
-        this.owner = owner;
+        if (owner != null)
+        {
+            Debug.Log(owner);
+            this.owner = owner;
+        }
         this.direction = direction;
-         speed *= speedMultiplier;
+         speed = speedMultiplier;
         switch (this.projectileType)
         {
             case ProjectileType.StraightForward:
@@ -147,22 +155,49 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer) || other.gameObject == owner || isOwnTeam(owner, other))
+        if(!IsLayerInMask(other.gameObject.layer, m_HitLayer) || other.gameObject == owner)
         {
             return;
         }
-        m_HitFunction.Invoke(other.gameObject);
-        IDamageable iDamageable = other.GetComponent<IDamageable>();
-        if (iDamageable != null)
+        if (ParticleEffect != null)
         {
-            //Debug.Log("HIt");
-            iDamageable.TakeDamage(damage);
+            GameObject particle = Instantiate(ParticleEffect, gameObject.transform.position, Quaternion.identity);
+            Destroy(particle, 3f);
         }
+        m_HitFunction.Invoke(other.gameObject);
+        if (AOE == -1)
+        {
+            IDamageable iDamageable = other.GetComponent<IDamageable>();
+            if (iDamageable != null)
+            {
+                //Debug.Log("HIt");
+                iDamageable.TakeDamage(damage, owner);
+            }
+        } else
+        {
+            CastDamageSphere();
+        }
+        if(TeamBehaviour.Singleton != null)
+            if (isOwnTeam(owner, other)) return;
         EnemyController enemy = other.GetComponent<EnemyController>();
         if (enemy != null && owner != null) { enemy.setAggro(owner); }
         if (!m_isPiercing)
         {
             Destroy(gameObject);
+        }
+    }
+    public void CastDamageSphere()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, AOE, m_HitLayer);
+        
+        foreach (Collider collider in colliders)
+        {
+            Debug.Log(collider);
+            IDamageable damageable = collider.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damage, owner);
+            }
         }
     }
     private bool isOwnTeam(GameObject origin, Collider target)

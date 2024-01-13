@@ -109,7 +109,7 @@ public static class StructureSerializer
             StructureStorage[] structureStorages = default;
             structureStorages = formatter.Deserialize(stream) as StructureStorage[];
             stream.Close();
-            Debug.Log("Count: " + structureStorages.Length);
+            //Debug.Log("Count: " + structureStorages.Length);
 
             return structureStorages;
         } else
@@ -401,7 +401,7 @@ public static class StructureSerializer
     public static Sprite LoadSpriteFromFile(string filePath)
     {
         filePath = Application.persistentDataPath + filePath;
-        Debug.Log(filePath);
+        //Debug.Log(filePath);
         byte[] imageData = File.ReadAllBytes(filePath);
 
         Texture2D texture = new Texture2D(2, 2);

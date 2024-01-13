@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,9 +16,11 @@ public class DisplayBehaviour : MonoBehaviour
     [SerializeField] private Color defaultColor = Color.white;
     public float TotalDuration { get { return displayDuration + fadeInDuration + fadeOutDuration; } }
     private Coroutine fadeCoroutine;
+    private Image image;
     private void Awake()
     {
         DisplayText = gameObject.GetComponent<TMP_Text>();
+        image = gameObject.GetComponent<Image>();
     }
     public virtual void SetText(string text, Color color = default(Color), float resetDuration = -1)
     {
@@ -50,6 +53,12 @@ public class DisplayBehaviour : MonoBehaviour
         // Get the item name from the item data using the provided item ID
         // Start the fade coroutine
         fadeCoroutine = StartCoroutine(FadeText(text, color, fadeInDuration, duration, fadeOutDuration));
+    }
+    public void UpdateBarFromHealth(GameObject origin)
+    {
+        HealthBehaviour healthBehaviour = origin.GetComponent<HealthBehaviour>();
+
+        image.fillAmount = healthBehaviour.GetHealth() / healthBehaviour.GetInitialHealth();
     }
     public void StartFadeInText(string text)
     {

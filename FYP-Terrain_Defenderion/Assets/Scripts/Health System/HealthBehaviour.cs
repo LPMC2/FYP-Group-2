@@ -15,6 +15,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private float hitTime = 0.1f;
     private float initialHealth;
     private float damage = 0;
+    [SerializeField] private UnityEvent<GameObject> hitEvent = new UnityEvent<GameObject>();
     [Header("Health Bar Settings")]
     public GameObject healthBarPrefab;
     [SerializeField] private Vector3 healthbarOffset;
@@ -143,9 +144,13 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(hitTime);
         isHit = false;
     }
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, GameObject owner = null)
     {
         if (isHit) return;
+        if (owner != null && gameObject.GetComponent<Collider>() != null)
+        {
+            if(TeamBehaviour.Singleton.isOwnTeam(owner, gameObject.GetComponent<Collider>())) { return; }
+        }
         if (audioSource != null)
         {
             audioSource.PlayOneShot(HurtSound, 1);
@@ -155,6 +160,7 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
            
             health -= damage;
             health = Mathf.Clamp(health, 0, initialHealth);
+            hitEvent.Invoke(gameObject);
             if (healthBarPrefab != null)
             {
                 lerpTimer = 0;

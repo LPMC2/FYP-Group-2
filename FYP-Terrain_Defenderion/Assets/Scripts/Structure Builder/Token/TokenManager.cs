@@ -32,6 +32,7 @@ public class TokenManager : MonoBehaviour
     private void Start()
     {
         initialTokens = tokens;
+        if(tokenDisplayText != null)
         initialColor = tokenDisplayText.color;
         UpdateTokenDisplay();
     }

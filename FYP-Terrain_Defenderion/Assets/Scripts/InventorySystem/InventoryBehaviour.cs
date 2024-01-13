@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
+
 public enum InventoryType
 {
     item,
@@ -48,6 +50,23 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private int[] initialSlotItem;
     [SerializeField] private StructureManager structureManager;
     [SerializeField] private GridGenerator gridGenerator;
+    public GameObject CurrentItem 
+    { 
+        get 
+        {
+            if(placeItemLocation.transform.childCount > 0)
+            {
+                Debug.Log("Item: " + placeItemLocation.transform.GetChild(0).gameObject);
+                return placeItemLocation.transform.GetChild(0).gameObject;
+            } else
+            {
+                return null;
+            }
+        }
+    }
+    [Header("Custom Events")]
+    [SerializeField] private UnityEvent<GameObject> CustomEquipItemEvent = new UnityEvent<GameObject>();
+    [SerializeField] private UnityEvent CustomInitialEvent;
     [Header("Drop Settings")]
     [SerializeField] private GameObject dropItemPrefab;
     [SerializeField] private float dropForce = 10f;
@@ -150,6 +169,7 @@ public class InventoryBehaviour : MonoBehaviour
     {
         setup();
         isInitializeOnStart = true;
+        
     }
     // Update is called once per frame
     void Update()
@@ -292,6 +312,7 @@ public class InventoryBehaviour : MonoBehaviour
         setInitialInventory();
         if(haveInventoryBag)
         InitialInvBag();
+        CustomInitialEvent.Invoke();
     }
     private void setSlotUI(GameObject slotPH, string type)
     {
@@ -373,6 +394,11 @@ public class InventoryBehaviour : MonoBehaviour
             if(equipItem)
             EquipItem(id);
         }
+    }
+    public void UpdateSlotDisplay(string text)
+    {
+        if(inventory.slot[selectedSlot].ItemDisplay != null)
+            inventory.slot[selectedSlot].ItemDisplay.text = text;
     }
     public void resetSlot(int id)
     {
@@ -491,11 +517,12 @@ public class InventoryBehaviour : MonoBehaviour
                     itemCollider.isTrigger = true;
                 }
             }
+            CustomEquipItemEvent.Invoke(targetItem);
         }
         Image targetImg = SlotPlaceHolder.transform.GetChild(slotId).GetComponent<Image>();
         targetImg.sprite = slotImageSelected;
         StartFadeInText(slotId);
-
+        
     }
 
     private void setSlotObjUI(int id, GameObject slotPH, GameObject slotObj, int item = -1)
@@ -511,14 +538,43 @@ public class InventoryBehaviour : MonoBehaviour
                 {
                     GameObject instantiatedUI = Instantiate(slotObj, Vector3.zero, Quaternion.identity);
                     instantiatedUI.transform.SetParent(targetUI.transform);
+                    TMP_Text displayText = instantiatedUI.transform.GetChild(0).GetComponent<TMP_Text>();
+                    inventory.slot[id].ItemDisplay = displayText;
                     if (instantiatedUI.GetComponent<Image>() == null)
                     {
                         instantiatedUI.AddComponent<Image>();
                     }
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                     Image uiImg = instantiatedUI.GetComponent<Image>();
-
+                    RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
                     uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
+                    if (itemData.item[inventory.slot[id].getId()].itemObject != null )
+                    {
+                        //Capture Item and display on Slot UI
+                        float width = rectTransform.rect.width * 2f;
+                        float height = rectTransform.rect.height * 2f;
+                        rectTransform.sizeDelta = new Vector2(width, height);
+                        GameObject gameObject = Instantiate(itemData.item[inventory.slot[id].getId()].itemObject);
+                        float cameraSize = captureCamera.orthographicSize;
+                        gameObject.transform.SetParent(captureCamera.transform);
+                        gameObject.transform.eulerAngles =new Vector3(313.390015f, 236.100006f, 0f);
+                        gameObject.transform.localPosition = Vector3.forward * 10 - new Vector3(0f,0.05f,0f);
+                        captureCamera.orthographicSize = 0.7f;
+                        if (displayText != null)
+                        {
+                            //Gun Specific Setup
+                            GunController gunController = gameObject.GetComponent<GunController>();
+                            if (gunController != null)
+                            {
+                                displayText.text = gunController.GetRemainAmmo() + "/" + gunController.GetTotalAmmo();
+                            }
+                        }   
+                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
+
+                        uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
+                        uiImg.raycastTarget = false;
+                        captureCamera.orthographicSize = cameraSize;
+                    }
                     uiImg.preserveAspect = true;
                     uiImg.raycastTarget = false;
                     SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();

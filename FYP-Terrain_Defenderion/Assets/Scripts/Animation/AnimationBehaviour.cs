@@ -26,8 +26,19 @@ public class AnimationBehaviour
             if (currentAttackAnimation >= playAttackAnimation.Length) currentAttackAnimation = 0;
         }
     }
+    public void ResetSpeed(Animator animator)
+    {
+        if (HasParameter("SpeedMultiplier", animator))
+            animator.SetFloat("SpeedMultiplier", 1f);
+    }
+    public IEnumerator DelayStartAnimationConstant(float delayTime, Animator animator, int animationId, float speed)
+    {
+        yield return new WaitForSeconds(delayTime);
+        StartAnimationConstant(animator, animationId, speed);
+    }
     public void StartAnimationConstant(Animator animator, int animationId, float speed)
     {
+        if (animator == null) return;
         if (playAttackAnimation.Length > animationId || playAttackAnimation.Length == 1)
         {
             float speedMultiplier = (1.0f / speed);
@@ -39,6 +50,7 @@ public class AnimationBehaviour
     }
     public static bool HasParameter(string paramName, Animator animator)
     {
+        if(animator != null)
         foreach (AnimatorControllerParameter param in animator.parameters)
         {
             if (param.name == paramName)

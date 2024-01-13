@@ -82,6 +82,8 @@ public class GunController : MonoBehaviour
     private bool isAim = false;
     private AudioSource audioSource;
     private HashSet<GameObject> hitEnemies = new HashSet<GameObject>();
+    private int ammoStoringSystemId = -1;
+    public int AmmoStoringSystemId { get { return ammoStoringSystemId; } set { ammoStoringSystemId = value; } }
     public float GetDamage()
     {
         return Damage;
@@ -161,6 +163,7 @@ public class GunController : MonoBehaviour
         return recoilAngle;
     }
     PlayerLocomotion playerLocomotion;
+    AmmoStoringBehaviour ammoStoringBehaviour;
     private void Start()
     {
         //cameraTransform = transform.parent;
@@ -174,7 +177,9 @@ public class GunController : MonoBehaviour
             MuzzleFlash.Stop();
         }
         OriginalPosition = transform.localPosition;
-        animationBehaviour.StartAnimationConstant(anim, 0, 1f);
+        StartCoroutine(animationBehaviour.DelayStartAnimationConstant(0.5f,anim, 0, 1f));
+        UpdateInv();
+        ammoStoringBehaviour = Player.GetComponent<AmmoStoringBehaviour>();
     }
     private void GetSound()
     {
@@ -189,11 +194,10 @@ public class GunController : MonoBehaviour
         audioSource.volume *= Volume;
 
     }
+   
     private void Update()
     {
-        if (!playerLocomotion.getIsSprinting())
-        {
-            //if (!isRecoiling)
+ //if (!isRecoiling)
             //{
             //    currentRecoilAngle = Mathf.Lerp(currentRecoilAngle, 0f, recoilSpeed * Time.deltaTime);
             //}
@@ -223,12 +227,14 @@ public class GunController : MonoBehaviour
             }
             if (isActive == true)
             {
+             if (!playerLocomotion.getIsSprinting())
+             {
                 ShootDetect();
+                Aim();
+                }
                 ReloadDetect();
                 Reload();
-                Aim();
             }
-        }
         
     }
 
@@ -247,6 +253,7 @@ public class GunController : MonoBehaviour
     }
     private void OnDestroy()
     {
+        animationBehaviour.ResetSpeed(anim);
         animationBehaviour.StartAnimationConstant(anim, 4, 1f);
     }
     private void ReloadDetect()
@@ -267,8 +274,8 @@ public class GunController : MonoBehaviour
         {
 
 
-          
-                StartCoroutine(Shoot());
+            //StartCoroutine(playerLocomotion.StartUpdateRotation());
+            StartCoroutine(Shoot());
             
             
         }
@@ -320,6 +327,7 @@ public class GunController : MonoBehaviour
                     TotalAmmo = 0;
                 }
                 UpdateInv();
+                ammoStoringBehaviour.StoreAmmo(ammoStoringSystemId, RemainAmmo, TotalAmmo);
                 ReloadCD = 0;
                 hasSound = false;
                 if (audioSource != null)
@@ -336,6 +344,7 @@ public class GunController : MonoBehaviour
 
     private void StartRecoil()
     {
+        if(!ignoreAnimation)
         animationBehaviour.StartAnimationConstant(anim, 3, 1f);
         
     }
@@ -370,9 +379,11 @@ public class GunController : MonoBehaviour
 
     private IEnumerator Shoot()
     {
+        
         ShootFunction.Invoke();
         isShoot = true;
         RemainAmmo--;
+        ammoStoringBehaviour.StoreAmmo(ammoStoringSystemId, RemainAmmo, TotalAmmo);
         if (muzzleFlashLight != null)
         {
             muzzleFlashLight.SetActive(true);
@@ -539,7 +550,7 @@ public class GunController : MonoBehaviour
     {
         if (Inventory != null)
         {
-            //Inventory.UpdateSlotTexts(RemainAmmo, TotalAmmo);
+            Inventory.UpdateSlotDisplay(RemainAmmo + "/" + TotalAmmo);
         }
     }
 

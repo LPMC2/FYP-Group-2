@@ -115,7 +115,7 @@ public class ModelPictureSaver : MonoBehaviour
         Object.Destroy(renderTexture);
         Object.Destroy(texture);
 
-        Debug.Log("Image captured and saved as " + filePath);
+        //Debug.Log("Image captured and saved as " + filePath);
     }
     private static void ImageTransparent(Texture2D image, Camera camera)
     {
