@@ -63,8 +63,9 @@ public class SpawnerBehaviour : MonoBehaviour
         return false;
 
     }
-    public virtual void StartSpawn()
+    public void StartSpawn(int teamID = -1)
     {
+        if(teamID != -1) { defaultTeamId = teamID; }
         InvokeRepeating("Spawn", 0f, Random.Range(minSpawnTime, maxSpawnTime));
     }
     public virtual void SetTeam(int id)

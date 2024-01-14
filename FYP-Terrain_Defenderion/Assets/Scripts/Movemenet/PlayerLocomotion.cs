@@ -7,11 +7,12 @@ public class PlayerLocomotion : MonoBehaviour
     PlayerManager playerManager;
     InputManager inputManager;
     AnimatorManager animatorManager;
-
+    [SerializeField] private Quaternion initialRotation = Quaternion.identity;
     Vector3 moveDirection;
     Transform cameraObject;
     public Rigidbody playerRigidbody;
-
+    [SerializeField] private bool isActive = true;
+    [SerializeField] private float activeTime = 3f;
     [Header("Falling Settings")]
     [SerializeField] private float inAirTimer;
     [SerializeField] private float leapingVelocity;
@@ -66,7 +67,19 @@ public class PlayerLocomotion : MonoBehaviour
         playerRigidbody = GetComponent<Rigidbody>();
         cameraObject = Camera.main.transform;
     }
-
+    private void OnEnable()
+    {
+        if(isActive == false)
+        {
+            gameObject.transform.rotation = initialRotation;
+            StartCoroutine(StartActive());
+        }
+    }
+    private IEnumerator StartActive()
+    {
+        yield return new WaitForSeconds(activeTime);
+        isActive = true;
+    }
     private void HandleMovement()
     {
         if(isJumping)
@@ -152,6 +165,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
     public void HandleAllMovements()
     {
+        if (!isActive) return;
         HandleFallingAndLanding();
         if(playerManager.getIsInteracting())
         {

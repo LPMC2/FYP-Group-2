@@ -324,6 +324,7 @@ public static class StructureSerializer
         GameObject structure = new GameObject();
         GridData gridData1 = structure.AddComponent<GridData>();
         structure.transform.localPosition = position;
+        InteractType interactType = InteractType.none;
         for (int i = 0; i < structureStorage.Length; i++)
         {
             if (structureStorage[i].structureId >= 0)
@@ -335,6 +336,10 @@ public static class StructureSerializer
                     block.transform.SetParent(structure.transform);
                     cost += structureStorage[i].tokenCost;
                     totalHealth += blockData.blockData[structureStorage[i].structureId].maxHealth;
+                    if(structureStorage[i].originInteractType != InteractType.none && interactType == InteractType.none)
+                    {
+                        interactType = structureStorage[i].originInteractType;
+                    }
                 } else
                 {
                     utilityList.Add(block);
@@ -359,6 +364,7 @@ public static class StructureSerializer
                 GridData gridData = block.AddComponent<GridData>();
                 gridData.SetData(structureStorage[i]);
                 gridData1.gridSize = structureStorage[i].gridSize;
+                gridData1.originInteractType = interactType;
             }
 
         }

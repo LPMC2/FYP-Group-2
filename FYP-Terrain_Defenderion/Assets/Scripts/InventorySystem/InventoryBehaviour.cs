@@ -671,6 +671,13 @@ public class InventoryBehaviour : MonoBehaviour
         }
 
     }
+    private void OnDisable()
+    {
+        if(gameObject.GetComponent<HealthBehaviour>() != null && CurrentItem != null && CurrentItem.GetComponent<GunController>()!=null)
+        {
+            CurrentItem.GetComponent<GunController>().SetActiveState(false);
+        }
+    }
     private void SetBlockSlotUI(int id, GameObject slotObj, Transform parentObj)
     {
         

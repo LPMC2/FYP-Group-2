@@ -349,7 +349,9 @@ public class GridGenerator : MonoBehaviour
                     newBlock.transform.position = buildPos + buildOffset;
                     if(TeamBehaviour.Singleton != null)
                     {
+                        //Temporary team handler
                         TeamBehaviour.Singleton.TeamManager[0].AddMember(newBlock);
+                        structureManager.SetDefenseFriendly(newBlock, newBlock);
                     }
                 }
                 break;
@@ -418,6 +420,7 @@ public class GridGenerator : MonoBehaviour
             gridData.isUtility = blockSO.blockData[gridManager.CurrentBlockId].isUtility;
             gridData.tokenCost = blockSO.blockData[gridManager.CurrentBlockId].tokenCost;
             gridData.gridSize = gridSize;
+            gridData.originInteractType = blockSO.blockData[gridManager.CurrentBlockId].utilityType;
         }
         newBlock.tag = "Grid";
         newBlock.layer = LayerMask.NameToLayer("Grid");
@@ -428,6 +431,7 @@ public class GridGenerator : MonoBehaviour
             meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
         hitStructure = false;
+        
     }
     private GameObject targetBlock;
     private Transform parent;
@@ -457,6 +461,7 @@ public class GridGenerator : MonoBehaviour
         newOffset.y = originalOffset.y;
         return newOffset;
     }
+
     public void DestroyBlock(Transform shootingPoint, float range)
     {
         RaycastHit hit;

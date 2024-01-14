@@ -19,7 +19,8 @@ public class GunController : MonoBehaviour
 
     [SerializeField] private int RemainAmmo;
     [SerializeField] private float ReloadingTime;
-    [SerializeField] private UnityEvent ReloadFunction;
+    [SerializeField] private UnityEvent ReloadStartFunction;
+    [SerializeField] private UnityEvent ReloadEndFunction;
 
     [Header("Gun Attack Settings")]
     [SerializeField] private GameObject firePoint;
@@ -154,6 +155,14 @@ public class GunController : MonoBehaviour
     {
         return isActive;
     }
+    public void SetActiveState(bool state)
+    {
+        isActive = state;
+        if(state == false)
+        {
+            ActiveTime = 0f;
+        }
+    }
     public void setRecoilAngle(float angle)
     {
         recoilAngle = angle;
@@ -162,6 +171,7 @@ public class GunController : MonoBehaviour
     {
         return recoilAngle;
     }
+
     PlayerLocomotion playerLocomotion;
     AmmoStoringBehaviour ammoStoringBehaviour;
     private void Start()
@@ -301,7 +311,7 @@ public class GunController : MonoBehaviour
             if(ReloadCD == 0)
             {
                 StartReload();
-                ReloadFunction.Invoke();
+                ReloadStartFunction.Invoke();
             }
             ReloadCD += Time.deltaTime;
 
@@ -334,7 +344,7 @@ public class GunController : MonoBehaviour
                 {
                     audioSource.clip = null;
                 }
-
+                ReloadEndFunction.Invoke();
                 isReload = false;
             }
 
