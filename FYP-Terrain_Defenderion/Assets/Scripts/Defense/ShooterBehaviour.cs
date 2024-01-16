@@ -137,7 +137,7 @@ public class ShooterBehaviour : MonoBehaviour
             int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
             if (teamID != -1)
             {
-                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
             }
         }
         if (colliders.Count > 0)
