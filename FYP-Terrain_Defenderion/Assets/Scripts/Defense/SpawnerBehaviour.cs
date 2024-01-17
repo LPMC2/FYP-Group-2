@@ -269,6 +269,7 @@ public class ObjectPool
             GameObject spawnedObj = Object.Instantiate(targetObject, Vector3.zero, Quaternion.identity);
             spawnedObj.transform.SetParent(basePool.transform);
             spawnedObj.name += " - Id: " + i+1;
+            spawnedObj.SetActive(false);
             debug += spawnedObj.name + "\n";
             objects.Add(spawnedObj);
         }
