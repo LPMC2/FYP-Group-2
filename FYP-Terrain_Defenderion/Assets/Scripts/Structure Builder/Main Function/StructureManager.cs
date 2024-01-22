@@ -25,7 +25,9 @@ public class StructureManager : MonoBehaviour
     private GameObject structureStorage;
     private void Start()
     {
+        
         structureFilePath = Application.persistentDataPath + structureFilePath;
+        FolderManager.CreateFolder(structureFilePath);
         structurePoolings = new StructurePooling[Directory.GetFiles(structureFilePath).Length + defaultStructureFiles.Length];
         for (int i = 0; i < structurePoolings.Length; i++)
         {
