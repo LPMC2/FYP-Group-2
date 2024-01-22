@@ -14,10 +14,14 @@ public class FolderManager
         if(!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
+#if UNITY_EDITOR
             Debug.Log("Folder created at " + folderPath);
+#endif
         } else
         {
+#if UNITY_EDITOR
             Debug.Log("Folder already exist at " + folderPath);
+#endif
         }
     }
 }
