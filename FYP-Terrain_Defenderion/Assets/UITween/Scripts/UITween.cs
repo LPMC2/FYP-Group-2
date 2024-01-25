@@ -197,6 +197,7 @@ namespace UITween
 
             animationPart.ChangeStatus();
             animationPart.CheckCallbackStatus();
+           
         }
 
         public void SetAnimationPos(Vector2 StartAnchoredPos, Vector2 EndAnchoredPos, AnimationCurve EntryTween, AnimationCurve ExitTween, RectTransform rectTransform)
