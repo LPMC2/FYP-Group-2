@@ -38,7 +38,22 @@ public class EasyTween : MonoBehaviour
     {
         CheckIfCurrenAnimationGoingExits();
     }
-
+    public void SetTweenState(bool state)
+    {
+        currentAnimationGoing.SetStatus(state);
+    }
+    public void StartUIObjectAnimation(bool state)
+    {
+        rectTransform.gameObject.SetActive(true);
+        if (state)
+        {
+            currentAnimationGoing.PlayOpenAnimations();
+        }
+        else
+        {
+            currentAnimationGoing.PlayCloseAnimations();
+        }
+    }
     public void OpenCloseObjectAnimation()
     {
         rectTransform.gameObject.SetActive(true);

@@ -115,7 +115,7 @@ public static class StructureSerializer
         } else
         {
 #if UNITY_EDITOR
-            Debug.LogError("Save file not found in " + path);
+            Debug.LogWarning("Save file not found in " + path);
 #endif
             return null;
         }
