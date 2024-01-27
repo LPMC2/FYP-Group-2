@@ -307,7 +307,7 @@ public static class StructureSerializer
                 camera.orthographicSize = 26.3f;
                 break;
         }
-        ModelPictureSaver.CaptureAndSaveImage(camera, gameObject, filePath, name);
+        ModelPictureSaver.CaptureAndSaveImage(camera, gameObject, filePath, name, true, false, 4f);
         camera.orthographicSize = initialCameraSize;
     }
     public static GameObject GenerateStructure(StructureStorage[] structureStorage, Vector3 position = default(Vector3), bool combineObjects = false, bool calculateStats = false)

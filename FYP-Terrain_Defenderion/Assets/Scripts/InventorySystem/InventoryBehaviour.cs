@@ -81,6 +81,8 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private GameObject menuContentPrefab;
     [SerializeField] private GameObject menuScrollView;
     [SerializeField] private int menuPage = 0;
+    [SerializeField] private bool useCustomOpenInvBagEvent = false;
+    [SerializeField] private UnityEvent customOpenInvBagEvent;
     [Header("Block Inventory Settings")]
     public GridManager gridManager;
     private ItemSO itemData;
@@ -569,7 +571,7 @@ public class InventoryBehaviour : MonoBehaviour
                                 displayText.text = gunController.GetRemainAmmo() + "/" + gunController.GetTotalAmmo();
                             }
                         }   
-                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
+                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
                         uiImg.raycastTarget = false;
@@ -608,7 +610,7 @@ public class InventoryBehaviour : MonoBehaviour
                         gameObject.transform.SetParent(gridManager.captureCamera.transform);
                         gameObject.transform.localPosition = Vector3.forward * 10;
                         gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
-                        ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
+                        ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
                         uiImg.raycastTarget = false;
@@ -701,7 +703,7 @@ public class InventoryBehaviour : MonoBehaviour
             gameObject.transform.SetParent(gridManager.captureCamera.transform);
             gameObject.transform.localPosition = Vector3.forward * 10;
             gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
-            ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true);
+            ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
 
             uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
             gridManager.captureCamera.orthographicSize = cameraSize;
@@ -946,12 +948,20 @@ public class InventoryBehaviour : MonoBehaviour
         {
             gridGenerator.BuildMode = invBagPanel.activeInHierarchy;
         }
-        invBagPanel.SetActive(!invBagPanel.activeInHierarchy);
-        ToolTipGameobject.SetActive(invBagPanel.activeInHierarchy);
-        ToolTipGameobject.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
-        invBagOpened = invBagPanel.activeInHierarchy;
-        ToggleCursorState(invBagPanel.activeInHierarchy);
-
+        invBagOpened = !invBagOpened;
+        if (!useCustomOpenInvBagEvent)
+        {
+            invBagPanel.SetActive(invBagOpened);
+            ToolTipGameobject.SetActive(invBagOpened);
+            ToolTipGameobject.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
+            ToggleCursorState(invBagOpened);
+        } else
+        {
+            customOpenInvBagEvent.Invoke();
+            ToolTipGameobject.SetActive(invBagOpened);
+            ToolTipGameobject.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
+            ToggleCursorState(invBagOpened);
+        }
        
     }
     #region structure
@@ -988,19 +998,16 @@ public class InventoryBehaviour : MonoBehaviour
         switch (gridSize)
         {
             case GridSize.Small:
-                newPosition.y = -3.22f;
-                width = rectTransform.rect.width * 3f;
-                height = rectTransform.rect.height * 3f;
+                width = rectTransform.rect.width * 2.5f;
+                height = rectTransform.rect.height * 2.5f;
                 break;
             case GridSize.Normal:
-                newPosition.y = -10.25f;
                 width = rectTransform.rect.width * 2.5f;
                 height = rectTransform.rect.height * 2.5f;
                 break;
             case GridSize.Large:
-                newPosition.y = -15f;
-                width = rectTransform.rect.width * 3f;
-                height = rectTransform.rect.height * 3f;
+                width = rectTransform.rect.width * 2.25f;
+                height = rectTransform.rect.height * 2.5f;
                 break;
         }
         rectTransform.sizeDelta = new Vector2(width, height);

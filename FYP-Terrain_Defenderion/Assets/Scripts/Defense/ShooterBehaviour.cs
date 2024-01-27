@@ -72,7 +72,7 @@ public class ShooterBehaviour : MonoBehaviour
         {
             if (Time.time >= cacheExpirationTimer)
             {
-                Debug.Log("Finding Target");
+            
                 FindTarget();
                 cacheExpirationTimer = Time.time + cacheExpirationTime;
             }
