@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class ModelPictureSaver : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class ModelPictureSaver : MonoBehaviour
         // Destroy the model instance
         if (isDestroy)
         {
-            Object.Destroy(modelPrefab);
+            UnityEngine.Object.Destroy(modelPrefab);
             if(modelPrefab != null)
             {
                 modelPrefab.SetActive(false);
@@ -136,12 +137,18 @@ public class ModelPictureSaver : MonoBehaviour
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture.Apply();
         byte[] bytes = texture.EncodeToPNG();
-        File.WriteAllBytes(filePath, bytes);
-
+        try
+        {
+            File.WriteAllBytes(filePath, bytes);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogWarning("Access to the path is denied: " + e.Message);
+        }
         RenderTexture.active = null;
         cameraObj.targetTexture = null;
-        Object.Destroy(renderTexture);
-        Object.Destroy(texture);
+        UnityEngine.Object.Destroy(renderTexture);
+        UnityEngine.Object.Destroy(texture);
 
         //Debug.Log("Image captured and saved as " + filePath);
     }

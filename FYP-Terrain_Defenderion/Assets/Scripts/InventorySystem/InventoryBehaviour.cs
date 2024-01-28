@@ -72,6 +72,7 @@ public class InventoryBehaviour : MonoBehaviour
     [SerializeField] private float dropForce = 10f;
     [SerializeField] private Vector3 dropOffset;
     [Header("Inventory Bag Settings")]
+    [SerializeField] private InventoryMenuManager inventoryMenuManager;
     [SerializeField] private InventoryBagSO invBagSO;
     [SerializeField] private GameObject slotBasePrefab;
     [SerializeField] private GameObject invBagPanel;
@@ -880,7 +881,8 @@ public class InventoryBehaviour : MonoBehaviour
             TMP_Text text = GameObjectExtension.GetGameObjectWithTagFromChilds(typeBtn, "Text").GetComponent<TMP_Text>();
             text.text = invBagSO.inventoryBag[i].TypeName;
             InventoryMenuTypeBehaviour inventoryMenuTypeBehaviour = typeBtn.GetComponent<InventoryMenuTypeBehaviour>();
-            inventoryMenuTypeBehaviour.Initialize(i, this);
+            inventoryMenuTypeBehaviour.Initialize(i, this, inventoryMenuManager);
+            inventoryMenuManager.AddInvMenu(-1, typeBtn.GetComponent<Image>());
         }
     }
     private void InvBagSetup(int page, bool setPage = true)
@@ -897,6 +899,7 @@ public class InventoryBehaviour : MonoBehaviour
         foreach(InvMenu invMenu in invBagSO.inventoryBag[page].invMenus)
         {
             GameObject menuNameObj = Instantiate(invBagSO.MenuNamePrefab, menuContent.transform.position, Quaternion.identity, menuContent.transform);
+           
             TMP_Text text1 = GameObjectExtension.GetGameObjectWithTagFromChilds(menuNameObj, "Text").GetComponent<TMP_Text>();
             text1.text = invMenu.MenuName;
             mainHeight += menuNameObj.GetComponent<RectTransform>().rect.height;
