@@ -1034,6 +1034,10 @@ public class GridManager : MonoBehaviour
         {
             return;
         }
+        if(path == "/StructureData/StructureFile/.json")
+        {
+            path = "/StructureData/StructureFile/noName";
+        }
         if (gridContainer.transform.childCount == 0)
         {
             if (isMainMenu)

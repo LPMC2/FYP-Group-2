@@ -896,7 +896,8 @@ public class InventoryBehaviour : MonoBehaviour
         menuContent = Instantiate(menuContentPrefab, menuScrollView.transform.GetChild(0).position, Quaternion.identity, menuScrollView.transform.GetChild(0));
         float mainHeight = 0f;
         //Menu Item generation
-        foreach(InvMenu invMenu in invBagSO.inventoryBag[page].invMenus)
+        RectTransform mainRect = menuContent.GetComponent<RectTransform>();
+        foreach (InvMenu invMenu in invBagSO.inventoryBag[page].invMenus)
         {
             GameObject menuNameObj = Instantiate(invBagSO.MenuNamePrefab, menuContent.transform.position, Quaternion.identity, menuContent.transform);
            
@@ -912,23 +913,27 @@ public class InventoryBehaviour : MonoBehaviour
                 if (inventoryType == InventoryType.block)
                 {
                     SetBlockSlotUI(itemID, slotObject, slotItem.transform);
-                    simpleTooltip.infoLeft = blockData.blockData[itemID].blockModel.name + "\n\nStats:" + "\nType: " + invMenu.MenuName  + "\nHealth: " + blockData.blockData[itemID].maxHealth + "\nToken Cost: " + blockData.blockData[itemID].tokenCost + "\n\n-Click to select-";
+                    simpleTooltip.infoLeft = "&" +blockData.blockData[itemID].blockModel.name + "\n\n`Stats:" + "\n$Type: " + invMenu.MenuName  + "\n~Health: " + blockData.blockData[itemID].maxHealth + "\n!Token Cost: " + blockData.blockData[itemID].tokenCost + "\n\n`-Click to select-";
                     slotBehaviour.Initialize(this, itemID, SlotType.InventoryBag);
                 }
                 if(inventoryType == InventoryType.Structure)
                 {
                     SetStructureSlotUI(itemID, slotObject, slotItem.transform);
-                    simpleTooltip.infoLeft = structureManager.structurePoolings[itemID].name + "\n\nStats:" + "\nType: " + invMenu.MenuName + "\nHealth: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<HealthBehaviour>().GetHealth() + "\nToken Cost: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<GridData>().tokenCost + "\n-Click to select-";
+                    simpleTooltip.infoLeft = "&" + structureManager.structurePoolings[itemID].name + "\n\n`Stats:" + "\n$Type: " + invMenu.MenuName + "\n~Health: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<HealthBehaviour>().GetHealth() + "\n!Token Cost: " + structureManager.structurePoolings[itemID].structures[0].GetComponent<GridData>().tokenCost + "\n`-Click to select-";
                     slotBehaviour.Initialize(this, itemID, SlotType.StructureEditor);
                 }
             }
             RectTransform rectTransform = menuSlot.GetComponent<RectTransform>();
-            float height = slotBasePrefab.GetComponent<RectTransform>().rect.height * Mathf.Ceil(menuSlot.transform.childCount / 10f) + menuContentOffset;
+            Debug.Log(rectTransform.rect.width);
+            float height = slotBasePrefab.GetComponent<RectTransform>().rect.height * Mathf.Ceil((menuSlot.transform.childCount * menuSlot.GetComponent<GridLayoutGroup>().cellSize.x)/inventoryMenuManager.GetComponent<RectTransform>().rect.width ) + menuContentOffset;
             mainHeight += height;
             rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, height);
         }
-        RectTransform mainRect = menuContent.GetComponent<RectTransform>();
+        
         mainRect.sizeDelta = new Vector2(mainRect.rect.x, mainHeight);
+        Vector3 pos = mainRect.position;
+        pos.x = 0f;
+        mainRect.anchoredPosition = pos;
         menuContent.SetActive(false);
         
     }

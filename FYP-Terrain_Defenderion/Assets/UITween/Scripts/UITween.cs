@@ -404,11 +404,13 @@ namespace UITween
             float yMes = (rectTr.anchorMin.y + rectTr.anchorMax.y) / 2f;
 			
             Transform rootObject = rectTr.root;
-			
-            Rect rectangleScreen = rootObject.GetComponent<RectTransform>().rect;
-			
-            StartWorldPos.x = (xMes * rectangleScreen.width + StartPos.x) * rootObject.localScale.x;
-            StartWorldPos.y = (yMes * rectangleScreen.height + StartPos.y) * rootObject.localScale.y;
+            if (rootObject.GetComponent<RectTransform>() != null)
+            {
+                Rect rectangleScreen = rootObject.GetComponent<RectTransform>().rect;
+
+                StartWorldPos.x = (xMes * rectangleScreen.width + StartPos.x) * rootObject.localScale.x;
+                StartWorldPos.y = (yMes * rectangleScreen.height + StartPos.y) * rootObject.localScale.y;
+            }
 #endif
         }
 
