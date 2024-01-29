@@ -1,6 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using UnityEngine;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
 
 public class SettingsManager : MonoBehaviour
 {
