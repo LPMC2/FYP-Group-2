@@ -5,12 +5,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 public class JsonSerializer
 {
-    public void SaveData<T>(T data, string savePath)
+    public static void SaveData<T>(T data, string savePath)
     {
             savePath = PathContainsPersistentDataPath(savePath);
         
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Application.persistentDataPath + savePath;
+        string path = savePath;
         FileStream stream = new FileStream(path, FileMode.Create);
         formatter.Serialize(stream, data);
 
@@ -24,10 +24,12 @@ public class JsonSerializer
     }
     private static string PathContainsPersistentDataPath(string path)
     {
-        if (!path.Contains(Application.persistentDataPath))
+      
+        if (path.Contains(Application.persistentDataPath) == false)
         {
             path = Application.persistentDataPath + path;
-        }
+            return path;
+        } else
         return path;
     }
     public static void DeleteFile(string path)
