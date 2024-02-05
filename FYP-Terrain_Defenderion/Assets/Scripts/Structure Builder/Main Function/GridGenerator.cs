@@ -4,8 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation.Samples;
 using Unity.AI.Navigation;
+using UnityEngine.InputSystem;
+
 public class GridGenerator : MonoBehaviour
 {
+    [Header("Inputs")]
+    [SerializeField] private InputAction m_placeInput;
+    [SerializeField] private InputAction m_destroyInput;
     [SerializeField] TemplateType templateType;
     [SerializeField] private GridType gridType;
     [SerializeField] private GameObject userObject;
@@ -90,6 +95,13 @@ public class GridGenerator : MonoBehaviour
             shootingPoint = playerCamera.transform;
         }
     }
+    private void OnEnable()
+    {
+        m_placeInput.performed += BuildBlock;
+        m_placeInput.Enable();
+        m_destroyInput.performed += RemoveBlock;
+        m_destroyInput.Enable();
+    }
     private void OnDisable()
     {
         if (lastOutlineBlock != null)
@@ -102,6 +114,10 @@ public class GridGenerator : MonoBehaviour
             Destroy(templateGameobject);
             templateGameobject = null;
         }
+        m_placeInput.performed -= BuildBlock;
+        m_placeInput.Disable();
+        m_destroyInput.performed -= RemoveBlock;
+        m_destroyInput.Disable();
     }
     public void SetGridSize(int row, int col, int h, GridSize gridSize)
     {
@@ -254,10 +270,7 @@ public class GridGenerator : MonoBehaviour
                 Destroy(templateGameobject);
                 templateGameobject = null;
             }
-            if (Input.GetMouseButtonDown(0))
-            {
-                DestroyBlock(shootingPoint, range);
-            }
+          
             if(gridType == GridType.Structure && templateGameobject != null)
             {
                 if(structureManager.CurrentStructure == -1)
@@ -281,23 +294,7 @@ public class GridGenerator : MonoBehaviour
             canBuild = false;
         }
 
-        if (canBuild)
-        {
-
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                PlaceBlock();
-            }
-
-        }
-        if(!canBuild)
-        {
-            if (Input.GetMouseButtonDown(1))
-            {
-                ErrorMessage();
-            }
-        }
+        
         if(gridType == GridType.Structure)
         {
             if(structureManager.CurrentStructure != currentStructure)
@@ -306,6 +303,25 @@ public class GridGenerator : MonoBehaviour
                 templateGameobject = null;
                 currentStructure = structureManager.CurrentStructure;
             }
+        }
+    }
+    private void RemoveBlock(InputAction.CallbackContext callbackContext)
+    {
+        if(buildModeOn)
+        {
+            DestroyBlock(shootingPoint, range);
+        }
+    }
+    private void BuildBlock(InputAction.CallbackContext callbackContext)
+    {
+        if (buildModeOn)
+        {
+            if (canBuild)
+            {
+                PlaceBlock();
+            }
+            else
+            { ErrorMessage(); return; }
         }
     }
     private void PlaceBlock()

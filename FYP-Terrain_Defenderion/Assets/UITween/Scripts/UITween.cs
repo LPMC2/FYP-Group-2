@@ -157,6 +157,10 @@ namespace UITween
         {
             animationPart.SetStatus(status);
         }
+        public bool GetStatus()
+        {
+            return animationPart.GetStatus();
+        }
 
         public void PlayCloseAnimations()
         {
@@ -833,7 +837,16 @@ namespace UITween
                 ObjectState = State.CLOSE;
             }
         }
-
+        public bool GetStatus()
+        {
+            if(ObjectState == State.OPEN)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
         public void SetStatus(bool open)
         {
             if (open)

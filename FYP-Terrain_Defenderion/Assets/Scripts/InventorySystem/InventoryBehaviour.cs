@@ -23,7 +23,7 @@ public class InventoryBehaviour : MonoBehaviour
     public KeyCode dropKey = KeyCode.Q;
     public KeyCode invBagKey = KeyCode.E;
     public bool isItemSelectable = true;
-    public bool invBagOpened { get; private set; }
+    public bool invBagOpened { get; set; }
     [Header("Canvas")]
     public GameObject SlotPlaceHolder;
     [Header("Slot UI")]

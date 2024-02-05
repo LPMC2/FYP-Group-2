@@ -26,6 +26,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float cameraCollisionRadius = 2f;
     [SerializeField] private float cameraFollowSpeed = 0.2f;
     [SerializeField] private float cameraLookSpeed = 2;
+    public float CameraLookSpeed { set { cameraLookSpeed = value; } }
     [SerializeField] private float cameraPivotSpeed = 2;
 
     [SerializeField] private float minPivotAngle = -35f;

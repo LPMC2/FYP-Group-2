@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
+using InputDeviceControl.Manager;
 public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Singleton;
@@ -30,6 +31,7 @@ public class SettingsManager : MonoBehaviour
     {
         openMenuButton.performed += OnClick;
         openMenuButton.Enable();
+     
     }
     private void OnDisable()
     {
@@ -39,12 +41,15 @@ public class SettingsManager : MonoBehaviour
     }
     private void OnClick(InputAction.CallbackContext context)
     {
+        
         menuAnimation.OpenCloseObjectAnimation();
+        InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
     public void OnClick()
     {
         menuAnimation.OpenCloseObjectAnimation();
+        InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
     private void SetSettingsData()
@@ -66,6 +71,7 @@ public class SettingsManager : MonoBehaviour
         if(File.Exists(settingsLocation))
         {
             LoadSettingsData();
+            UpdateAll();
         } else
         {
             GenerateSettingsData();
@@ -80,12 +86,7 @@ public class SettingsManager : MonoBehaviour
     public void LoadSettingsData()
     {
         settingsData.SetData(JsonSerializer.LoadData<SettingsData>(settingsLocation));
-        m_MainSlider.TargetObject.value = settingsData.Settings.MainVolume.Value;
-        m_MusicSlider.TargetObject.value = settingsData.Settings.MusicVolume.Value;
-        m_GraphicsTypeDropdown.value = (int)settingsData.Settings.screenType.Value;
-
-        m_POVSlider.TargetObject.value = settingsData.Settings.POV.Value;
-        m_SensitivitySlider.TargetObject.value = settingsData.Settings.Sensitivity.Value;
+        UpdateAll();
     }
     public void SaveSettingsData()
     {
@@ -96,7 +97,11 @@ public class SettingsManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-   
+        if (File.Exists(settingsLocation) && !SettingsPanel.activeInHierarchy)
+        {
+            UpdatePovValue(settingsData.GetData().POV.Value, false);
+            UpdateSensitivityValue(settingsData.GetData().Sensitivity.Value, false);
+        }
     }
     public void SetGraphicsData(int index)
     {
@@ -113,14 +118,32 @@ public class SettingsManager : MonoBehaviour
         UpdateGraphics();
     }
     #region -----------------------------Update Data-----------------------------
+    public void UpdateAll()
+    {
+        UpdateUI();
+        UpdateMainVolume(settingsData.GetData().MainVolume.Value);
+        UpdateMusicVolume(settingsData.GetData().MusicVolume.Value);
+        UpdatePovValue(settingsData.GetData().POV.Value);
+        UpdateSensitivityValue(settingsData.GetData().Sensitivity.Value);
+        UpdateGraphics();
+    }
     public void UpdateUI()
     {
+        m_MainSlider.TargetObject.value = settingsData.Settings.MainVolume.Value;
+        m_MusicSlider.TargetObject.value = settingsData.Settings.MusicVolume.Value;
+        m_GraphicsTypeDropdown.value = (int)settingsData.Settings.screenType.Value;
 
+        m_POVSlider.TargetObject.value = settingsData.Settings.POV.Value;
+        m_SensitivitySlider.TargetObject.value = settingsData.Settings.Sensitivity.Value;
     }
     public void UpdateMainVolume(float value)
     {
         settingsData.Settings.MainVolume.Value = value;
         m_MainSlider.DisplayText = Mathf.Ceil(value * 100).ToString();
+        foreach(AudioSource audioSource in GameObject.FindObjectsOfType<AudioSource>())
+        {
+            audioSource.volume = value;
+        }
         SaveSettingsData();
     }
     public void UpdateMusicVolume(float value)
@@ -129,17 +152,45 @@ public class SettingsManager : MonoBehaviour
         m_MusicSlider.DisplayText = Mathf.Ceil(value*100).ToString();
         SaveSettingsData();
     }
-    public void UpdatePovValue(float value)
+    public void UpdatePovValue(float value, bool saveData = true)
     {
         settingsData.Settings.POV.Value = value;
         m_POVSlider.DisplayText = value.ToString();
+        if (Camera.main != null)
+        {
+            Camera.main.fieldOfView = value;
+        }
+        if(saveData)
         SaveSettingsData();
     }
-    public void UpdateSensitivityValue(float value)
+    public void TriggerPovValue(float value) { UpdatePovValue(value, true); }
+    public void UpdateSensitivityValue(float value, bool saveData = true)
     {
         settingsData.Settings.Sensitivity.Value = value;
-        m_SensitivitySlider.DisplayText = (value * 10).ToString();
+        m_SensitivitySlider.DisplayText = Mathf.Ceil(value * 100).ToString();
+        SetControlSensitivity(value);
+        if(saveData)
         SaveSettingsData();
+    }
+    public void TriggerSensitivityValue(float value) { UpdateSensitivityValue(value, true); }
+    private void SetControlSensitivity(float value)
+    {
+        CameraManager[] inputManager = GameObject.FindObjectsOfType<CameraManager>();
+        if(inputManager.Length > 0)
+        {
+            foreach(CameraManager inputManager1 in inputManager)
+            {
+                inputManager1.CameraLookSpeed = value * 2;
+            }
+        }
+        FlightController[] flightControllers = GameObject.FindObjectsOfType<FlightController>();
+        if(flightControllers.Length > 0)
+        {
+            foreach(FlightController flightController in flightControllers)
+            {
+                flightController.MouseSensitivity = value;
+            }
+        }
     }
     public void UpdateGraphics()
     {
