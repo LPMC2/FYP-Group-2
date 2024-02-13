@@ -213,10 +213,7 @@ public class EnemyController : MonoBehaviour
         }
         if (isAggro) return;
         int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
-        if (teamID != -1)
-        {
-            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
-        }
+        colliders = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID ,colliders);
         if(excludedTarget != null)
         {
             colliders.Remove(excludedTarget);

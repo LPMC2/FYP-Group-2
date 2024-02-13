@@ -361,6 +361,24 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Right_Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a0c0ba4-9e42-4528-b425-b4aecc522036"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Left_Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""33a664dc-4222-4ca6-9660-5adbf525ed06"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -385,6 +403,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f9dd2278-5703-4e5c-9082-b435748cce41"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Right_Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""63a775a1-2a39-40a9-bb4a-4b67422a558e"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Left_Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -402,6 +442,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // PlayerActions
         m_PlayerActions = asset.FindActionMap("PlayerActions", throwIfNotFound: true);
         m_PlayerActions_Sprint = m_PlayerActions.FindAction("Sprint", throwIfNotFound: true);
+        m_PlayerActions_Right_Click = m_PlayerActions.FindAction("Right_Click", throwIfNotFound: true);
+        m_PlayerActions_Left_Click = m_PlayerActions.FindAction("Left_Click", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -550,11 +592,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_PlayerActions;
     private List<IPlayerActionsActions> m_PlayerActionsActionsCallbackInterfaces = new List<IPlayerActionsActions>();
     private readonly InputAction m_PlayerActions_Sprint;
+    private readonly InputAction m_PlayerActions_Right_Click;
+    private readonly InputAction m_PlayerActions_Left_Click;
     public struct PlayerActionsActions
     {
         private @PlayerInput m_Wrapper;
         public PlayerActionsActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Sprint => m_Wrapper.m_PlayerActions_Sprint;
+        public InputAction @Right_Click => m_Wrapper.m_PlayerActions_Right_Click;
+        public InputAction @Left_Click => m_Wrapper.m_PlayerActions_Left_Click;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -567,6 +613,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Right_Click.started += instance.OnRight_Click;
+            @Right_Click.performed += instance.OnRight_Click;
+            @Right_Click.canceled += instance.OnRight_Click;
+            @Left_Click.started += instance.OnLeft_Click;
+            @Left_Click.performed += instance.OnLeft_Click;
+            @Left_Click.canceled += instance.OnLeft_Click;
         }
 
         private void UnregisterCallbacks(IPlayerActionsActions instance)
@@ -574,6 +626,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Right_Click.started -= instance.OnRight_Click;
+            @Right_Click.performed -= instance.OnRight_Click;
+            @Right_Click.canceled -= instance.OnRight_Click;
+            @Left_Click.started -= instance.OnLeft_Click;
+            @Left_Click.performed -= instance.OnLeft_Click;
+            @Left_Click.canceled -= instance.OnLeft_Click;
         }
 
         public void RemoveCallbacks(IPlayerActionsActions instance)
@@ -603,5 +661,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IPlayerActionsActions
     {
         void OnSprint(InputAction.CallbackContext context);
+        void OnRight_Click(InputAction.CallbackContext context);
+        void OnLeft_Click(InputAction.CallbackContext context);
     }
 }
