@@ -550,33 +550,37 @@ public class InventoryBehaviour : MonoBehaviour
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                     Image uiImg = instantiatedUI.GetComponent<Image>();
                     RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
-                    uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
+                   
                     if (itemData.item[inventory.slot[id].getId()].itemObject != null )
                     {
                         //Capture Item and display on Slot UI
                         float width = rectTransform.rect.width * 2f;
                         float height = rectTransform.rect.height * 2f;
                         rectTransform.sizeDelta = new Vector2(width, height);
-                        GameObject gameObject = Instantiate(itemData.item[inventory.slot[id].getId()].itemObject);
+                        GameObject captureItem = Instantiate(itemData.item[inventory.slot[id].getId()].itemObject);
                         float cameraSize = captureCamera.orthographicSize;
-                        gameObject.transform.SetParent(captureCamera.transform);
-                        gameObject.transform.eulerAngles =new Vector3(313.390015f, 236.100006f, 0f);
-                        gameObject.transform.localPosition = Vector3.forward * 10 - new Vector3(0f,0.05f,0f);
-                        captureCamera.orthographicSize = 0.7f;
+                        captureItem.transform.SetParent(captureCamera.transform);
+                        captureItem.transform.eulerAngles =new Vector3(313.390015f, 236.100006f, 0f);
+                        captureItem.transform.localPosition = Vector3.forward * 10 - new Vector3(0f,0.05f,0f);
                         if (displayText != null)
                         {
                             //Gun Specific Setup
-                            GunController gunController = gameObject.GetComponent<GunController>();
+                            GunController gunController = captureItem.GetComponent<GunController>();
                             if (gunController != null)
                             {
                                 displayText.text = gunController.GetRemainAmmo() + "/" + gunController.GetTotalAmmo();
                             }
-                        }   
-                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
+                        }
+
+                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, captureItem, captureSavePath, id.ToString(), true, true, itemData.item[inventory.slot[id].getId()].CustomBuffer);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
                         uiImg.raycastTarget = false;
                         captureCamera.orthographicSize = cameraSize;
+                    }
+                    if(itemData.item[inventory.slot[id].getId()].useItemSprite)
+                    {
+                        uiImg.sprite = itemData.item[inventory.slot[id].getId()].itemSprite;
                     }
                     uiImg.preserveAspect = true;
                     uiImg.raycastTarget = false;

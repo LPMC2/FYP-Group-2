@@ -11,6 +11,8 @@ public class ItemSO : ScriptableObject
     {
         public GameObject itemObject;
         public string itemName;
+        public bool useItemSprite = false;
         public Sprite itemSprite;
+        public float CustomBuffer = 1f;
     }
 }
