@@ -11,6 +11,7 @@ public class FlightController : MonoBehaviour
     [SerializeField] float rotationSpeed = 3f;
     [SerializeField] private bool isRotatable = true;
     [SerializeField] float mouseSensitivity = 3f;
+    public float MouseSensitivity { set { mouseSensitivity = value; } }
     [SerializeField] float acceleration = 1f;
     [SerializeField] PlayerInput playerInput;
     [SerializeField] private bool startMoveOnInitialize = false;

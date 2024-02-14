@@ -12,7 +12,10 @@ public class AnimationBehaviour
     private int currentAttackAnimation = 0;
     [SerializeField] private float switchAnimationTime = 0.25f;
     // Start is called before the first frame update
-
+    public int GetAnimationLength()
+    {
+        return playAttackAnimation.Length;
+    }
     public void StartAnimationRandom(Animator animator, float speed)
     {
         if (playAttackAnimation.Length > currentAttackAnimation || playAttackAnimation.Length == 1)

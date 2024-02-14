@@ -68,7 +68,7 @@ public class STController : MonoBehaviour
 
         if (showNow)
         {
-            rect.anchoredPosition = Input.mousePosition;
+            rect.anchoredPosition = Input.mousePosition- new Vector3(rect.rect.width, 0f, 0f);
         }
 
         showInFrames -= 1;

@@ -35,7 +35,7 @@ public class TeamBehaviour : MonoBehaviour
         }
         else
         {
-            return false;
+            return true;
         }
     }
     public void SortTeamID()

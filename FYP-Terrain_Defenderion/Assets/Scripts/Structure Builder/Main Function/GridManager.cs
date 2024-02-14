@@ -1034,6 +1034,10 @@ public class GridManager : MonoBehaviour
         {
             return;
         }
+        if(path == "/StructureData/StructureFile/.json")
+        {
+            path = "/StructureData/StructureFile/noName";
+        }
         if (gridContainer.transform.childCount == 0)
         {
             if (isMainMenu)
@@ -1328,7 +1332,7 @@ public class GridManager : MonoBehaviour
                 captureCamera.orthographicSize = 26.3f;
                 break;
         }
-        ModelPictureSaver.CaptureAndSaveImage(captureCamera ,GenerateStructure(structureStorages), "/StructureData/StructureImg/", name);
+        ModelPictureSaver.CaptureAndSaveImage(captureCamera ,GenerateStructure(structureStorages), "/StructureData/StructureImg/", name, true, false, 4f);
         captureCamera.orthographicSize = initialCameraSize;
     }
     public static void SaveStructureImg(TextAsset file, Camera camera, string name, string path = "")
@@ -1347,14 +1351,14 @@ public class GridManager : MonoBehaviour
                 camera.orthographicSize = 26.3f;
                 break;
         }
-        ModelPictureSaver.CaptureAndSaveImage(camera, StructureSerializer.GenerateStructure(structureStorages), path, name);
+        ModelPictureSaver.CaptureAndSaveImage(camera, StructureSerializer.GenerateStructure(structureStorages, default, true), path, name, true, false, 4f);
         camera.orthographicSize = initialCameraSize;
     }
     public void SaveTempStructureImg()
     {
         int oldMask = captureCamera.cullingMask;
         captureCamera.cullingMask = -1;
-        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gridContainer, "/StructureData/Temp/", "tempStructureImg", false);
+        ModelPictureSaver.CaptureAndSaveImage(captureCamera, gridContainer, "/StructureData/Temp/", "tempStructureImg", false, false, 4f);
         captureCamera.cullingMask = oldMask;
     }
 

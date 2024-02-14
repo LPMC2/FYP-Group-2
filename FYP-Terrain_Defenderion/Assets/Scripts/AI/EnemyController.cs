@@ -25,9 +25,14 @@ public class EnemyController : MonoBehaviour
     private int maxPatrolState = 3;
     [Header("Attack System")]
     private bool isAggro = false;
+    [SerializeField] private GameObject itemPlaceholder;
     [SerializeField] private float AttackDistance = 1f;
     [SerializeField] private Transform target;
     [SerializeField] public AttackType attackType;
+    public void SetAttackType(AttackType attackType)
+    {
+        this.attackType = attackType;
+    }
     [SerializeField] public ProjectileType projectileType;
     [SerializeField] private float damage;
     [SerializeField] private float preAttackCD;
@@ -46,12 +51,19 @@ public class EnemyController : MonoBehaviour
     private LayerMask obstacleMask;
     private Animator enemyAnimator;
     private GameObject nearestDestructible;
+    float movementThreshold = 0.1f;
     [Header("Animation & Sound")]
     [SerializeField] private GameObject AnimateObject;
     [SerializeField] private AudioClip AttackSound;
     [SerializeField] private AudioClip DeathSound;
+    [SerializeField] private AnimationBehaviour attackAnimations;
+    [SerializeField] private AnimationBehaviour movementAnimations;
+    [SerializeField] private AnimationBehaviour deathAnimations;
+    [SerializeField] private int currentAttackAnimation = -1;
+    public void SetAttackAnimation(int value) { currentAttackAnimation = value; }
     private AudioSource audioSource;
     bool isInRange = false;
+    private bool isActive = true;
     [Header("Debug")]
     [SerializeField] private bool DebugMode = false;
     private void DebugLog(string text)
@@ -65,6 +77,32 @@ public class EnemyController : MonoBehaviour
         Melee,
         Ranged,
         Custom
+    }
+    public void Respawn()
+    {
+        isActive = true;
+    }
+    public void Death()
+    {
+        
+        deathAnimations.StartAnimationRandom(enemyAnimator, 1f);
+        target = null;
+        currentTarget = null;
+        isAggro = false;
+        agent.SetDestination(gameObject.transform.position);
+        isActive = false;
+    }
+    public void SetItem(GameObject target)
+    {
+        if (target == null) return;
+        GameObjectExtension.RemoveAllObjectsFromParent(itemPlaceholder.transform);
+        GameObject targetItem = Instantiate(target, itemPlaceholder.transform.position, Quaternion.identity, itemPlaceholder.transform);
+        targetItem.transform.localPosition = target.transform.position;
+        targetItem.transform.localRotation = target.transform.rotation;
+    }
+    public void SetProjectile(GameObject projectile)
+    {
+        projectileObject = projectile;
     }
     public ProjectileType CurrentAttackType { get; set; }
     public void changeAttackType(int type)
@@ -177,7 +215,7 @@ public class EnemyController : MonoBehaviour
         int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
         if (teamID != -1)
         {
-            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+            colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
         }
         if(excludedTarget != null)
         {
@@ -260,13 +298,41 @@ public class EnemyController : MonoBehaviour
             agent.speed = chaseSpeed;
             isInRange = true;
             agent.stoppingDistance = AttackDistance;
+            isMoving = false;
         }
     }
     private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
     private float cacheExpirationTimer; // Timer to track cache expiration
     // Update is called once per frame
+    private bool isMoving = false;
+    float movementSpeed = 0f;
     void Update()
     {
+        if (!isActive) return;
+        //if (target != null) {
+        //    TeamBehaviour.Singleton.isOwnTeam(gameObject, target.GetComponent<Collider>());
+        //    target = null;
+        //    currentTarget = null;
+        //}
+        movementSpeed = agent.velocity.magnitude;
+        if (agent.velocity.magnitude > movementThreshold && isMoving == false)
+        {
+            if (agent.velocity.magnitude > 0.1 && agent.velocity.magnitude <= patrolSpeed)
+            {
+                movementAnimations.StartAnimationConstant(enemyAnimator, 1, 1f);
+            } else if(agent.velocity.magnitude > 0.4 && agent.velocity.magnitude <= chaseSpeed)
+            {
+                movementAnimations.StartAnimationConstant(enemyAnimator, 2, 1f);
+            } else
+            {
+                movementAnimations.StartAnimationConstant(enemyAnimator, 3, 1f);
+            }
+            isMoving = true;
+        } else if(agent.velocity.magnitude <= movementThreshold && isMoving)
+        {
+            movementAnimations.StartAnimationConstant(enemyAnimator, 0, 1f);
+            isMoving = false;
+        }
         Patrol();
         if (enemyState.CurrentAIState == AIState.State.Attack || enemyState.CurrentAIState == AIState.State.Defend || enemyState.CurrentAIState == AIState.State.Patrol)
         {
@@ -282,6 +348,7 @@ public class EnemyController : MonoBehaviour
             currentTarget = null;
         }
         ChaseTarget();
+
     }
     bool isPatrol = false;
     Vector3 initialPatrolPos = Vector3.zero;
@@ -358,7 +425,7 @@ public class EnemyController : MonoBehaviour
         /* Note: agent.SetDestination() requires network update(Server & Client) when in multiplayer 
          * 
         */
-        if (target == null)
+        if (target == null || TeamBehaviour.Singleton.GetTeamID(target.gameObject) == TeamBehaviour.Singleton.GetTeamID(gameObject))
         {
             //if(enemyState.CurrentAIState != AIState.State.Patrol)
             //    agent.SetDestination(gameObject.transform.position);
@@ -392,12 +459,14 @@ public class EnemyController : MonoBehaviour
             else if (distance > agent.stoppingDistance)
             {
                 AttackTime = 0f;
+                if(AttackCor != null)
+                StopCoroutine(AttackCor);
                 if (AnimateObject != null)
                 {
-                    if (!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        StartCoroutine(PlayWalkAnimation());
-                    }
+                    //if (!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                    //{
+                    //    StartCoroutine(PlayWalkAnimation());
+                    //}
                 }
             }
         }
@@ -453,7 +522,7 @@ public class EnemyController : MonoBehaviour
 
         AttackTime += Time.deltaTime;
 
-        if (AttackTime >= attackCD)
+        if (AttackTime >= attackCD && target != null)
         {
 
             AttackCor = StartCoroutine(AttackCoroutine());
@@ -464,6 +533,12 @@ public class EnemyController : MonoBehaviour
     private IEnumerator AttackCoroutine()
     {
         if (target == null) { StopCoroutine(AttackCor); }
+        if (enemyAnimator != null && currentAttackAnimation != -1 && currentAttackAnimation < attackAnimations.GetAnimationLength())
+        {
+            // Play the "Walk" animation clip
+            attackAnimations.StartAnimationConstant(enemyAnimator, currentAttackAnimation, attackCD);
+
+        }
         if (attackType == AttackType.Melee)
         {
                 if (DeathSound != null && audioSource != null)
@@ -471,14 +546,7 @@ public class EnemyController : MonoBehaviour
                     audioSource.clip = AttackSound;
                     audioSource.Play();
                 }
-            if (enemyAnimator != null)
-            {
-                // Play the "Walk" animation clip
-             
-                float speedMultiplier = 1.0f / attackCD;
-                enemyAnimator.SetFloat("SpeedMultiplier", speedMultiplier);
-                enemyAnimator.Play("AttackMelee");
-            }
+
             yield return new WaitForSeconds(preAttackCD);
             if (target != null)
             {
@@ -514,14 +582,20 @@ public class EnemyController : MonoBehaviour
             yield return new WaitForSeconds(preAttackCD);
             if (projectileType != ProjectileType.Raycast)
             {
-                GameObject projectileInstance = Instantiate(projectileObject, transform.position + transform.TransformDirection(ProjectileOffset), Quaternion.identity);
-                Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
-                if (projectileScript != null)
+                if (projectileObject != null)
                 {
-                    Vector3 direction = target.position - transform.position;
-                    direction.Normalize(); 
-                    projectileScript.InitializeProjectile(direction, ProjectileSpeed, damage, projectileType, gameObject);
+                    GameObject projectileInstance = Instantiate(projectileObject, transform.position + transform.TransformDirection(ProjectileOffset), Quaternion.identity);
+                    Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
+                    if (projectileScript != null && target!=null)
+                    {
+                        Vector3 relativePos = target.transform.position - projectileInstance.transform.position;
+                        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+                        projectileInstance.transform.rotation = rotation;
+                        Vector3 direction = target.position - transform.position;
+                        direction.Normalize();
+                        projectileScript.InitializeProjectile(direction, ProjectileSpeed, damage, projectileType, gameObject);
 
+                    }
                 }
             } else
             {
@@ -562,7 +636,10 @@ public class EnemyController : MonoBehaviour
     }
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, lookRadius);
+        if (DebugMode)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, lookRadius);
+        }
     }
 }

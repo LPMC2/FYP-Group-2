@@ -25,7 +25,8 @@ public class Projectile : MonoBehaviour
     private float speed = 1f;
     private Rigidbody rb;
     private GameObject nearestDesturctable;
-    private float AOE;
+    [SerializeField]
+    private float AOE = -1f;
     [SerializeField]
     private float maxTime = 10f;
     [SerializeField]

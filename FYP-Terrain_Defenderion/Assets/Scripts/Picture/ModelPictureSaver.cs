@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class ModelPictureSaver : MonoBehaviour
 {
     private static Camera cameraObj;
     private static Renderer modelRenderer;
     private static GameObject modelInstance;
-    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false)
+    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false, float buffer = 0f)
     {
         if (camera == null || modelPrefab == null) return;
         FolderManager.CreateFolder("/StructureData/StructureImg");
@@ -30,18 +31,46 @@ public class ModelPictureSaver : MonoBehaviour
         string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
         //Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);
         // Capture the object's image
+        var initialCenter = camera.transform.position;
+        var initialSize = camera.orthographicSize;
+        var (center, size) = CalculateOrthographicSize(modelPrefab, camera, buffer);
+        camera.transform.position = center;
+        camera.orthographicSize = size;
         CaptureObjectImage(camera, modelPrefab, fileName);
-
+        camera.transform.position = initialCenter;
+        camera.orthographicSize = initialSize;
         // Destroy the model instance
         if (isDestroy)
         {
-            Object.Destroy(modelPrefab);
+            UnityEngine.Object.Destroy(modelPrefab);
             if(modelPrefab != null)
             {
                 modelPrefab.SetActive(false);
             }
         }
         modelPrefab = SetAllChildLayer(modelPrefab, LayerMask.LayerToName(layer));
+    }
+    private static (Vector3 center, float size) CalculateOrthographicSize(GameObject obj, Camera cam, float buffer)
+    {
+        var bounds = new Bounds();
+        var colliders = obj.GetComponentsInChildren<Collider>();
+        foreach (var col in colliders)
+        {
+            bounds.Encapsulate(col.bounds);
+        }
+        bounds.Expand(buffer);
+
+        var rotationMatrix = Matrix4x4.TRS(Vector3.zero, cam.transform.rotation, Vector3.one);
+        var rotatedCenter = rotationMatrix.MultiplyPoint3x4(bounds.center);
+        var rotatedSize = bounds.size;
+
+        var vertical = rotatedSize.y;
+        var horizontal = rotatedSize.x * cam.pixelHeight / cam.pixelWidth;
+
+        var size = Mathf.Max(horizontal, vertical) * 0.5f;
+        var center = rotatedCenter + cam.transform.forward * -100;
+
+        return (center, size);
     }
     public static GameObject SetAllChildLayer(GameObject target, string layerName)
     {
@@ -108,12 +137,18 @@ public class ModelPictureSaver : MonoBehaviour
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture.Apply();
         byte[] bytes = texture.EncodeToPNG();
-        File.WriteAllBytes(filePath, bytes);
-
+        try
+        {
+            File.WriteAllBytes(filePath, bytes);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogWarning("Access to the path is denied: " + e.Message);
+        }
         RenderTexture.active = null;
         cameraObj.targetTexture = null;
-        Object.Destroy(renderTexture);
-        Object.Destroy(texture);
+        UnityEngine.Object.Destroy(renderTexture);
+        UnityEngine.Object.Destroy(texture);
 
         //Debug.Log("Image captured and saved as " + filePath);
     }

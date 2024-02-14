@@ -72,7 +72,8 @@ public enum InteractType
 {
     none,
     Body,
-    Head
+    Head,
+    Wall
 }
 
 public class DebugScript

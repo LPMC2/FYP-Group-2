@@ -25,7 +25,9 @@ public class StructureManager : MonoBehaviour
     private GameObject structureStorage;
     private void Start()
     {
+        
         structureFilePath = Application.persistentDataPath + structureFilePath;
+        FolderManager.CreateFolder(structureFilePath);
         structurePoolings = new StructurePooling[Directory.GetFiles(structureFilePath).Length + defaultStructureFiles.Length];
         for (int i = 0; i < structurePoolings.Length; i++)
         {
@@ -60,6 +62,41 @@ public class StructureManager : MonoBehaviour
             count++;
         }
         structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("Custom")].invMenus[0], count-defaultCount, true, true, defaultCount++);
+    }
+    public void SetDefenseFriendly(GameObject structure, GameObject user)
+    {
+        int id = TeamBehaviour.Singleton.GetTeamID(user);
+        if(id!= -1)
+        {
+            foreach (Transform child in structure.transform)
+            {
+                ShooterManager shooterManager = child.GetComponent<ShooterManager>();
+                if (shooterManager != null)
+                {
+                    TeamBehaviour.Singleton.TeamManager[id].AddMember(shooterManager.ShooterObj);
+                }
+            }
+        }
+    }
+    private List<SpawnerBehaviour> spawnerBehaviours = new List<SpawnerBehaviour>();
+    private void StoreSpawners(GameObject structure)
+    {
+        foreach (Transform child in structure.transform)
+        {
+            SpawnerBehaviour spawnerBehaviour = child.GetComponent<SpawnerBehaviour>();
+            if (spawnerBehaviour != null)
+            {
+                spawnerBehaviours.Add(spawnerBehaviour);
+            }
+        }
+    }
+    public void SetSpawnerTeam()
+    {
+        foreach (SpawnerBehaviour spawnerBehaviour in spawnerBehaviours)
+        {
+            if (spawnerBehaviour)
+                spawnerBehaviour.StartSpawn(0);
+        }
     }
     public virtual GameObject GetStructure(int id, bool isActivation = true)
     {
@@ -126,9 +163,11 @@ public class StructureManager : MonoBehaviour
                     HealthBehaviour healthBehaviour = structure.GetComponent<HealthBehaviour>();
                     if(dynamicNavMeshObject != null && healthBehaviour != null)
                     healthBehaviour.AddDeathEvents(dynamicNavMeshObject.UpdateNavMesh);
+                    StoreSpawners(structure);
                 }
             }
         }
+        SetSpawnerTeam();
     }
     public virtual void ResetStorage()
     {

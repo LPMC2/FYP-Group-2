@@ -25,6 +25,10 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private LayerMask targetLayer;
     [SerializeField]
     private LayerMask m_HitLayer;
+    [Header("Misc")]
+    [SerializeField] private GameObject fireParticleEffect;
+    [SerializeField] private AudioClip fireSound;
+    [SerializeField] private AudioSource audioSource;
     private bool isRotating = false; // Track if the shooter is currently rotating
     private bool isFiring = false;
     private bool isCD = false; // Track if shooting is in progress
@@ -49,6 +53,10 @@ public class ShooterBehaviour : MonoBehaviour
         {
             rotateObject = HeadObject;
         }
+        if(audioSource == null)
+        {
+            audioSource = gameObject.GetComponent<AudioSource>();
+        }
     }
 
     private bool isCooldown = false; // Track cooldown state
@@ -64,7 +72,7 @@ public class ShooterBehaviour : MonoBehaviour
         {
             if (Time.time >= cacheExpirationTimer)
             {
-                Debug.Log("Finding Target");
+            
                 FindTarget();
                 cacheExpirationTimer = Time.time + cacheExpirationTime;
             }
@@ -129,7 +137,7 @@ public class ShooterBehaviour : MonoBehaviour
             int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
             if (teamID != -1)
             {
-                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamColliders.Contains(itemA));
+                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
             }
         }
         if (colliders.Count > 0)
@@ -168,8 +176,8 @@ public class ShooterBehaviour : MonoBehaviour
         }
         else
         {
-            target = null;
             currentTarget = null;
+            target = null;
             if(bulletType == ShootType.Ray)
             CloseLaser();
         }
@@ -278,11 +286,24 @@ public class ShooterBehaviour : MonoBehaviour
     private void ResetShooter()
     {
         target = null;
+        currentTarget = null;
         isRotating = false;
     }
     private void FireBullet(ProjectileType projectileType, GameObject owner = null)
     {
+        if (fireParticleEffect != null)
+        {
+            GameObject particle = Instantiate(fireParticleEffect, originShooter.transform.position, Quaternion.identity);
+        }
+        if(audioSource != null && fireSound != null)
+        {
+            audioSource.clip = fireSound;
+            audioSource.Play();
+        }
         GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
+        Vector3 relativePos = target.transform.position - bullet.transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+        bullet.transform.rotation = rotation;
         Projectile projectile = bullet.GetComponent<Projectile>();
         projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner);
 

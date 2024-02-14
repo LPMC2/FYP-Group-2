@@ -55,22 +55,18 @@ public class AmmoStoringBehaviour : MonoBehaviour
     } 
     public void SlotDetection(GameObject target)
     {
-        Debug.Log("Slot Detection 1");
         foreach (AmmoStoring ammoStoring in ammoStoringSystem)
         {
             if (ammoStoring.ID == inventory.SelectedSlot)
             {
-                Debug.Log("Slot Detection 2");
                 if (ItemManager.ItemData.item[inventory.inventory.slot[inventory.SelectedSlot].getId()].itemObject.GetComponent<GunController>() != null)
                 {
-                    Debug.Log("Slot Detection 3");
                     GunController gunController = target.GetComponent<GunController>();
                     if (gunController != null)
                     {
                         gunController.SetRemainAmmo(ammoStoring.RemainAmmo);
                         gunController.SetTotalAmmo(ammoStoring.TotalAmmo);
                         gunController.AmmoStoringSystemId = ammoStoring.ID;
-                        Debug.Log("Slot Detection 4 - ID: " + gunController.AmmoStoringSystemId);
                     }
                 }
             }
