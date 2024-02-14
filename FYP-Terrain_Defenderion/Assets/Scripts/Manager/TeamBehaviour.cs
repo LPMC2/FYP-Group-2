@@ -26,6 +26,20 @@ public class TeamBehaviour : MonoBehaviour
         }
         return -1;
     }
+    public List<Collider> RemoveFriendlyMembers(int teamId, List<Collider> mainColliders)
+    {
+        if(teamId == -1) { return mainColliders; }
+        mainColliders.RemoveAll(itemA => Singleton.TeamManager[teamId].TeamList.Contains(itemA.gameObject));
+        return mainColliders;
+
+    }
+    public List<Collider> RemoveUnFriendlyMembers(int teamId, List<Collider> mainColliders)
+    {
+        if (teamId == -1) { return mainColliders; }
+        mainColliders.RemoveAll(itemA => !Singleton.TeamManager[teamId].TeamList.Contains(itemA.gameObject));
+        return mainColliders;
+
+    }
     public bool isOwnTeam(GameObject origin, Collider target)
     {
         int teamID = TeamBehaviour.Singleton.GetTeamID(origin);

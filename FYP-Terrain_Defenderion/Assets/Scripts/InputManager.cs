@@ -10,6 +10,10 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private Vector2 movementInput;
     [SerializeField] private float moveAmount;
+    [SerializeField] private bool isRightClick;
+    [SerializeField] private bool isLeftClick;
+    public bool RightMouseClick { get { return isRightClick; } }
+    public bool LeftMouseClick { get { return isLeftClick; } }
     PlayerLocomotion playerLocomotion;
     #region moveAmount getter
     public float getMoveAmount()
@@ -64,6 +68,10 @@ public class InputManager : MonoBehaviour
             playerInputs.PlayerActions.Sprint.canceled += i => b_Input = false;
             playerInputs.PlayerMovement.Jump.performed += i => jump_Input = true;
             playerInputs.PlayerMovement.Dodge.performed += i => dodge_Input = true;
+            playerInputs.PlayerActions.Left_Click.performed += i => isLeftClick = true;
+            playerInputs.PlayerActions.Left_Click.canceled += i => isLeftClick = false;
+            playerInputs.PlayerActions.Right_Click.performed += i => isRightClick = true;
+            playerInputs.PlayerActions.Right_Click.canceled += i => isRightClick = false;
         }
         playerInputs.Enable();
     }
@@ -77,6 +85,8 @@ public class InputManager : MonoBehaviour
         horizontalInput = 0f;
         cameraInputX = 0f;
         cameraInputY = 0f;
+        isLeftClick = false;
+        isRightClick = false;
         playerInputs.Disable();
 
     }
