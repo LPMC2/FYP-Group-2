@@ -18,6 +18,7 @@ public class SettingsManager : MonoBehaviour
      private SettingsDataSO settingsData;
     public SettingsDataSO SettingsData { get { return settingsData; } }
     [SerializeField] private GameObject SettingsPanel;
+    [SerializeField] private GameObject bg;
     [SerializeField] private InputAction openMenuButton;
     [SerializeField] private EasyTween menuAnimation;
     [Header("Reference Settings Object")]
@@ -44,12 +45,14 @@ public class SettingsManager : MonoBehaviour
         
         menuAnimation.OpenCloseObjectAnimation();
         InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
+        bg.SetActive(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
     public void OnClick()
     {
         menuAnimation.OpenCloseObjectAnimation();
         InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
+        bg.SetActive(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
     private void SetSettingsData()

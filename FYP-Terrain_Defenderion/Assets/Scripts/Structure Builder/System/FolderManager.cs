@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class FolderManager
 {
-    public static void CreateFolder(string folderPath)
+    public static void CreateFolder(string folderPath, bool includePersistancePath = true)
     {
         //Check if folder exists and create one if not
-        if (!folderPath.Contains(Application.persistentDataPath))
+        if (!folderPath.Contains(Application.persistentDataPath) && includePersistancePath)
         {
             folderPath = Application.persistentDataPath + folderPath;
         }
@@ -24,5 +27,13 @@ public class FolderManager
 #endif
         }
     }
+#if UNITY_EDITOR
+    public static void CreateAssetFolder(string name)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/" + name)) {
+            AssetDatabase.CreateFolder("Assets", name);
+        }
+    }
+#endif
 }
 

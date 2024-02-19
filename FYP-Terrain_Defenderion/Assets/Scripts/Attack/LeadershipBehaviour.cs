@@ -16,6 +16,7 @@ public class LeadershipBehaviour : MonoBehaviour
     [SerializeField] private float m_ActivateDistance = 20f;
     [SerializeField] private LayerMask gather_ContactLayer;
     [SerializeField] private LayerMask lead_ContactLayer;
+    [SerializeField] private GameObject pointedAreaEffectPrefab;
     private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
     private float cacheExpirationTimer; // Timer to track cache expiration
     private List<Collider> inRangedTeamMembers = new List<Collider>();
@@ -44,7 +45,7 @@ public class LeadershipBehaviour : MonoBehaviour
         if(playerInput.RightMouseClick)
         {
             Gather();
-         
+            
         }
     }
     private void SearchingFriendly()

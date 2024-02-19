@@ -9,30 +9,52 @@ public class ModelPictureSaver : MonoBehaviour
     private static Camera cameraObj;
     private static Renderer modelRenderer;
     private static GameObject modelInstance;
-    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab, string savePath, string name, bool isDestroy = true, bool lightAllowed = false, float buffer = 0f)
+    public static void CaptureAndSaveImage(Camera camera, GameObject modelPrefab = null, string savePath = null, string name = null, bool isDestroy = true, bool lightAllowed = false, float buffer = 0f, bool includePersistanceDataPath = true)
     {
-        if (camera == null || modelPrefab == null) return;
+        if(modelPrefab == null)
+        {
+            Debug.LogWarning("Warning: modelPrefab is null");
+        }
+        if (camera == null || savePath == null || name == null) return;
         FolderManager.CreateFolder("/StructureData/StructureImg");
         FolderManager.CreateFolder("/StructureData/Temp");
-        FolderManager.CreateFolder(savePath);
-        int layer = modelPrefab.layer;
-        modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
-        MeshRenderer meshRenderer = modelPrefab.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
+        if (includePersistanceDataPath)
         {
-            if (!lightAllowed)
+            FolderManager.CreateFolder(savePath);
+        } else
+        {
+            FolderManager.CreateFolder(savePath, false);
+        }
+        int layer = 0;
+        if (modelPrefab != null)
+        {
+            layer = modelPrefab.layer;
+            modelPrefab = SetAllChildLayer(modelPrefab, "Capture");
+            MeshRenderer meshRenderer = modelPrefab.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
             {
-                meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
-                meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (!lightAllowed)
+                {
+                    meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+                    meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                }
             }
         }
         
         // Generate a unique file name
-        string fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
+        string fileName = "";
+        if(includePersistanceDataPath)
+        {
+           fileName = Path.Combine(Application.persistentDataPath + savePath, GenerateFileType(name, "png"));
+        } else
+        {
+            fileName = Path.Combine(savePath, GenerateFileType(name, "png"));
+        }
         //Debug.Log(modelPrefab + " Layer: " + modelPrefab.layer + " Camera: " + camera.cullingMask);
         // Capture the object's image
         var initialCenter = camera.transform.position;
         var initialSize = camera.orthographicSize;
+        if (modelPrefab == null) { CaptureObjectImage(camera, modelPrefab, fileName); return; }
         var (center, size) = CalculateOrthographicSize(modelPrefab, camera, buffer);
         camera.transform.position = center;
         camera.orthographicSize = size;
@@ -149,8 +171,9 @@ public class ModelPictureSaver : MonoBehaviour
         cameraObj.targetTexture = null;
         UnityEngine.Object.Destroy(renderTexture);
         UnityEngine.Object.Destroy(texture);
-
-        //Debug.Log("Image captured and saved as " + filePath);
+#if UNITY_EDITOR
+        Debug.Log("Image captured and saved as " + filePath);
+#endif
     }
     private static void ImageTransparent(Texture2D image, Camera camera)
     {
