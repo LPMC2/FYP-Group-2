@@ -83,6 +83,7 @@ public class GameManager : NetworkBehaviour
 
         gameState.Value = GameState.UI;
         m_EnterLobbyEvent.Invoke();
+        Shader.WarmupAllShaders();
     }
     private void Awake()
     {
