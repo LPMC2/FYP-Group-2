@@ -74,6 +74,7 @@ public class TeamBehaviour : MonoBehaviour
         {
             foreach(GameObject gameObject in team.TeamList)
             {
+                if (gameObject == null) continue;
                 Collider collider = gameObject.GetComponent<Collider>();
                 if(collider != null)
                 {

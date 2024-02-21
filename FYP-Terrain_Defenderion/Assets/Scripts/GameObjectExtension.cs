@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameObjectExtension : MonoBehaviour
 {
@@ -13,6 +14,21 @@ public class GameObjectExtension : MonoBehaviour
                 child.SetParent(parent.transform);
             }
         }
+    }
+    private static Coroutine delayEvent;
+    public static void DelayUnityEventInvoke(UnityEvent action, float delayTime)
+    {
+        if (delayEvent != null)
+        {
+            GameManager.Singleton.StopCoroutine(delayEvent);
+            delayEvent = null;
+        }
+        delayEvent = GameManager.Singleton.StartCoroutine(DelayUnityEventInvokeCoroutine(action, delayTime));
+    }
+    private static IEnumerator DelayUnityEventInvokeCoroutine(UnityEvent action, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        action.Invoke();
     }
     public static void DisableFromTime(MonoBehaviour monoBehaviour ,GameObject gameObject, float time) 
     {

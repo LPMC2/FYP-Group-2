@@ -9,6 +9,7 @@ using System.Linq;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private AIState enemyState;
+
     [Header("Team Settings")]
     [SerializeField] private int m_DefaultTeamId = -1;
     [Header("Movement Settings")]
@@ -60,6 +61,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private AnimationBehaviour movementAnimations;
     [SerializeField] private AnimationBehaviour deathAnimations;
     [SerializeField] private int currentAttackAnimation = -1;
+    [SerializeField] private bool isControlled = false;
+    public bool IsControl { set { isControlled = value; } }
     public void SetAttackAnimation(int value) { currentAttackAnimation = value; }
     private AudioSource audioSource;
     bool isInRange = false;
@@ -120,6 +123,10 @@ public class EnemyController : MonoBehaviour
     public void ChangeAIState(AIState.State state)
     {
         enemyState.CurrentAIState = state;
+        if(state != AIState.State.Patrol)
+        {
+            isPatrol = false;
+        }
     }
     NavMeshAgent agent;
 
@@ -305,7 +312,8 @@ public class EnemyController : MonoBehaviour
     float movementSpeed = 0f;
     void Update()
     {
-        if (!isActive) return;
+        if (isControlled && agent.remainingDistance <= agent.stoppingDistance) { isControlled = false; }
+        if (!isActive || isControlled) return;
         //if (target != null) {
         //    TeamBehaviour.Singleton.isOwnTeam(gameObject, target.GetComponent<Collider>());
         //    target = null;

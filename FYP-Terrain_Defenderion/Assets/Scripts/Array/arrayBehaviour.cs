@@ -57,6 +57,28 @@ public class arrayBehaviour
         }
         return newArray;
     }
+    public static string DebugListReturnString<T>(List<T> arr)
+    {
+        string Content = "Content List: \n";
+        int count = 1;
+        foreach (T content in arr)
+        {
+            Content += " " + count + " > " + content + "\n";
+            count++;
+        }
+        if (count <= 1)
+        {
+            Content += "None!";
+        }
+        return Content;
+    }
+    public static void DebugList<T>(List<T> arr, string headerString = "", bool isDebug = true)
+    {
+        if(isDebug)
+        {
+            Debug.Log(headerString +"\n" + DebugListReturnString(arr));
+        }
+    }
     public static void DebugArray<T>(T[] arr)
     {
         string Content = "Content List: \n";
@@ -166,6 +188,12 @@ public class arrayBehaviour
             DebugArr += "----------\n";
         }
         Debug.Log(DebugArr);
+    }
+    public static T GetRandomObjectFromList<T>(List<T> lst)
+    {
+        if (lst == null || lst.Count == 0) return default(T);
+        else
+        return lst[Random.Range(0, lst.Count)];
     }
 
     public static bool ArrayContainsValue<T>(T[] arr, T value)

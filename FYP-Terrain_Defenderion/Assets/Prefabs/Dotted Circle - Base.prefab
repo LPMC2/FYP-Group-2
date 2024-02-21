@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5619498559754180260}
   - component: {fileID: 1109490425130075701}
   - component: {fileID: 112961418859060495}
+  - component: {fileID: 5922462275137417968}
   m_Layer: 0
   m_Name: Dotted Circle
   m_TagString: Untagged
@@ -83,6 +84,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5922462275137417968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 583366533799012725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 354e94fb232b38e4c8775c60d5b03b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_openAnimationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_closeAnimationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_animationSpeed: 0.1
+  m_StartValue: {x: 0, y: 0, z: 0}
+  m_EndValue: {x: 0.1, y: 0.1, z: 0.1}
+  m_state: 1
 --- !u!1 &6273149680806193804
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,5 +255,5 @@ Transform:
   - {fileID: 5619498559754180260}
   - {fileID: 7054182379691547511}
   m_Father: {fileID: 0}
-  m_RootOrder: 38
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

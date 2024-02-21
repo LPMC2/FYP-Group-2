@@ -5,12 +5,12 @@ using UnityEngine;
 public class ShooterBehaviour : MonoBehaviour
 {
     [SerializeField] private ShootType bulletType;
-    [SerializeField] private GameObject originShooter;
-    [SerializeField] private GameObject shootObject;
+    [SerializeField] private List<GameObject> m_launchPositionObjects =new List<GameObject>();
+    [SerializeField] private List<GameObject> m_shootObject = new List<GameObject>();
     [SerializeField] private GameObject HeadObject;
     [SerializeField] private GameObject structure;
     public GameObject Structure { set { structure = value; } }
-    public GameObject ShootObject { get { return shootObject; } private set { shootObject = value; } }
+    public GameObject ShootObject { get { return arrayBehaviour.GetRandomObjectFromList(m_shootObject); }  }
     [SerializeField] private float preFireCd = 0.1f;
     [SerializeField] private float shootingSpeed = 1f;
     [SerializeField] private float objectSpeed = 1f;
@@ -18,7 +18,7 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private int shootCount = 1;
     [SerializeField] private float shootSpeedPerCount = 0.1f;
     [SerializeField] private float rotateDuration = 1f;
-    [SerializeField] private bool isActive = false;
+    [SerializeField] private bool isActive = true;
     [SerializeField] private float range = 10f;
     [SerializeField] private GameObject target;
     [SerializeField] private float damageMultiplier = 1f;
@@ -35,11 +35,12 @@ public class ShooterBehaviour : MonoBehaviour
     private bool targetLocked = false;
     private Quaternion targetRotation; // Store the target rotation
     private GameObject rotateObject;
+    [SerializeField] private bool isDebug = false;
     private void Awake()
     {
-        if (originShooter == null)
+        if (m_launchPositionObjects.Count == 0)
         {
-            originShooter = gameObject;
+            m_launchPositionObjects.Add(gameObject);
         }
     }
 
@@ -131,6 +132,7 @@ public class ShooterBehaviour : MonoBehaviour
     {
         Collider[] collidersArray = Physics.OverlapSphere(transform.position, range, targetLayer);
         List<Collider> colliders = new List<Collider>(collidersArray);
+        arrayBehaviour.DebugList(colliders, "Before:", isDebug);
         test = colliders;
         if (TeamBehaviour.Singleton != null)
         {
@@ -138,6 +140,7 @@ public class ShooterBehaviour : MonoBehaviour
             if (teamID != -1)
             {
                 colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
+                arrayBehaviour.DebugList(colliders, "After:", isDebug);
             }
         }
         if (colliders.Count > 0)
@@ -289,18 +292,23 @@ public class ShooterBehaviour : MonoBehaviour
         currentTarget = null;
         isRotating = false;
     }
+    private GameObject RandomLaunchPositionObj()
+    {
+        return arrayBehaviour.GetRandomObjectFromList(m_launchPositionObjects);
+    }
     private void FireBullet(ProjectileType projectileType, GameObject owner = null)
     {
+        GameObject targetObj = RandomLaunchPositionObj();
         if (fireParticleEffect != null)
         {
-            GameObject particle = Instantiate(fireParticleEffect, originShooter.transform.position, Quaternion.identity);
+            GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, Quaternion.identity);
         }
         if(audioSource != null && fireSound != null)
         {
             audioSource.clip = fireSound;
             audioSource.Play();
         }
-        GameObject bullet = Instantiate(shootObject, originShooter.transform.position, Quaternion.identity);
+        GameObject bullet = Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
         Vector3 relativePos = target.transform.position - bullet.transform.position;
         Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         bullet.transform.rotation = rotation;

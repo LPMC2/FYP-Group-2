@@ -22,31 +22,77 @@ public class LeadershipBehaviour : MonoBehaviour
     private List<Collider> inRangedTeamMembers = new List<Collider>();
     private bool isLeading = false;
     private bool isGathering = false;
+    GameObject areaEffect;
+    ScaleAnimationCoroutineBehaviour scaleAnimation;
+    private void OnDestroy()
+    {
+        Destroy(areaEffect);
+    }
     private void Start()
     {
         teamBehaviour = TeamBehaviour.Singleton;
+        areaEffect = Instantiate(pointedAreaEffectPrefab, transform.position, Quaternion.identity);
+        scaleAnimation = areaEffect.transform.GetChild(0).GetComponent<ScaleAnimationCoroutineBehaviour>();
     }
+    Vector3 point = Vector3.zero;
+    GameObject hitObj;
     private void Update()
     {
+        RaycastHit hitPos;
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hitPos, m_ActivateDistance, lead_ContactLayer))
+        {
+            point = hitPos.point;
+            if (hitPos.collider.GetComponent<IDamageable>() != null)
+            {
+                hitObj = hitPos.collider.gameObject;
+            } else
+            {
+                hitObj = null;
+            }
+        }
+        
         if (playerInput == null && transform.root.gameObject != gameObject && transform.root.GetComponent<InputManager>() != null)
         {
             teamId = teamBehaviour.GetTeamID(transform.root.gameObject);
             playerInput = transform.root.GetComponent<InputManager>();
         }
-        SearchingFriendly();
         if (playerInput.LeftMouseClick)
         {
-            isLeading = true;
+            areaEffect.transform.position = point;
+            if (!isLeading)
+            {
+                scaleAnimation.StartAnimation();
+                areaEffect.transform.localScale = new Vector3(1f, 1f, 1f);
+                isLeading = true;
+            }
         } else if(!playerInput.LeftMouseClick && isLeading)
         {
+            scaleAnimation.StartAnimation();
             isLeading = false;
             Lead();
         }
         if(playerInput.RightMouseClick)
         {
-            Gather();
-            
+            SearchingFriendly();
+            if (!isGathering)
+            {
+                scaleAnimation.StartAnimation();
+                isGathering = true;
+            }
+            areaEffect.transform.position = playerInput.transform.position;
+            areaEffect.transform.localScale = new Vector3(m_GatherRadius, 1f, m_GatherRadius);
+        } else
+        {
+            if (isGathering)
+            {
+                isGathering = false;
+                if (areaEffect != null)
+                {
+                    scaleAnimation.StartAnimation();
+                }
+            }
         }
+        Gather();
     }
     private void SearchingFriendly()
     {
@@ -70,24 +116,34 @@ public class LeadershipBehaviour : MonoBehaviour
     }
     private void Gather()
     {
-        foreach(Collider gameObject in inRangedTeamMembers)
-        {
-            NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
-            navMeshAgent.SetDestination(transform.root.position);
-        }
-    }
-    private void Lead()
-    {
-        RaycastHit hitPos;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hitPos, m_ActivateDistance, lead_ContactLayer))
-        {
-            Vector3 point = hitPos.point;
+
             foreach (Collider gameObject in inRangedTeamMembers)
             {
                 NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
-                navMeshAgent.SetDestination(point);
+                navMeshAgent.SetDestination(transform.root.position);
             }
+        
+    }
+    private void SetAIState(EnemyController enemyController)
+    {
+        enemyController.ChangeAIState(AIState.State.Attack);
+        enemyController.IsControl = true;
+    }
+    private void SetAIAggro(EnemyController enemyController, GameObject target)
+    {
+        enemyController.setAggro(target);
+    }
+    private void Lead()
+    {
+
+        foreach (Collider gameObject in inRangedTeamMembers)
+        {
+            SetAIState(gameObject.GetComponent<EnemyController>());
+            NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+            navMeshAgent.SetDestination(point);
         }
+        inRangedTeamMembers.Clear();
+
     }
 
 
