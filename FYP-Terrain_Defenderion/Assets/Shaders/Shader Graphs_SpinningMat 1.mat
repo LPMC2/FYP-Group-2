@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Dissolve
-  m_Shader: {fileID: -6465566751694194690, guid: bffea91c565bc444998a73ad3e3d8017, type: 3}
+  m_Name: Shader Graphs_SpinningMat 1
+  m_Shader: {fileID: -6465566751694194690, guid: 0c3f5fb1bfde0fc4f80cbc04d44dd48e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,6 +23,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: 8896db8211ca441be9c09aa72d5ccd98, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -37,15 +41,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DissolveOutline: 0.04
-    - _DissolveValue: 0.464
+    - _FadeValue: 1
+    - _NoiseValue: 0.5
+    - _Power: 2.08
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _SpinSpeed: 0.5
     m_Colors:
-    - _Color: {r: 0.002731743, g: 0.09989874, b: 0.66538745, a: 0.003921569}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 0}
+    - _Emmision: {r: 7.372549, g: 0.0000002929588, b: 0, a: 0}
+    - _Fresnel_Color: {r: 4.0162296, g: 0.039325174, b: 0, a: 0}
+    - _LineColor: {r: 1, g: 0.017761573, b: 0, a: 0}
+    - _Main_Color: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &2986191381006210589
+--- !u!114 &2883866025491290714
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

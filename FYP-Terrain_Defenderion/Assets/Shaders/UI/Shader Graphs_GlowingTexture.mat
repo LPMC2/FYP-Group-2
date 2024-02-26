@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Dissolve
-  m_Shader: {fileID: -6465566751694194690, guid: bffea91c565bc444998a73ad3e3d8017, type: 3}
+  m_Name: Shader Graphs_GlowingTexture
+  m_Shader: {fileID: -6465566751694194690, guid: 65389ee52c55e3849aae505cd59d1b21, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -23,6 +23,18 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _EmmisionMap:
+        m_Texture: {fileID: 2800000, guid: 844916cda8bfbcd4b84d48c3cc095fd8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTexture:
+        m_Texture: {fileID: 2800000, guid: 844916cda8bfbcd4b84d48c3cc095fd8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_81d044838835460ba48a570a6c6fa83e_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 0652033c1c374f849a9bebdec0f50c7c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -37,15 +49,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DissolveOutline: 0.04
-    - _DissolveValue: 0.464
+    - _EmmisionValue: 1.31
+    - _FadeContrast: 1.83
+    - _FadeValue: 0.241
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.002731743, g: 0.09989874, b: 0.66538745, a: 0.003921569}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 11.165439, g: 0, b: 0, a: 0}
+    - _Emmision: {r: 0, g: 0.36790228, b: 0.5204382, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &2986191381006210589
+--- !u!114 &7657077039983713177
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
