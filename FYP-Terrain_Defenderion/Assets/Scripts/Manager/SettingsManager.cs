@@ -143,16 +143,17 @@ public class SettingsManager : MonoBehaviour
     {
         settingsData.Settings.MainVolume.Value = value;
         m_MainSlider.DisplayText = Mathf.Ceil(value * 100).ToString();
-        foreach(AudioSource audioSource in GameObject.FindObjectsOfType<AudioSource>())
-        {
-            audioSource.volume = value;
-        }
+        //foreach(AudioSource audioSource in GameObject.FindObjectsOfType<AudioSource>())
+        //{
+        //    audioSource.volume = value;
+        //}
         SaveSettingsData();
     }
     public void UpdateMusicVolume(float value)
     {
         settingsData.Settings.MusicVolume.Value = value;
         m_MusicSlider.DisplayText = Mathf.Ceil(value*100).ToString();
+        AudioManager.Singleton.SetVolume(value);
         SaveSettingsData();
     }
     public void UpdatePovValue(float value, bool saveData = true)
