@@ -98,13 +98,20 @@ public class SettingsManager : MonoBehaviour
         JsonSerializer.SaveData(settingsData1, settingsLocation);
     }
     // Update is called once per frame
+    private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
+    private float cacheExpirationTimer; // Timer to track cache expiration
     void Update()
     {
-        if (File.Exists(settingsLocation) && !SettingsPanel.activeInHierarchy)
+        if (Time.time >= cacheExpirationTimer)
         {
-            UpdatePovValue(settingsData.GetData().POV.Value, false);
-            UpdateSensitivityValue(settingsData.GetData().Sensitivity.Value, false);
+            if (File.Exists(settingsLocation) && !SettingsPanel.activeInHierarchy)
+            {
+                UpdatePovValue(settingsData.GetData().POV.Value, false);
+                UpdateSensitivityValue(settingsData.GetData().Sensitivity.Value, false);
+            }
+            cacheExpirationTimer = Time.time + cacheExpirationTime;
         }
+       
     }
     public void SetGraphicsData(int index)
     {

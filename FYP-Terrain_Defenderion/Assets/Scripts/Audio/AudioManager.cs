@@ -14,11 +14,17 @@ public class AudioManager : MonoBehaviour
     public static float SoundEffectVolune { get { return SettingsManager.Singleton.SettingsData.Settings.MainVolume.Value; } }
     private static float audioVolume = 1f;
     public static float AudioVolume { get { return audioVolume; } set { audioVolume = value; } }
-    [SerializeField] private List<Audio> audios = new List<Audio>();
+    [SerializeField] private AudioSO audioSO;
     #region Audio Clip Getter
+    /// <summary>
+    /// Find requested Audio clip with name
+    /// </summary>
+    /// <param name="nameOfSound"></param>
+    /// <returns></returns>
     public AudioClip GetAudioClip(string nameOfSound)
     {
-        foreach(Audio audio in audios)
+        if (audioSO == null) return null;
+        foreach(Audio audio in audioSO.Audios)
         {
             if(audio.Name == nameOfSound)
             {
@@ -27,10 +33,35 @@ public class AudioManager : MonoBehaviour
         }
         return null;
     }
+    /// <summary>
+    /// Find requested audio clip with name but certain tag only for faster calculation
+    /// </summary>
+    /// <param name="nameOfSound"></param>
+    /// <param name="includedTag"></param>
+    /// <returns></returns>
+    public AudioClip GetAudioClip(string nameOfSound, Audio.Tag includedTag)
+    {
+        if (audioSO == null) return null;
+        foreach (Audio audio in audioSO.Audios)
+        {
+            if (audio.AudioTag != includedTag) continue;
+            if (audio.Name == nameOfSound)
+            {
+                return audio.Clip;
+            }
+        }
+        return null;
+    }
+    /// <summary>
+    /// Get all audio clips within a certain tag and returns with a list
+    /// </summary>
+    /// <param name="nameOfTag"></param>
+    /// <returns></returns>
     public List<AudioClip> GetAudioClipsFromTag(Audio.Tag nameOfTag)
     {
+        if (audioSO == null) return null;
         List<AudioClip> audioClips = new List<AudioClip>();
-        foreach(Audio audio in audios)
+        foreach(Audio audio in audioSO.Audios)
         {
             if(audio.AudioTag == nameOfTag)
             {
@@ -126,20 +157,5 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
-    [System.Serializable]
-    public class Audio
-    {
-        [SerializeField] private string m_Name;
-        public string Name { get { return m_Name; } }
-        [SerializeField] private AudioClip m_audioClip;
-        public AudioClip Clip { get { return m_audioClip; } }
-        [SerializeField] private Tag m_audioTag;
-        public Tag AudioTag { get { return m_audioTag; } }
-        public enum Tag
-        {
-            DEFAULT,
-            MUSIC,
-            SOUND_EFFECT
-        }
-    }
+   
 }
