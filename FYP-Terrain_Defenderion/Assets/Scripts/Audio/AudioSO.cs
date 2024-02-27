@@ -22,6 +22,7 @@ public class Audio
     {
         DEFAULT,
         MUSIC,
-        SOUND_EFFECT
+        SOUND_EFFECT,
+        UI
     }
 }
