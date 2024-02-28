@@ -401,7 +401,7 @@ public static class StructureSerializer
             utility.transform.SetParent(structure.transform);
             utility.GetComponent<Collider>().isTrigger = true;
         }
-        Debug.Log("Count: " + count);
+       
         return structure;
     }
     public static Sprite LoadSpriteFromFile(string filePath)

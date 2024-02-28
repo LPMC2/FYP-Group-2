@@ -44,7 +44,7 @@ namespace InputDeviceControl.Manager
             }
             if (state)
             {
-                Debug.Log("Device State:" + deviceState);
+                //Debug.Log("Device State:" + deviceState);
                 CursorBehaviour.StaticControlCursor(true);
             } else
             CursorBehaviour.StaticControlCursor(deviceState);

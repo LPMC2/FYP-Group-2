@@ -18,6 +18,7 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private int shootCount = 1;
     [SerializeField] private float shootSpeedPerCount = 0.1f;
     [SerializeField] private float rotateDuration = 1f;
+    [SerializeField] private Quaternion rotateOffset = Quaternion.identity;
     [SerializeField] private bool isActive = true;
     [SerializeField] private float range = 10f;
     [SerializeField] private GameObject target;
@@ -79,7 +80,7 @@ public class ShooterBehaviour : MonoBehaviour
             }
             if (target != null && IsTargetInRange(target))
             {
-                Quaternion newRotation = Quaternion.LookRotation( target.transform.position - rotateObject.transform.position);
+                Quaternion newRotation = Quaternion.LookRotation( target.transform.position - rotateObject.transform.position) * rotateOffset;
                 if (isRotating)
                 {
                     if (mainTargetRotation != newRotation)
@@ -113,8 +114,8 @@ public class ShooterBehaviour : MonoBehaviour
                     {
                         isCooldown = false;
                         cooldownTimer = 0f;
-                        targetRotation = newRotation;
-                        mainTargetRotation = newRotation;
+                        targetRotation = newRotation ;
+                        mainTargetRotation = newRotation ;
                         isRotating = true;
                         StartCoroutine(RotateToTargetCoroutine());
                     }
@@ -204,13 +205,13 @@ public class ShooterBehaviour : MonoBehaviour
     float rotationTime = 0f;
     private IEnumerator RotateToTargetCoroutine()
     {
-       rotationTime = 0f;
+        rotationTime = 0f;
        startRotation = rotateObject.transform.rotation;
        while (rotationTime < rotateDuration && isRotating)
        {
-
-          rotationTime += Time.deltaTime;
-          float t = rotationTime / rotateDuration;
+            rotationTime += Time.deltaTime;
+            if (isDebug) { Debug.Log("Rotating: " + rotationTime + "/" + rotateDuration); }
+            float t = rotationTime / rotateDuration;
               
           Quaternion newRotation = Quaternion.Lerp(startRotation, mainTargetRotation, t);
           rotateObject.transform.rotation = newRotation;
@@ -219,6 +220,7 @@ public class ShooterBehaviour : MonoBehaviour
     
        if (isRotating)
       {
+            if(isDebug) { Debug.Log("Target Locked and Prepare to fire"); }
           isRotating = false;
             isCD = true;
             targetLocked = true;

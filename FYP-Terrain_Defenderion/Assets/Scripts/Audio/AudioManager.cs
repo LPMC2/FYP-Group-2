@@ -11,10 +11,19 @@ public class AudioManager : MonoBehaviour
         if(audioSource != null)
         audioSource.volume = value;
     }
-    public static float SoundEffectVolune { get { return SettingsManager.Singleton.SettingsData.Settings.MainVolume.Value; } }
+    public void SetSFXVolume(float value)
+    {
+        if(sfxAudioSource != null)
+        {
+            sfxAudioSource.volume = value;
+        }
+    }
+    public static float SoundEffectVolume { get { return SettingsManager.Singleton.SettingsData.Settings.MainVolume.Value; } }
+    public static float MusicVolune { get { return SettingsManager.Singleton.SettingsData.Settings.MusicVolume.Value; } }
     private static float audioVolume = 1f;
     public static float AudioVolume { get { return audioVolume; } set { audioVolume = value; } }
     [SerializeField] private AudioSO audioSO;
+    [SerializeField] private float m_LoopDelay = 3f;
     #region Audio Clip Getter
     /// <summary>
     /// Find requested Audio clip with name
@@ -71,16 +80,20 @@ public class AudioManager : MonoBehaviour
         return audioClips;
     }
     #endregion
+
     public float fadeDuration = 1.0f;
 
     private float initialVolume;
     private float fadeTimer;
-
+    private AudioSource sfxAudioSource;
     // Start is called before the first frame update
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-
+        sfxAudioSource = new GameObject("SFX Manager").AddComponent<AudioSource>();
+        sfxAudioSource.transform.SetParent(transform);
+        sfxAudioSource.priority = 130;
+        sfxAudioSource.volume = 1f;
     }
     public void Awake()
     {
@@ -91,19 +104,58 @@ public class AudioManager : MonoBehaviour
     {
         audioSource.volume = value;
     }
+
+    #region Play/Stop Audio Functions
+    public void RandomPlayOneShotSound(List<string> listOfAudio)
+    {
+        int index = Mathf.CeilToInt(Random.Range(0, listOfAudio.Count));
+        AudioClip clip = GetAudioClip(listOfAudio[index]);
+        if(clip != null)
+        {
+            PlayOneShotSound(clip);
+        } else
+        {
+#if UNITY_EDITOR
+            Debug.LogError("Error: Unable to find " + listOfAudio[index]);
+#endif
+        }
+    }
     public void PlayOneShotSound(string nameOfAudio)
     {
         AudioClip audioClip = GetAudioClip(nameOfAudio);
         if (audioClip != null)
         {
-            audioSource.PlayOneShot(audioClip, SoundEffectVolune);
+            sfxAudioSource.PlayOneShot(audioClip);
+        }
+    }
+    public void PlayOneShotSound(string nameOfAudio, Vector3 position)
+    {
+        AudioClip audioClip = GetAudioClip(nameOfAudio);
+        if (audioClip != null)
+        {
+            AudioSource audioSource = new GameObject("Sound Effect: " + nameOfAudio).AddComponent<AudioSource>();
+            audioSource.transform.position = position;
+            audioSource.volume = sfxAudioSource.volume;
+            audioSource.PlayOneShot(audioClip);
+            Destroy(audioSource.gameObject, audioClip.length);
+        }
+    }
+    public void PlayOneShotSound(AudioClip audioClip, Vector3 position)
+    {
+        if (audioClip != null)
+        {
+            AudioSource audioSource = new GameObject("Sound Effect: " + audioClip.name).AddComponent<AudioSource>();
+            audioSource.transform.position = position;
+            audioSource.volume = sfxAudioSource.volume;
+            audioSource.PlayOneShot(audioClip);
+            Destroy(audioSource.gameObject, audioClip.length);
         }
     }
     public void PlayOneShotSound(AudioClip clip)
     {
         if (clip != null)
         {
-            audioSource.PlayOneShot(clip, SoundEffectVolune);
+            sfxAudioSource.PlayOneShot(clip);
         }
     }
     public void PlayAudioNonRepeatable(string nameOfAudio)
@@ -121,6 +173,26 @@ public class AudioManager : MonoBehaviour
             audioSource.Play();
         }
     }
+    public void PlayOneShotLoop(AudioClip audioClip, Audio.Tag audioType)
+    {
+        StartCoroutine(PlayOneShotLoopIEnumerator(audioClip, audioType));
+    }
+    private IEnumerator PlayOneShotLoopIEnumerator(AudioClip audioClip, Audio.Tag audioType)
+    {
+        Debug.Log("Start");
+        yield return new WaitForSeconds(.01f);
+        while (true)
+        {
+            Debug.Log("Loop");
+            if (audioType == Audio.Tag.MUSIC) {
+                audioSource.PlayOneShot(audioClip, MusicVolune);
+            } else
+            {
+                audioSource.PlayOneShot(audioClip, SoundEffectVolume);
+            }
+            yield return new WaitForSeconds(audioClip.length + m_LoopDelay);
+        }
+    }
     public IEnumerator ResetAndPlay(AudioClip target)
     {
         StopMusic();
@@ -135,6 +207,7 @@ public class AudioManager : MonoBehaviour
         fadeTimer = fadeDuration;
         initialVolume = audioSource.volume;
     }
+    #endregion
 
     private void Update()
     {

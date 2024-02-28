@@ -10,6 +10,10 @@ using InputDeviceControl.Manager;
 public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Singleton;
+    private bool isActive = true;
+    private bool forceVisibleCursor = false;
+    public bool VisibleCursor { get {return forceVisibleCursor; } set { forceVisibleCursor = value; } }
+    public bool ActiveState { get { return isActive; } set { isActive = value; } }
     public static GameObject Obj;
     [SerializeField] private string location = "/Settings/Data";
     [SerializeField] private string dataName = "SettingsData";
@@ -42,16 +46,19 @@ public class SettingsManager : MonoBehaviour
     }
     private void OnClick(InputAction.CallbackContext context)
     {
-        
+        if (!isActive) return;
         menuAnimation.OpenCloseObjectAnimation();
-        InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
+        if(!forceVisibleCursor)
+            InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
         bg.SetActive(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
     public void OnClick()
     {
+        if (!isActive) return;
         menuAnimation.OpenCloseObjectAnimation();
-        InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
+        if (!forceVisibleCursor)
+            InputDeviceManager.SetDevice(menuAnimation.animationParts.GetStatus());
         bg.SetActive(menuAnimation.animationParts.GetStatus());
         SetSettingsData();
     }
@@ -149,18 +156,19 @@ public class SettingsManager : MonoBehaviour
     public void UpdateMainVolume(float value)
     {
         settingsData.Settings.MainVolume.Value = value;
-        m_MainSlider.DisplayText = Mathf.Ceil(value * 100).ToString();
+        m_MainSlider.DisplayText = Mathf.Ceil(value).ToString();
         //foreach(AudioSource audioSource in GameObject.FindObjectsOfType<AudioSource>())
         //{
         //    audioSource.volume = value;
         //}
+        AudioManager.Singleton.SetSFXVolume(value/100f);
         SaveSettingsData();
     }
     public void UpdateMusicVolume(float value)
     {
         settingsData.Settings.MusicVolume.Value = value;
-        m_MusicSlider.DisplayText = Mathf.Ceil(value*100).ToString();
-        AudioManager.Singleton.SetVolume(value);
+        m_MusicSlider.DisplayText = Mathf.Ceil(value).ToString();
+        AudioManager.Singleton.SetVolume(value/100f);
         SaveSettingsData();
     }
     public void UpdatePovValue(float value, bool saveData = true)

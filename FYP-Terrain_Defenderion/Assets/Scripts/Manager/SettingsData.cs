@@ -6,8 +6,8 @@ using TMPro;
 [System.Serializable]
 public class SettingsData
 {
-    [SerializeField] private DataType<float> m_MusicVolume = new DataType<float>(0.5f);
-    [SerializeField] private DataType<float> m_MainVolume = new DataType<float>(0.5f);
+    [SerializeField] private DataType<float> m_MusicVolume = new DataType<float>(50f);
+    [SerializeField] private DataType<float> m_MainVolume = new DataType<float>(50f);
     [SerializeField] private DataType<ScreenType> m_ScreenType = new DataType<ScreenType>(ScreenType.FullScreen);
     [SerializeField] private DataType<float> m_POV = new DataType<float>(60f);
     [SerializeField] private DataType<float> m_Sensitivity = new DataType<float>(1f);

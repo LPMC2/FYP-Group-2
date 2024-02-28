@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Dissolve
-  m_Shader: {fileID: -6465566751694194690, guid: bffea91c565bc444998a73ad3e3d8017, type: 3}
+  m_Name: Shader Graphs_Intersection2
+  m_Shader: {fileID: -6465566751694194690, guid: 33ba1cdf7ae082346b5b5be96b519ac8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -37,15 +37,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DissolveOutline: 0.04
-    - _DissolveValue: 0
+    - _Fresnel_Power: 1.98
+    - _IntersectionDepth: 1.26
+    - _Multy: 1.02
+    - _Offset: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.002731743, g: 0.09989874, b: 0.66538745, a: 0.003921569}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 0}
+    - _Emission: {r: 0, g: 0.8490566, b: 0.6063859, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &2986191381006210589
+--- !u!114 &1162768357682499082
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

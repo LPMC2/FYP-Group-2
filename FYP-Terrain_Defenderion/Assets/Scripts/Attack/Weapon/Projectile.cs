@@ -95,7 +95,7 @@ public class Projectile : MonoBehaviour
         }
         if (owner != null)
         {
-            Debug.Log(owner);
+            //Debug.Log(owner);
             this.owner = owner;
         }
         this.direction = direction;

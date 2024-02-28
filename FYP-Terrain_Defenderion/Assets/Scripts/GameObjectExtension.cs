@@ -65,6 +65,32 @@ public class GameObjectExtension : MonoBehaviour
         }
         return null;
     }
+    public static T[] FindChildObjectsOfType<T>(Transform parent)
+    {
+        // Create a list to store the found objects
+        var foundObjects = new List<T>();
+
+        // Loop through all child objects
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+
+            // Check if the child object has the specified component
+            var component = child.GetComponent<T>();
+            if (component != null)
+            {
+                // Add the found object to the list
+                foundObjects.Add(component);
+            }
+
+            // Recursively search for child objects
+            var childObjects = FindChildObjectsOfType<T>(child);
+            foundObjects.AddRange(childObjects);
+        }
+
+        // Return the array of found objects
+        return foundObjects.ToArray();
+    }
     public static void RemoveAllObjectsFromParent(Transform parent)
     {
         for(int i=0; i< parent.childCount; i++)

@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 7571243595762885555}
   - component: {fileID: 2567944504984440502}
   - component: {fileID: 8419736724880573677}
+  - component: {fileID: 6056944601013806817}
   m_Layer: 5
   m_Name: OptionsToggler
   m_TagString: Options
@@ -256,4 +257,29 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2567944504984440502}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6056944601013806817}
+        m_TargetAssemblyTypeName: AudioReferencer, Assembly-CSharp
+        m_MethodName: PlayOneShot
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: UIClick2
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6056944601013806817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7733053252877675822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 214d1df756ba9c746ae48febf44d143b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nameOfSound: 
