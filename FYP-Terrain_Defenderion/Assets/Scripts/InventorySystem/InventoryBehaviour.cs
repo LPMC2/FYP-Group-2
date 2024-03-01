@@ -952,15 +952,15 @@ public class InventoryBehaviour : MonoBehaviour
     private void OpenBag()
     {
         if (gridManager != null && gridManager.IsMenuOpen) return;
+        invBagOpened = !invBagOpened;
         if (gridManager != null)
         {
-            gridManager.Gridgenerator.BuildMode = invBagPanel.activeInHierarchy;
+            gridManager.Gridgenerator.BuildMode = !invBagOpened;
         }
-        if(gridGenerator != null)
+        if (gridGenerator != null)
         {
-            gridGenerator.BuildMode = invBagPanel.activeInHierarchy;
+            gridGenerator.BuildMode = !invBagOpened;
         }
-        invBagOpened = !invBagOpened;
         if (!useCustomOpenInvBagEvent)
         {
             invBagPanel.SetActive(invBagOpened);

@@ -24,9 +24,14 @@ namespace InputDeviceControl.Manager
             InputManager[] inputActions = GameObject.FindObjectsOfType<InputManager>();
             FlightController[] flightControllers = GameObject.FindObjectsOfType<FlightController>();
             InventoryBehaviour inventoryBehaviour = GameObject.FindObjectOfType<InventoryBehaviour>();
+            GridGenerator gridGenerator = GameObject.FindObjectOfType<GridGenerator>();
             if(inventoryBehaviour != null)
             {
                 inventoryBehaviour.enabled = !state;
+            }
+            if(gridGenerator!= null)
+            {
+                gridGenerator.enabled = !state;
             }
             foreach(InputManager inputManager in inputActions)
             {
