@@ -10,7 +10,7 @@ public class SettingsData
     [SerializeField] private DataType<float> m_MainVolume = new DataType<float>(50f);
     [SerializeField] private DataType<ScreenType> m_ScreenType = new DataType<ScreenType>(ScreenType.FullScreen);
     [SerializeField] private DataType<float> m_POV = new DataType<float>(60f);
-    [SerializeField] private DataType<float> m_Sensitivity = new DataType<float>(1f);
+    [SerializeField] private DataType<float> m_Sensitivity = new DataType<float>(.5f);
     public DataType<float> MusicVolume { get { return m_MusicVolume; }set { m_MusicVolume = value; } }
     public DataType<float> MainVolume { get { return m_MainVolume; } set { m_MainVolume = value; } }
     public DataType<ScreenType> screenType { get { return m_ScreenType; } set { m_ScreenType = value; } }
