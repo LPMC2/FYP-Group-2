@@ -29,6 +29,7 @@ public class TimeManager : NetworkBehaviour
     [Header("Debug Settings")]
     [SerializeField] private bool debugActive = false;
     [SerializeField] private bool debugEndTimer = false;
+    [SerializeField] private bool isInfinite = false;
     public delegate void CustomEvent();
     public event CustomEvent EndTimeEvent;
     private void Start()
@@ -79,6 +80,11 @@ public class TimeManager : NetworkBehaviour
                 ActiveTimer();
                 debugActive = false;
             }
+            if(isInfinite)
+        {
+            m_TimeRemain.Value = Mathf.Infinity;
+            isInfinite = false;
+        }
             if(debugEndTimer)
             {
                 EndTimeInvoke();

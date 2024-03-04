@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 public class StructureManager : MonoBehaviour
 {
+    public static StructureManager Singleton;
     private int currentStructure;
     public int CurrentStructure { get { return currentStructure; } set { currentStructure = value; } }
     [Header("Note: Must contains StrcutureStorage data inside")]
@@ -21,8 +22,14 @@ public class StructureManager : MonoBehaviour
     [SerializeField] private int maxStructures = 10;
     [SerializeField] private string[] structurePaths;
     [SerializeField] private Camera captureCamera;
+    [SerializeField] private GameObject EnemyStructurePosition;
+    public static GameObject EnemyStructurePos { get { return Singleton.EnemyStructurePosition; } }
     public StructurePooling[] structurePoolings { get; private set; }
     private GameObject structureStorage;
+    private void Awake()
+    {
+        Singleton = this;
+    }
     private void Start()
     {
         
@@ -116,11 +123,13 @@ public class StructureManager : MonoBehaviour
         }
         return null;
     }
+    GameObject main;
+    public static GameObject MainPool { get { return Singleton.main; } }
     public virtual void LoadAllStructures()
     {
         if (structureStorage != null) return;
         //Place to rewrite into multiplayer
-        GameObject main = new GameObject("Structure Storage");
+        main = new GameObject("Structure Storage");
         foreach(StructurePooling structurePooling in structurePoolings)
         {
             GameObject child = new GameObject(structurePooling.name);
