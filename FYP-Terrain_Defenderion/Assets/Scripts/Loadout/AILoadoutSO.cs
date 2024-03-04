@@ -5,9 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AILoadout", menuName = "AI/Create AI Loadout(Structure)")]
 public class AILoadoutSO : ScriptableObject
 {
-
-    public List<StructureData> structureDatas = new List<StructureData>();
-
+    [SerializeField]
+    private List<StructureData> structureDatas = new List<StructureData>();
+    public List<StructureData> StructureDatas { get { return structureDatas; } }
     public void SaveData()
     {
         if (StructureManager.Singleton == null || StructureManager.MainPool == null) {
