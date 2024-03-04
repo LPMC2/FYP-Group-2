@@ -15,7 +15,7 @@ public class AILoadoutSOEditor : Editor
         {
             data.SaveData();
         }
-        if(GUILayout.Button("Test Load Data"))
+        if(GUILayout.Button("Load Data"))
         {
             data.LoadData();
         }

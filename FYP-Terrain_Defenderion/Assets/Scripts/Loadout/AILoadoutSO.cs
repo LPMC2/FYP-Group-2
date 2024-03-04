@@ -7,22 +7,22 @@ public class AILoadoutSO : ScriptableObject
 {
 
     public List<StructureData> structureDatas = new List<StructureData>();
-    
+
     public void SaveData()
     {
-        if(StructureManager.Singleton ==null || StructureManager.MainPool == null) {
+        if (StructureManager.Singleton == null || StructureManager.MainPool == null) {
 #if UNITY_EDITOR
-            Debug.LogError("Cannot find the structure MainPool!");
+            Debug.LogError("Cannot find the MainPool!");
+#endif
             return;
-            #endif
         }
-            if(structureDatas.Count > 0) { structureDatas.Clear(); }
+        if (structureDatas.Count > 0) { structureDatas.Clear(); }
         int index = 0;
-        foreach(Transform child in StructureManager.MainPool.transform)
+        foreach (Transform child in StructureManager.MainPool.transform)
         {
-            foreach(Transform structure in child.transform)
+            foreach (Transform structure in child.transform)
             {
-                if(structure.gameObject.activeInHierarchy)
+                if (structure.gameObject.activeInHierarchy)
                 {
                     structureDatas.Add(new StructureData(index, structure.transform.position, structure.localRotation));
 
@@ -30,19 +30,57 @@ public class AILoadoutSO : ScriptableObject
             }
             index++;
         }
-        
+
     }
     public void LoadData()
     {
-        if(StructureManager.Singleton == null || StructureManager.MainPool == null) { return; }
-        foreach(StructureData structure in structureDatas)
+        if (StructureManager.Singleton == null || StructureManager.MainPool == null) {
+#if UNITY_EDITOR
+            Debug.LogError("Cannot find the MainPool!");
+#endif
+            return;
+        }
+        foreach (StructureData structure in structureDatas)
         {
             GameObject newStructure = Instantiate(StructureManager.Singleton.structurePoolings[structure.id].structures[0], StructureManager.EnemyStructurePos.transform.localPosition, structure.rotation, StructureManager.EnemyStructurePos.transform);
             newStructure.transform.position = -structure.position;
             newStructure.SetActive(true);
+            TeamBehaviour.Singleton.TeamManager[1].AddMember(newStructure);
+            SaveSpawner(newStructure);
         }
-        StructureManager.EnemyStructurePos.transform.eulerAngles = new Vector3(0f, 180f, 0f);
+        StructureManager.EnemyStructurePos.transform.eulerAngles = new Vector3(0f, 0, 0f);
     }
+    List<SpawnerBehaviour> spawnerBehaviours = new List<SpawnerBehaviour>();
+    private void SaveSpawner(GameObject target)
+    {
+        foreach (Transform child in target.transform)
+        {
+            SpawnerBehaviour spawnerBehaviour = child.GetComponent<SpawnerBehaviour>();
+            if (spawnerBehaviour != null)
+            {
+                spawnerBehaviours.Add(spawnerBehaviour);
+                spawnerBehaviour.gameObject.GetComponent<Collider>().enabled = true;
+                spawnerBehaviour.gameObject.GetComponent<Collider>().isTrigger = false;
+            }
+        }
+
+    }
+    public void LoadSpawner()
+    {
+
+
+
+        foreach (SpawnerBehaviour spawnerBehaviour in spawnerBehaviours)
+        {
+            if (spawnerBehaviour)
+            {
+                TeamBehaviour.Singleton.TeamManager[1].AddMember(spawnerBehaviour.gameObject);
+                spawnerBehaviour.StartSpawn(1);
+            }
+        }
+    }
+
+}
     [System.Serializable]
     public class StructureData
     {
@@ -56,4 +94,4 @@ public class AILoadoutSO : ScriptableObject
             rotation = rot;
         }
     }
-}
+

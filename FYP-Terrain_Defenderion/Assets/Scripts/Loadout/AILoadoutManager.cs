@@ -16,9 +16,23 @@ public class AILoadoutManager : MonoBehaviour
     public void LoadData(int id)
     {
         Data.LoadData(id);
+        SetTurretTeam();
     }
     public void LoadData()
     {
         Data.LoadData(m_loadoutID);
+        SetTurretTeam();
+    }
+    public void SetSpawner()
+    {
+        Data.SetSpawner(m_loadoutID);
+    }
+    public void SetTurretTeam()
+    {
+        ShooterBehaviour[] shooterBehaviours =  StructureManager.EnemyStructurePos.GetComponentsInChildren<ShooterBehaviour>();
+        foreach(ShooterBehaviour child in shooterBehaviours)
+        {
+            TeamBehaviour.Singleton.TeamManager[1].AddMember(child.gameObject);
+        }
     }
 }
