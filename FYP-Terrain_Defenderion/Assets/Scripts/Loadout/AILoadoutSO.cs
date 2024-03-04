@@ -30,7 +30,11 @@ public class AILoadoutSO : ScriptableObject
             }
             index++;
         }
-
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+        UnityEditor.EditorUtility.SetDirty(this);
+        UnityEditor.AssetDatabase.SaveAssets();
+#endif
     }
     public void LoadData()
     {
