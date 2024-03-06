@@ -210,7 +210,7 @@ public class InventoryBehaviour : MonoBehaviour
     private void dropItem()
     {
         GameObject dropBaseObj = Instantiate(dropItemPrefab, gameObject.transform.position + dropOffset, Quaternion.identity);
-        GameObject dropItem = Instantiate(itemData.item[inventory.slot[selectedSlot].getId()].itemObject,dropBaseObj.transform.position, Quaternion.identity);
+        GameObject dropItem = Instantiate(itemData.item[inventory.slot[selectedSlot].getId()].model,dropBaseObj.transform.position, Quaternion.identity);
         dropItem.transform.SetParent(dropBaseObj.transform);
         Collider itemCollider = dropItem.GetComponent<Collider>();
         if(itemCollider != null)
@@ -376,13 +376,13 @@ public class InventoryBehaviour : MonoBehaviour
             case InventoryType.item:
                 if (item != -1 && item < itemData.item.Length)
                 {
-                    inventory.slot[id].item.SetItem(itemData.item[item].itemObject);
+                    inventory.slot[id].item.SetItem(itemData.item[item].model);
                 }
             break;
             case InventoryType.block:
                 if (item != -1 && item < blockData.blockData.Length)
                 {
-                    inventory.slot[id].item.SetItem(blockData.blockData[item].blockModel);
+                    inventory.slot[id].item.SetItem(blockData.blockData[item].model);
 
                 }
             break;
@@ -460,7 +460,7 @@ public class InventoryBehaviour : MonoBehaviour
                 case InventoryType.item:
                     if (invId >= 0)
                     {
-                        targetItem = Instantiate(itemData.item[invId].itemObject, placeItemLocation.transform.position, Quaternion.identity);
+                        targetItem = Instantiate(itemData.item[invId].model, placeItemLocation.transform.position, Quaternion.identity);
                     }
                      break;
                 case InventoryType.block:
@@ -472,16 +472,16 @@ public class InventoryBehaviour : MonoBehaviour
                     }
                     if (blockData.blockData[invId].isUtility == false)
                     {
-                        GameObject gameObject = blockData.blockData[invId].blockModel;
+                        GameObject gameObject = blockData.blockData[invId].model;
                         targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
                         targetItem.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                         gridManager.PlaceBlockObject = gameObject;
                     }
                     if(blockData.blockData[invId].isUtility == true)
                     {
-                        if (blockData.blockData[invId].blockModel != null)
+                        if (blockData.blockData[invId].model != null)
                         {
-                            GameObject gameObject = blockData.blockData[invId].blockModel;
+                            GameObject gameObject = blockData.blockData[invId].model;
                             targetItem = Instantiate(gameObject, placeItemLocation.transform.position, Quaternion.identity);
                         }
                         else
@@ -507,8 +507,8 @@ public class InventoryBehaviour : MonoBehaviour
                 targetItem.transform.SetParent(placeItemLocation.transform);
                 if (inventoryType == InventoryType.item)
                 {
-                    targetItem.transform.localPosition = itemData.item[invId].itemObject.transform.position;
-                    targetItem.transform.localRotation = itemData.item[invId].itemObject.transform.rotation;
+                    targetItem.transform.localPosition = itemData.item[invId].model.transform.position;
+                    targetItem.transform.localRotation = itemData.item[invId].model.transform.rotation;
                     //targetItem.transform.position += itemData.item[invId].itemObject.transform.position;
                 } else
                 {
@@ -551,17 +551,17 @@ public class InventoryBehaviour : MonoBehaviour
                     Image uiImg = instantiatedUI.GetComponent<Image>();
                     RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
                    
-                    if (itemData.item[inventory.slot[id].getId()].itemObject != null )
+                    if (itemData.item[inventory.slot[id].getId()].model != null )
                     {
                         //Capture Item and display on Slot UI
                         float width = rectTransform.rect.width * 2f;
                         float height = rectTransform.rect.height * 2f;
                         rectTransform.sizeDelta = new Vector2(width, height);
-                        GameObject captureItem = Instantiate(itemData.item[inventory.slot[id].getId()].itemObject);
+                        GameObject captureItem = Instantiate(itemData.item[inventory.slot[id].getId()].model);
                         float cameraSize = captureCamera.orthographicSize;
                         captureItem.transform.SetParent(captureCamera.transform);
-                        captureItem.transform.eulerAngles =new Vector3(313.390015f, 236.100006f, 0f);
-                        captureItem.transform.localPosition = Vector3.forward * 10 - new Vector3(0f,0.05f,0f);
+                        captureItem.transform.eulerAngles = itemData.item[inventory.slot[id].getId()].captureAngle;
+                        captureItem.transform.localPosition = Vector3.forward * 10 + itemData.item[inventory.slot[id].getId()].captureOffset;
                         if (displayText != null)
                         {
                             //Gun Specific Setup
@@ -605,15 +605,16 @@ public class InventoryBehaviour : MonoBehaviour
                     instantiatedUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                     RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
                     Image uiImg = instantiatedUI.GetComponent<Image>();
-                    if (blockData.blockData[inventory.slot[id].getId()].blockModel != null)
+                    if (blockData.blockData[inventory.slot[id].getId()].model != null)
                     {
                         float width = rectTransform.rect.width * 2.5f;
                         float height = rectTransform.rect.height * 2.5f;
                         rectTransform.sizeDelta = new Vector2(width, height);
-                        GameObject gameObject = Instantiate(blockData.blockData[invId].blockModel);
+                        GameObject gameObject = Instantiate(blockData.blockData[invId].model);
                         float cameraSize = gridManager.captureCamera.orthographicSize;
                         gameObject.transform.SetParent(gridManager.captureCamera.transform);
-                        gameObject.transform.localPosition = Vector3.forward * 10;
+                        gameObject.transform.localPosition = Vector3.forward * 10 + blockData.blockData[inventory.slot[id].getId()].captureOffset;
+                        gameObject.transform.eulerAngles = blockData.blockData[inventory.slot[id].getId()].captureAngle;
                         gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
                         ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
 
@@ -634,7 +635,7 @@ public class InventoryBehaviour : MonoBehaviour
                     uiImg.preserveAspect = true;
                     SimpleTooltip simpleTooltip = SlotPlaceHolder.GetComponent<SimpleTooltip>();
                     if (simpleTooltip != null)
-                        simpleTooltip.infoLeft = blockData.blockData[inventory.slot[id].getId()].blockModel.name;
+                        simpleTooltip.infoLeft = blockData.blockData[inventory.slot[id].getId()].model.name;
                 }
             }
             if(inventoryType == InventoryType.Structure)
@@ -698,15 +699,16 @@ public class InventoryBehaviour : MonoBehaviour
         RectTransform rectTransform = instantiatedUI.GetComponent<RectTransform>();
         Image uiImg = instantiatedUI.GetComponent<Image>();
         uiImg.raycastTarget = false;
-        if (blockData.blockData[invId].blockModel != null)
+        if (blockData.blockData[invId].model != null)
         {
             float width = rectTransform.rect.width * 2.5f;
             float height = rectTransform.rect.height * 2.5f;
             rectTransform.sizeDelta = new Vector2(width, height);
-            GameObject gameObject = Instantiate(blockData.blockData[invId].blockModel);
+            GameObject gameObject = Instantiate(blockData.blockData[invId].model);
             float cameraSize = gridManager.captureCamera.orthographicSize;
             gameObject.transform.SetParent(gridManager.captureCamera.transform);
-            gameObject.transform.localPosition = Vector3.forward * 10;
+            gameObject.transform.localPosition = Vector3.forward * 10 + blockData.blockData[invId].captureOffset;
+            gameObject.transform.eulerAngles = blockData.blockData[invId].captureAngle;
             gridManager.captureCamera.orthographicSize = blockData.blockData[invId].captureOrthographicSize;
             ModelPictureSaver.CaptureAndSaveImage(gridManager.captureCamera, gameObject, captureSavePath, id.ToString(), true, true, 0.5f);
 
@@ -777,8 +779,8 @@ public class InventoryBehaviour : MonoBehaviour
                 break;
 
                 case InventoryType.block:
-                    if (blockData.blockData[invId].blockModel != null)
-                        itemName = blockData.blockData[invId].blockModel.name;
+                    if (blockData.blockData[invId].model != null)
+                        itemName = blockData.blockData[invId].model.name;
                     else
                     {
                         itemName = blockData.blockData[invId].blockTexture.name;
@@ -917,7 +919,7 @@ public class InventoryBehaviour : MonoBehaviour
                 if (inventoryType == InventoryType.block)
                 {
                     SetBlockSlotUI(itemID, slotObject, slotItem.transform);
-                    simpleTooltip.infoLeft = "&" +blockData.blockData[itemID].blockModel.name + "\n\n`Stats:" + "\n$Type: " + invMenu.MenuName  + "\n~Health: " + blockData.blockData[itemID].maxHealth + "\n!Token Cost: " + blockData.blockData[itemID].tokenCost + "\n\n`-Click to select-";
+                    simpleTooltip.infoLeft = "&" +blockData.blockData[itemID].model.name + "\n\n`Stats:" + "\n$Type: " + invMenu.MenuName  + "\n~Health: " + blockData.blockData[itemID].maxHealth + "\n!Token Cost: " + blockData.blockData[itemID].tokenCost + "\n\n`-Click to select-";
                     slotBehaviour.Initialize(this, itemID, SlotType.InventoryBag);
                 }
                 if(inventoryType == InventoryType.Structure)

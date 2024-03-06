@@ -329,8 +329,8 @@ public static class StructureSerializer
         {
             if (structureStorage[i].structureId >= 0)
             {
-                GameObject block = MonoBehaviour.Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
-                block.name = blockData.blockData[structureStorage[i].structureId].blockModel.name + ": " + i;
+                GameObject block = MonoBehaviour.Instantiate(blockData.blockData[structureStorage[i].structureId].model, Vector3.zero, Quaternion.identity);
+                block.name = blockData.blockData[structureStorage[i].structureId].model.name + ": " + i;
                 if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
                 {
                     block.transform.SetParent(structure.transform);

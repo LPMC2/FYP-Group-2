@@ -43,8 +43,8 @@ public class AmmoStoringBehaviour : MonoBehaviour
         {
             if (slot.getId() != -1)
             {
-                Debug.Log(ItemManager.ItemData.item[slot.getId()].itemObject);
-                GunController gunController = ItemManager.ItemData.item[slot.getId()].itemObject.GetComponent<GunController>();
+                Debug.Log(ItemManager.ItemData.item[slot.getId()].model);
+                GunController gunController = ItemManager.ItemData.item[slot.getId()].model.GetComponent<GunController>();
                 if (gunController != null)
                 {
                     AddAmmoStore(gunController, count);
@@ -59,7 +59,7 @@ public class AmmoStoringBehaviour : MonoBehaviour
         {
             if (ammoStoring.ID == inventory.SelectedSlot)
             {
-                if (ItemManager.ItemData.item[inventory.inventory.slot[inventory.SelectedSlot].getId()].itemObject.GetComponent<GunController>() != null)
+                if (ItemManager.ItemData.item[inventory.inventory.slot[inventory.SelectedSlot].getId()].model.GetComponent<GunController>() != null)
                 {
                     GunController gunController = target.GetComponent<GunController>();
                     if (gunController != null)

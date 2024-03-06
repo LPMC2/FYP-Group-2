@@ -776,7 +776,7 @@ public class GridManager : MonoBehaviour
                     {
                     if (name == null)
                     {
-                        inventoryBehaviour.StartFadeInText("Unable to afford " + blockData.blockData[currentBlockId].blockModel.name + ". Need " + -(tokenManager.getTokens() - cost) + " more tokens", Color.red);
+                        inventoryBehaviour.StartFadeInText("Unable to afford " + blockData.blockData[currentBlockId].model.name + ". Need " + -(tokenManager.getTokens() - cost) + " more tokens", Color.red);
                     } else
                     {
                         inventoryBehaviour.StartFadeInText("Unable to afford " + name + ". Need " + -(tokenManager.getTokens() - cost) + " more tokens", Color.red);
@@ -1158,8 +1158,8 @@ public class GridManager : MonoBehaviour
         {
             if (structureStorage[i].structureId >= 0)
             {
-                GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].blockModel, Vector3.zero, Quaternion.identity);
-                block.name = blockData.blockData[structureStorage[i].structureId].blockModel.name + ": " + i;
+                GameObject block = Instantiate(blockData.blockData[structureStorage[i].structureId].model, Vector3.zero, Quaternion.identity);
+                block.name = blockData.blockData[structureStorage[i].structureId].model.name + ": " + i;
                 if (structureStorage[i].isUtility == false && structureStorage[i].isDefense == false)
                 {
                     block.transform.SetParent(structure.transform);
@@ -1239,10 +1239,10 @@ public class GridManager : MonoBehaviour
             {
             if (structureStorage.structureId >= 0)
             {
-                GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].blockModel, Vector3.zero, Quaternion.identity, gridContainer.transform);
+                GameObject block = Instantiate(blockData.blockData[structureStorage.structureId].model, Vector3.zero, Quaternion.identity, gridContainer.transform);
                 block.transform.position = new Vector3(structureStorage.cellPos[0], structureStorage.cellPos[1], structureStorage.cellPos[2]);
                 if (block.GetComponent<BoxCollider>() != null)
-                    block.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, blockData.blockData[structureStorage.structureId].blockModel.transform.position.x + blockData.blockData[structureStorage.structureId].blockModel.transform.position.z);
+                    block.GetComponent<BoxCollider>().center += new Vector3(0f, 0f, blockData.blockData[structureStorage.structureId].model.transform.position.x + blockData.blockData[structureStorage.structureId].model.transform.position.z);
                 block.transform.eulerAngles = new Vector3(structureStorage.Rotation[0], structureStorage.Rotation[1], structureStorage.Rotation[2]);
                 block.transform.localScale = new Vector3(structureStorage.Scale[0], structureStorage.Scale[1], structureStorage.Scale[2]);
                 GridData gridData = block.AddComponent<GridData>();

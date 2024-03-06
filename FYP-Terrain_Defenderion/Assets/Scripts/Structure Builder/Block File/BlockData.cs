@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class BlockData
+public class BlockData : Item
 {
 
-    public GameObject blockModel;
-    [Header("Note: Block texture only applies when no block model found")]
+    [Header("Block Selection")]
+    [Tooltip("Note: Block texture only applies when no block model found")]
     public Material blockTexture;
     public int maxHealth = 1;
     public int tokenCost = 1;
