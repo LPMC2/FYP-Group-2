@@ -7,6 +7,7 @@ using UnityEditor;
 [CustomEditor(typeof(WeaponBehaviour))]
 public class WeaponBehaviourEditor : Editor
 {
+    private SerializedProperty m_firePointProperty;
     private SerializedProperty m_useCDProperty;
     private SerializedProperty m_damageProperty;
     private SerializedProperty m_affectedLayersProperty;
@@ -26,6 +27,7 @@ public class WeaponBehaviourEditor : Editor
 
     private void OnEnable()
     {
+        m_firePointProperty = serializedObject.FindProperty("m_firePoint");
         m_useCDProperty = serializedObject.FindProperty("m_useCD");
         m_damageProperty = serializedObject.FindProperty("m_damage");
         m_affectedLayersProperty = serializedObject.FindProperty("m_affectedLayers");
@@ -47,7 +49,8 @@ public class WeaponBehaviourEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.LabelField("Main - Weapon Settings", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(m_useCDProperty, new GUIContent("Use Cooldown"));
+        EditorGUILayout.PropertyField(m_firePointProperty);
+        EditorGUILayout.PropertyField(m_useCDProperty, new GUIContent("Cooldown Time on Use"));
         EditorGUILayout.PropertyField(m_damageProperty);
         EditorGUILayout.PropertyField(m_affectedLayersProperty);
         EditorGUILayout.PropertyField(m_ownerProperty);

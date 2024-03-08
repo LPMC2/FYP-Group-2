@@ -5,9 +5,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class WeaponBehaviour : MonoBehaviour
 {
+    #region Main Settings
     // Main Settings
     [Tooltip("Time between use")]
-    [SerializeField] private GameObject m_firePoint;
+    [SerializeField] private Transform m_firePoint;
     [SerializeField] private float m_useCD = 0;
     [SerializeField] private float m_damage;
     [SerializeField] private LayerMask m_affectedLayers;
@@ -56,6 +57,7 @@ public class WeaponBehaviour : MonoBehaviour
     {
         if (isDebug) Debug.Log(text);
     }
+    #endregion
 
     #region Unity Functions
     private void OnValidate()
@@ -65,7 +67,13 @@ public class WeaponBehaviour : MonoBehaviour
     }
     public virtual void Awake()
     {
-
+        if (m_activeTime > 0)
+        {
+            StartCoroutine(ActiveEnumerator());
+        } else
+        {
+            IsActive = true;
+        }
     }
     public virtual void Start()
     {
@@ -107,7 +115,7 @@ public class WeaponBehaviour : MonoBehaviour
     }
     #endregion
 
-    #region Weapon Features
+    #region Weapon Features & Variables
     [Flags]
     public enum WeaponFeatures
     {
