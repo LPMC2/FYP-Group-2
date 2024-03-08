@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-public class MeleeController : MonoBehaviour
+public class MeleeController : WeaponBehaviour
 {
     [Header("Attack Settings")]
     [SerializeField] private AttackMethod attackMethod;
-    [SerializeField] private LayerMask hitLayer;
     [SerializeField] private bool areaAttack = true;
     [SerializeField] private float AttackSpeed;
-    [SerializeField] private float AttackCD = 0;
-    [SerializeField] private float Damage;
     [SerializeField] private float StartHitTime = 0.5f;
     [SerializeField] private float hitboxSizeX = 1f;
     [SerializeField] private float hitboxSizeY = 1f;
@@ -101,7 +98,7 @@ public class MeleeController : MonoBehaviour
         }
         
         yield return new WaitForSeconds(AttackSpeed* (1- StartHitTime));
-        yield return new WaitForSeconds(AttackCD);
+        yield return new WaitForSeconds(useCD);
         isAttack = false;
         if (audioSource != null)
         {
@@ -122,7 +119,7 @@ public class MeleeController : MonoBehaviour
 
         // Cast the boxcast
         Vector3 size = new Vector3(halfWidth, halfHeight, maxDistance);
-        RaycastHit[] hits = Physics.BoxCastAll(origin, size, Camera.main.transform.forward * -1f, Quaternion.identity, maxDistance, hitLayer);
+        RaycastHit[] hits = Physics.BoxCastAll(origin, size, Camera.main.transform.forward * -1f, Quaternion.identity, maxDistance, affectedLayers);
         if (debugMode)
         {
             Vector3[] corners = new Vector3[8];
@@ -208,7 +205,7 @@ public class MeleeController : MonoBehaviour
             {
                 if (!teamBehaviour.isOwnTeam(Player, hit.GetComponent<Collider>()))
                 {
-                    damageable.TakeDamage(Damage);
+                    damageable.TakeDamage(damage);
                     EnemyController enemyController = hit.GetComponent<EnemyController>();
                     if (enemyController != null)
                     {
@@ -217,7 +214,7 @@ public class MeleeController : MonoBehaviour
                 }
             }
             else
-                damageable.TakeDamage(Damage);
+                damageable.TakeDamage(damage);
         }
     }
     private IEnumerator AttackAnim()

@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class ItemThrowerBehaviour : MonoBehaviour
+[System.Serializable]
+public class ItemThrowerBehaviour : WeaponBehaviour
 {
     [SerializeField] private GameObject firePoint;
     [SerializeField] private GameObject throwItem;
     [SerializeField] private float ProjectileSpeed;
     [SerializeField] private Vector3 ProjectileOffset;
-    [SerializeField] private float damage;
     [SerializeField] private bool isAreaDamage = false;
     [SerializeField] private float AOERadius = 1f;
-    [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private ProjectileType projectileType;
     private GameObject owner;
     // Start is called before the first frame update

@@ -49,14 +49,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50cbfd1f9ded796428e757a6bb9a3dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackMethod: 1
-  hitLayer:
+  m_useCD: 0.5
+  m_damage: 100
+  m_affectedLayers:
     serializedVersion: 2
     m_Bits: 0
+  m_owner: {fileID: 0}
+  attackMethod: 1
   areaAttack: 1
-  AttackSpeed: 0.7
-  AttackCD: 1
-  Damage: 100
+  AttackSpeed: 0.5
   StartHitTime: 0.5
   hitboxSizeX: 1
   hitboxSizeY: 1

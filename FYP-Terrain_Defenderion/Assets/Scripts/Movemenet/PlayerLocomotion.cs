@@ -117,7 +117,7 @@ public class PlayerLocomotion : MonoBehaviour
         //}
         Vector3 targetDirection = Vector3.zero;
 
-        targetDirection = cameraObject.forward /** inputManager.getVerticalInput()*/;
+        targetDirection = cameraObject.forward * inputManager.getVerticalInput();
         targetDirection = targetDirection + cameraObject.right * inputManager.getHorizontalInput();
         targetDirection.Normalize();
         targetDirection.y = 0;

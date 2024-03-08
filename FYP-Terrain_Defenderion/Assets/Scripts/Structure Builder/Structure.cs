@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 public class Structure : MonoBehaviour
@@ -23,12 +24,17 @@ public class StructureStorage
     public float[] cellPos = new float[3];
     public float[] Rotation = new float[3];
     public float[] Scale = new float[3];
+    [OptionalField(VersionAdded = 2)]
     public bool isAutoRotatable = true;
     public int tokenCost = 0;
     public int id = -1;
+    [OptionalField(VersionAdded = 2)]
     public InteractType originInteractType = default;
+    [OptionalField(VersionAdded = 2)]
     public int originGameObjectId = -1;
+    [OptionalField(VersionAdded = 2)]
     public bool isUtility = false;
+    [OptionalField(VersionAdded = 2)]
     public bool isDefense = false;
     public StructureStorage ()
     {

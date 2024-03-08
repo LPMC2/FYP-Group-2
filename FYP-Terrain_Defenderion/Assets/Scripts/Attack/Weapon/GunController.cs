@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-public class GunController : MonoBehaviour
+public class GunController : WeaponBehaviour
 {
 
   
@@ -24,9 +24,6 @@ public class GunController : MonoBehaviour
 
     [Header("Gun Attack Settings")]
     [SerializeField] private GameObject firePoint;
-    [SerializeField] private float ShootingTime;
-    [SerializeField] private LayerMask hitLayer;
-    [SerializeField] private float Damage;
     [SerializeField] private float Range;
     [SerializeField] private int bulletCount = 1;
     [SerializeField] private float horizontalSpreadAngle = 1f;
@@ -87,7 +84,7 @@ public class GunController : MonoBehaviour
     public int AmmoStoringSystemId { get { return ammoStoringSystemId; } set { ammoStoringSystemId = value; } }
     public float GetDamage()
     {
-        return Damage;
+        return damage;
     }
     public int GetTotalAmmo()
     {
@@ -149,7 +146,7 @@ public class GunController : MonoBehaviour
     }
   public float GetShootingTime()
     {
-        return ShootingTime;
+        return useCD;
     }
     public bool getActiveState()
     {
@@ -174,8 +171,9 @@ public class GunController : MonoBehaviour
 
     PlayerLocomotion playerLocomotion;
     AmmoStoringBehaviour ammoStoringBehaviour;
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         //cameraTransform = transform.parent;
         Player = gameObject.transform.parent.GetComponent<OriginManager>().OriginGameObject;
         playerLocomotion = Player.GetComponent<PlayerLocomotion>();
@@ -441,7 +439,7 @@ public class GunController : MonoBehaviour
 
             RaycastHit hit;
 
-            if (Physics.Raycast(firePoint.transform.position, spreadDirection, out hit, Range, hitLayer))
+            if (Physics.Raycast(firePoint.transform.position, spreadDirection, out hit, Range, affectedLayers))
             {
                 if (!hitEnemies.Contains(hit.collider.gameObject))
                 {
@@ -449,7 +447,7 @@ public class GunController : MonoBehaviour
                     IDamageable healthBehaviour = hit.collider.GetComponent<IDamageable>();
                     if (healthBehaviour != null)
                     {
-                        healthBehaviour.TakeDamage(Damage);
+                        healthBehaviour.TakeDamage(damage);
                       
                         if (isPiercing == false)
                         {
@@ -476,7 +474,7 @@ public class GunController : MonoBehaviour
         
         
         StartRecoil();
-        yield return new WaitForSeconds(ShootingTime*0.1f);
+        yield return new WaitForSeconds(useCD*0.1f);
         if (MuzzleFlash != null)
         {
             MuzzleFlash.Stop();
@@ -485,7 +483,7 @@ public class GunController : MonoBehaviour
         {
             muzzleFlashLight.SetActive(false);
         }
-        yield return new WaitForSeconds(ShootingTime*0.9f);
+        yield return new WaitForSeconds(useCD*0.9f);
         isShoot = false;
             hitEnemies.Clear();
 
@@ -498,7 +496,7 @@ public class GunController : MonoBehaviour
     private void fireCoolDown()
     {
         fireTimer += Time.deltaTime;
-        if(fireTimer >= ShootingTime * 2)
+        if(fireTimer >= useCD * 2)
         {
             isShoot = false;
             if (MuzzleFlash != null)
