@@ -42,10 +42,11 @@ public class WeaponBehaviourEditor : Editor
         m_projectileSettingsProperty = serializedObject.FindProperty("m_projectileSettings");
         m_animationSettingsProperty = serializedObject.FindProperty("m_animationFeatureSettings");
     }
+    WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
     {
         //base.OnInspectorGUI();
-        WeaponBehaviour weaponBehaviour = (WeaponBehaviour)target;
+        weaponBehaviour = (WeaponBehaviour)target;
         serializedObject.Update();
 
         EditorGUILayout.LabelField("Main - Weapon Settings", EditorStyles.boldLabel);
@@ -68,58 +69,15 @@ public class WeaponBehaviourEditor : Editor
             EditorGUILayout.BeginVertical(GUI.skin.window);
             EditorGUILayout.Space(-20);
             EditorGUILayout.LabelField("Features List", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.yellow } });
-            if ((weaponBehaviour.Features & WeaponBehaviour.WeaponFeatures.AMMO) != 0)
-            {
-                EditorGUILayout.BeginVertical(GUI.skin.button);
 
-                EditorGUILayout.LabelField("Ammo Feature", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.red } });
-                EditorGUILayout.LabelField("-------------------------", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.red } });
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(m_ammoSettingsProperty);
-                EditorGUILayout.Space();
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space();
-            }
-            if ((weaponBehaviour.Features & WeaponBehaviour.WeaponFeatures.RAYCAST) != 0)
-            {
+            GenerateFeatureGUI("Ammo Feature", Color.red,ref m_ammoSettingsProperty, WeaponBehaviour.WeaponFeatures.AMMO);
 
-                EditorGUILayout.BeginVertical(GUI.skin.button);
+            GenerateFeatureGUI("Raycast Feature", Color.green, ref m_raycastSettingsProperty, WeaponBehaviour.WeaponFeatures.RAYCAST);
 
-                EditorGUILayout.LabelField("Raycast Feature", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.green } });
-                EditorGUILayout.LabelField("-------------------------", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.green } });
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(m_raycastSettingsProperty);
-                EditorGUILayout.Space();
-                EditorGUILayout.EndVertical();
+            GenerateFeatureGUI("Projectile Feature", Color.green, ref m_projectileSettingsProperty, WeaponBehaviour.WeaponFeatures.PROJECTILE);
 
-                EditorGUILayout.Space();
-            }
-            if ((weaponBehaviour.Features & WeaponBehaviour.WeaponFeatures.PROJECTILE) != 0)
-            {
-
-                EditorGUILayout.BeginVertical(GUI.skin.button);
-                EditorGUILayout.LabelField("Projectile Feature", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.green } });
-                EditorGUILayout.LabelField("-------------------------", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.green } });
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(m_projectileSettingsProperty);
-                EditorGUILayout.Space();
-                EditorGUILayout.EndVertical();
-
-                EditorGUILayout.Space();
-            }
-            if ((weaponBehaviour.Features & WeaponBehaviour.WeaponFeatures.ANIMATIONS) != 0)
-            {
-
-                EditorGUILayout.BeginVertical(GUI.skin.button);
-                EditorGUILayout.LabelField("Animation Feature", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.magenta } });
-                EditorGUILayout.LabelField("-------------------------", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.magenta } });
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(m_animationSettingsProperty);
-                EditorGUILayout.Space();
-                EditorGUILayout.EndVertical();
-
-                EditorGUILayout.Space();
-            }
+            GenerateFeatureGUI("Animation Feature", Color.magenta, ref m_animationSettingsProperty, WeaponBehaviour.WeaponFeatures.ANIMATIONS);
+           
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.Space();
@@ -128,6 +86,21 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.PropertyField(m_isDebugProperty);
 
         serializedObject.ApplyModifiedProperties();
+    }
+    private void GenerateFeatureGUI(string FeatureName, Color color, ref SerializedProperty targetFeatureProperty, WeaponBehaviour.WeaponFeatures weaponFeature)
+    {
+        if ((weaponBehaviour.Features & weaponFeature) != 0)
+        {
+
+            EditorGUILayout.BeginVertical(GUI.skin.button);
+            EditorGUILayout.LabelField(FeatureName, new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = color } });
+            EditorGUILayout.LabelField("-------------------------", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = color } });
+            EditorGUILayout.PropertyField(targetFeatureProperty);
+            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+        }
     }
 }
 #endif
