@@ -289,7 +289,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5368020047949551032}
-  - component: {fileID: 6812483885259794932}
+  - component: {fileID: 251581011921218248}
   - component: {fileID: 912068172699004969}
   - component: {fileID: 1454126122770930696}
   - component: {fileID: -4404238121373584865}
@@ -321,7 +321,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -178.7, y: -76.6, z: 0}
---- !u!114 &6812483885259794932
+--- !u!114 &251581011921218248
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -330,100 +330,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 7628509336533531650}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15cc07a235173054e8cebcf65b9f77e8, type: 3}
+  m_Script: {fileID: 11500000, guid: b1c4fa2228716fd4293619791b9ce719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalAmmo: 20
-  AmmoCount: 1
-  RemainAmmo: 1
-  ReloadingTime: 4
-  ReloadStartFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  ReloadEndFunction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8758536724242065125}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-  firePoint: {fileID: 6742684141474329960}
-  ShootingTime: 2
-  hitLayer:
+  m_firePoint: {fileID: 0}
+  m_useCD: 0.0001
+  m_damage: 0
+  m_affectedLayers:
     serializedVersion: 2
-    m_Bits: 14720
-  Damage: 0
-  Range: 0
-  bulletCount: 1
-  horizontalSpreadAngle: 1
-  verticalSpreadAngle: 1
-  isPiercing: 0
-  HitFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  ShootFunction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 912068172699004969}
-        m_TargetAssemblyTypeName: ItemThrowerBehaviour, Assembly-CSharp
-        m_MethodName: shoot
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8758536724242065125}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AimPosition: {x: 0, y: 0, z: 0}
-  BulletSpreadMultiplier: 1
-  removeAimSymbol: 1
-  recoilAngle: 5
-  recoilSpeed: 10
-  maxRecoilAngle: 20
-  currentRecoilAngle: 0
-  animationBehaviour:
-    animationLayer: 2
-    playAttackAnimation:
-    - AimIdle
-    - AimActive
-    - Reloading
-    - AttackGun
-    - Empty
-    - AimRelease
-    switchAnimationTime: 0.25
-  SpeedMultiplier: 1
-  hitFX: {fileID: 0}
-  ignoreAnimation: 0
-  ignoreAudio: 0
-  Gun: {fileID: 0}
-  SwitchingCD: 0.75
-  muzzleFlashLight: {fileID: 0}
-  MuzzleFlash: {fileID: 0}
-  ShootSound: {fileID: 8300000, guid: c7272d2a097951f4cb784f9b0e89134a, type: 3}
-  ReloadSound: {fileID: 8300000, guid: fe8758f17ba184a40afd8b7608c619b7, type: 3}
-  isOut: 0
+    m_Bits: 5505
+  m_features: 66
+  m_owner: {fileID: 0}
+  m_activeTime: 1
+  m_isActive: 1
+  m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  isDebug: 0
+  m_ammoSettings:
+    m_totalAmmo: 20
+    m_ammoCount: 1
+    m_remainAmmo: 1
+    m_reloadingTime: 3
+    m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  m_raycastSettings:
+    m_range: 10
+    m_bulletCount: 1
+    m_horizontalSpreadAngle: 1
+    m_verticalSpreadAngle: 1
+    m_isPiercing: 0
+  m_projectileSettings:
+    m_throwItem: {fileID: 48867486252896457, guid: 647643a6f25670c4092e6f9c9e2122c0, type: 3}
+    m_ProjectileSpeed: 1000
+    m_ProjectileOffset: {x: 0, y: 0, z: 0}
+    m_isAreaDamage: 1
+    m_AOERadius: 3
+    m_projectileType: 1
+  m_animationFeatureSettings:
+    animationSettings:
+      animationLayer: 2
+      playAttackAnimation: []
+      switchAnimationTime: 0.25
+  m_soundEffectSettings:
+    audioSettings:
+      m_audioSO: {fileID: 0}
+      audioList: []
 --- !u!114 &912068172699004969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,16 +385,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b5f05e54438f746851394f9f801c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_firePoint: {fileID: 0}
+  m_useCD: 0
+  m_damage: 0
+  m_affectedLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_features: 0
+  m_owner: {fileID: 0}
+  m_activeTime: 1
+  m_isActive: 1
+  m_useWeaponInputActionReference: {fileID: 0}
+  isDebug: 0
+  m_ammoSettings:
+    m_totalAmmo: 1
+    m_ammoCount: 1
+    m_remainAmmo: 1
+    m_reloadingTime: 1
+    m_reloadInputActionReference: {fileID: 0}
+  m_raycastSettings:
+    m_range: 10
+    m_bulletCount: 1
+    m_horizontalSpreadAngle: 1
+    m_verticalSpreadAngle: 1
+    m_isPiercing: 0
+  m_projectileSettings:
+    m_throwItem: {fileID: 0}
+    m_ProjectileSpeed: 0
+    m_ProjectileOffset: {x: 0, y: 0, z: 0}
+    m_isAreaDamage: 0
+    m_AOERadius: 1
+    m_projectileType: 0
+  m_animationFeatureSettings:
+    animationSettings:
+      animationLayer: 2
+      playAttackAnimation: []
+      switchAnimationTime: 0.25
+  m_soundEffectSettings:
+    audioSettings:
+      m_audioSO: {fileID: 0}
+      audioList: []
   firePoint: {fileID: 6742684141474329960}
   throwItem: {fileID: 48867486252896457, guid: 647643a6f25670c4092e6f9c9e2122c0, type: 3}
   ProjectileSpeed: 1000
   ProjectileOffset: {x: 0, y: 0, z: 0}
-  damage: 1000
   isAreaDamage: 1
   AOERadius: 5
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 15745
   projectileType: 1
 --- !u!82 &1454126122770930696
 AudioSource:

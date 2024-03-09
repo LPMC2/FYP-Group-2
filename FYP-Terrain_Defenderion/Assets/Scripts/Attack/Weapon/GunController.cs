@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-public class GunController : WeaponBehaviour
+public class GunController : MonoBehaviour
 {
 
   
@@ -12,7 +12,7 @@ public class GunController : WeaponBehaviour
 
     [Header("Gun Clip Settings")]
 
-
+    private float damage;
     [SerializeField] private int TotalAmmo;
 
      [SerializeField] private int AmmoCount;
@@ -82,6 +82,7 @@ public class GunController : WeaponBehaviour
     private HashSet<GameObject> hitEnemies = new HashSet<GameObject>();
     private int ammoStoringSystemId = -1;
     public int AmmoStoringSystemId { get { return ammoStoringSystemId; } set { ammoStoringSystemId = value; } }
+    /*
     public float GetDamage()
     {
         return damage;
@@ -171,9 +172,9 @@ public class GunController : WeaponBehaviour
 
     PlayerLocomotion playerLocomotion;
     AmmoStoringBehaviour ammoStoringBehaviour;
-    public override void Start()
+    public void Start()
     {
-        base.Start();
+        
         //cameraTransform = transform.parent;
         Player = gameObject.transform.parent.GetComponent<OriginManager>().OriginGameObject;
         playerLocomotion = Player.GetComponent<PlayerLocomotion>();
@@ -561,5 +562,5 @@ public class GunController : WeaponBehaviour
             Inventory.UpdateSlotDisplay(RemainAmmo + "/" + TotalAmmo);
         }
     }
-
+    */
 }

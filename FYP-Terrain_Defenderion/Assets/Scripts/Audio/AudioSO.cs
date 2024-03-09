@@ -6,7 +6,11 @@ public class AudioSO : ScriptableObject
 {
     [SerializeField] private List<Audio> audios = new List<Audio>();
     public List<Audio> Audios { get { return audios; } }
-
+    public static AudioSO Singleton;
+    public void Awake()
+    {
+        Singleton = this;
+    }
 
 }
 [System.Serializable]

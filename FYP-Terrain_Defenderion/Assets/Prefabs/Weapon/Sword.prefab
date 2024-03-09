@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3773285791066968284}
-  - component: {fileID: 3340968599667044025}
+  - component: {fileID: 1068686206666811395}
   - component: {fileID: 8205448148089867952}
   - component: {fileID: 6251979933078100231}
   - component: {fileID: 6950167304147782630}
@@ -37,7 +37,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -64.129, y: 210.256, z: -25.127}
---- !u!114 &3340968599667044025
+--- !u!114 &1068686206666811395
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,41 +46,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 1719598565401989821}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50cbfd1f9ded796428e757a6bb9a3dfa, type: 3}
+  m_Script: {fileID: 11500000, guid: b1c4fa2228716fd4293619791b9ce719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_useCD: 0.5
+  m_firePoint: {fileID: 3773285791066968284}
+  m_useCD: 0.65
   m_damage: 100
   m_affectedLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4480
+  m_features: 0
   m_owner: {fileID: 0}
-  attackMethod: 1
-  areaAttack: 1
-  AttackSpeed: 0.5
-  StartHitTime: 0.5
-  hitboxSizeX: 1
-  hitboxSizeY: 1
-  maxDistance: 1
-  AttackSound: {fileID: 8300000, guid: e5d0f6a3ae78d5949afa5f1e25b3f635, type: 3}
-  AttackFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  HitFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  debugMode: 0
-  animationBehaviour:
-    animationLayer: 2
-    playAttackAnimation:
-    - SwordSwing1
-    - SwordSwing2
-    - SwordSwing3
-    - SwordSwing4
-    switchAnimationTime: 0.25
-  Weapon: {fileID: 0}
-  AttackMode: 0
-  SpeedMultiplier: 1
+  m_activeTime: 1
+  m_isActive: 1
+  m_useWeaponInputActionReference: {fileID: 0}
+  isDebug: 0
+  m_ammoSettings:
+    m_totalAmmo: 1
+    m_ammoCount: 1
+    m_remainAmmo: 1
+    m_reloadingTime: 1
+    m_reloadInputActionReference: {fileID: 0}
+  m_raycastSettings:
+    m_range: 10
+    m_bulletCount: 1
+    m_horizontalSpreadAngle: 1
+    m_verticalSpreadAngle: 1
+    m_isPiercing: 0
+  m_projectileSettings:
+    m_throwItem: {fileID: 0}
+    m_ProjectileSpeed: 0
+    m_ProjectileOffset: {x: 0, y: 0, z: 0}
+    m_isAreaDamage: 0
+    m_AOERadius: 1
+    m_projectileType: 0
+  m_animationFeatureSettings:
+    animationSettings:
+      animationLayer: 2
+      playAttackAnimation: []
+      switchAnimationTime: 0.25
+  m_soundEffectSettings:
+    audioSettings:
+      m_audioSO: {fileID: 0}
+      audioList: []
 --- !u!95 &8205448148089867952
 Animator:
   serializedVersion: 5

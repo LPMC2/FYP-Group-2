@@ -41,6 +41,7 @@ public class WeaponBehaviourEditor : Editor
         m_raycastSettingsProperty = serializedObject.FindProperty("m_raycastSettings");
         m_projectileSettingsProperty = serializedObject.FindProperty("m_projectileSettings");
         m_animationSettingsProperty = serializedObject.FindProperty("m_animationFeatureSettings");
+        m_soundEFfectSettingsProperty = serializedObject.FindProperty("m_soundEffectSettings");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -64,20 +65,22 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.LabelField("Weapon Features", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_featuresProperty);
         EditorGUILayout.Space();
-        if (weaponBehaviour.Features != WeaponBehaviour.WeaponFeatures.DEFAULT)
+        if (weaponBehaviour.Features != WeaponFeature.WeaponFeatures.DEFAULT)
         {
             EditorGUILayout.BeginVertical(GUI.skin.window);
             EditorGUILayout.Space(-20);
             EditorGUILayout.LabelField("Features List", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.yellow } });
 
-            GenerateFeatureGUI("Ammo Feature", Color.red,ref m_ammoSettingsProperty, WeaponBehaviour.WeaponFeatures.AMMO);
+            GenerateFeatureGUI("Ammo Feature", Color.red,ref m_ammoSettingsProperty, WeaponFeature.WeaponFeatures.AMMO);
 
-            GenerateFeatureGUI("Raycast Feature", Color.green, ref m_raycastSettingsProperty, WeaponBehaviour.WeaponFeatures.RAYCAST);
+            GenerateFeatureGUI("Raycast Feature", Color.green, ref m_raycastSettingsProperty, WeaponFeature.WeaponFeatures.RAYCAST);
 
-            GenerateFeatureGUI("Projectile Feature", Color.green, ref m_projectileSettingsProperty, WeaponBehaviour.WeaponFeatures.PROJECTILE);
+            GenerateFeatureGUI("Projectile Feature", Color.green, ref m_projectileSettingsProperty, WeaponFeature.WeaponFeatures.PROJECTILE);
 
-            GenerateFeatureGUI("Animation Feature", Color.magenta, ref m_animationSettingsProperty, WeaponBehaviour.WeaponFeatures.ANIMATIONS);
-           
+            GenerateFeatureGUI("Animation Feature", Color.magenta, ref m_animationSettingsProperty, WeaponFeature.WeaponFeatures.ANIMATIONS);
+
+            GenerateFeatureGUI("Sound Effects Feature", Color.cyan, ref m_soundEFfectSettingsProperty, WeaponFeature.WeaponFeatures.SOUNDEFFECTS);
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.Space();
@@ -87,7 +90,7 @@ public class WeaponBehaviourEditor : Editor
 
         serializedObject.ApplyModifiedProperties();
     }
-    private void GenerateFeatureGUI(string FeatureName, Color color, ref SerializedProperty targetFeatureProperty, WeaponBehaviour.WeaponFeatures weaponFeature)
+    private void GenerateFeatureGUI(string FeatureName, Color color, ref SerializedProperty targetFeatureProperty, WeaponFeature.WeaponFeatures weaponFeature)
     {
         if ((weaponBehaviour.Features & weaponFeature) != 0)
         {

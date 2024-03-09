@@ -562,6 +562,7 @@ public class InventoryBehaviour : MonoBehaviour
                         captureItem.transform.SetParent(captureCamera.transform);
                         captureItem.transform.eulerAngles = itemData.item[inventory.slot[id].getId()].captureAngle;
                         captureItem.transform.localPosition = Vector3.forward * 10 + itemData.item[inventory.slot[id].getId()].captureOffset;
+                        /*
                         if (displayText != null)
                         {
                             //Gun Specific Setup
@@ -571,7 +572,7 @@ public class InventoryBehaviour : MonoBehaviour
                                 displayText.text = gunController.GetRemainAmmo() + "/" + gunController.GetTotalAmmo();
                             }
                         }
-
+                        */
                         ModelPictureSaver.CaptureAndSaveImage(captureCamera, captureItem, captureSavePath, id.ToString(), true, true, itemData.item[inventory.slot[id].getId()].CustomBuffer);
 
                         uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
@@ -681,9 +682,9 @@ public class InventoryBehaviour : MonoBehaviour
     }
     private void OnDisable()
     {
-        if(gameObject.GetComponent<HealthBehaviour>() != null && CurrentItem != null && CurrentItem.GetComponent<GunController>()!=null)
+        if(gameObject.GetComponent<HealthBehaviour>() != null && CurrentItem != null && CurrentItem.GetComponent<WeaponBehaviour>()!=null)
         {
-            CurrentItem.GetComponent<GunController>().SetActiveState(false);
+            CurrentItem.GetComponent<WeaponBehaviour>().IsActive=false;
         }
     }
     private void SetBlockSlotUI(int id, GameObject slotObj, Transform parentObj)

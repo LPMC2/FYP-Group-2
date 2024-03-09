@@ -9,11 +9,11 @@ public class WeaponBehaviour : MonoBehaviour
     // Main Settings
     [Tooltip("Time between use")]
     [SerializeField] private Transform m_firePoint;
-    [SerializeField] private float m_useCD = 0;
+    [SerializeField] private float m_useCD = 0.1f;
     [SerializeField] private float m_damage;
     [SerializeField] private LayerMask m_affectedLayers;
-    [SerializeField] private WeaponFeatures m_features;
-    public WeaponFeatures Features { get { return m_features; } }
+    [SerializeField] private WeaponFeature.WeaponFeatures m_features;
+    public WeaponFeature.WeaponFeatures Features { get { return m_features; } }
     [SerializeField] private GameObject m_owner;
     [SerializeField] private float m_activeTime = 1f;
     [SerializeField] private bool m_isActive = true;
@@ -74,6 +74,7 @@ public class WeaponBehaviour : MonoBehaviour
         {
             IsActive = true;
         }
+        AddFeatures();
     }
     public virtual void Start()
     {
@@ -92,7 +93,8 @@ public class WeaponBehaviour : MonoBehaviour
     }
     public virtual void OnEnable()
     {
-        m_useWeaponInputActionReference = InputActionReference.Create(new PlayerInput().PlayerActions.Right_Click);
+        if(m_useWeaponInputActionReference == null)
+            m_useWeaponInputActionReference = InputActionReference.Create(new PlayerInput().PlayerActions.Right_Click);
         useAction = m_useWeaponInputActionReference.ToInputAction();
         
         useAction.performed += i => { isPerformaned = true; };
@@ -116,29 +118,39 @@ public class WeaponBehaviour : MonoBehaviour
     #endregion
 
     #region Weapon Features & Variables
-    [Flags]
-    public enum WeaponFeatures
-    {
-        DEFAULT = 0,
-        AMMO = 1 <<1,
-        AIM = 1 <<2,
-        ANIMATIONS = 1 <<3,
-        SOUNDEFFECTS = 1 << 4,
-        RAYCAST = 1 << 5,
-        PROJECTILE = 1 << 6
 
-    }
     // Ammo Features Settings
     [SerializeField] private WeaponFeature.AmmoData m_ammoSettings;
+    public WeaponFeature.AmmoData AmmoData { get { return m_ammoSettings; } }
 
     //Raycast Features Settings
     [SerializeField] private WeaponFeature.RayData m_raycastSettings;
+    public WeaponFeature.RayData RayData { get { return m_raycastSettings; } }
 
     //Projectile Features Settings
     [SerializeField] private WeaponFeature.ProjectileData m_projectileSettings;
-
+    public WeaponFeature.ProjectileData ProjectileData { get { return m_projectileSettings; } }
     //Animation Settings
     [SerializeField] private WeaponFeature.AnimationData m_animationFeatureSettings;
+    public WeaponFeature.AnimationData AnimationData { get { return m_animationFeatureSettings; } }
+    //Audio Features Settings
+    [SerializeField] private WeaponFeature.AudioData m_soundEffectSettings;
+    public WeaponFeature.AudioData AudioData { get { return m_soundEffectSettings; } }
+
+    private void AddFeatures()
+    {
+        if((m_features & WeaponFeature.WeaponFeatures.AMMO)!= 0)
+        {
+            AmmoBehaviour ammoBehaviour = gameObject.AddComponent<AmmoBehaviour>();
+            ammoBehaviour.SetBehaviour(this);
+        }
+        if ((m_features & WeaponFeature.WeaponFeatures.PROJECTILE) != 0)
+        {
+
+        }
+        if ((m_features & WeaponFeature.WeaponFeatures.RAYCAST) != 0) { }
+        if ((m_features & WeaponFeature.WeaponFeatures.AIM) != 0) { }
+    }
     #endregion
 
     #region Events Functions
@@ -177,6 +189,11 @@ public class WeaponBehaviour : MonoBehaviour
         DebugLog("Start CD!");
         yield return new WaitForSeconds(useCD);
         DebugLog("End CD!");
+        StopCoroutine(onUseCoroutine);
+        onUseCoroutine = null;
+    }
+    private void StopUseCDEnumerator()
+    {
         StopCoroutine(onUseCoroutine);
         onUseCoroutine = null;
     }

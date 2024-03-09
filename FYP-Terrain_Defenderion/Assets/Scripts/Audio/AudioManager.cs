@@ -104,6 +104,10 @@ public class AudioManager : MonoBehaviour
     {
         audioSource.volume = value;
     }
+    public string GetAudioNameFromIndex(int index)
+    {
+        return audioSO.Audios[index].Name;
+    }
 
     #region Play/Stop Audio Functions
     public void RandomPlayOneShotSound(List<string> listOfAudio)

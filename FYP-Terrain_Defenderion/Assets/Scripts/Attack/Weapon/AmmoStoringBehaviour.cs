@@ -15,7 +15,7 @@ public class AmmoStoringBehaviour : MonoBehaviour
     }
     public void StoreAmmo(int id ,int remainAmmo, int totalAmmo)
     {
-        Debug.Log("Gun ID: " + id);
+        //Debug.Log("Gun ID: " + id);
         foreach (AmmoStoring ammoStoring in ammoStoringSystem)
         {
             if (ammoStoring.ID == id)
@@ -44,10 +44,12 @@ public class AmmoStoringBehaviour : MonoBehaviour
             if (slot.getId() != -1)
             {
                 Debug.Log(ItemManager.ItemData.item[slot.getId()].model);
-                GunController gunController = ItemManager.ItemData.item[slot.getId()].model.GetComponent<GunController>();
-                if (gunController != null)
+                WeaponBehaviour gunController = ItemManager.ItemData.item[slot.getId()].model.GetComponent<WeaponBehaviour>();
+                if (gunController != null && ((gunController.Features & WeaponFeature.WeaponFeatures.AMMO) != 0 ))
                 {
                     AddAmmoStore(gunController, count);
+                    if (inventory.inventory.slot[count].ItemDisplay != null)
+                        inventory.inventory.slot[count].ItemDisplay.text = gunController.AmmoData.RemainAmmo + "/" + gunController.AmmoData.TotalAmmo;
                 }
             }
             count++;
@@ -59,33 +61,33 @@ public class AmmoStoringBehaviour : MonoBehaviour
         {
             if (ammoStoring.ID == inventory.SelectedSlot)
             {
-                if (ItemManager.ItemData.item[inventory.inventory.slot[inventory.SelectedSlot].getId()].model.GetComponent<GunController>() != null)
+                if (ItemManager.ItemData.item[inventory.inventory.slot[inventory.SelectedSlot].getId()].model.GetComponent<WeaponBehaviour>() != null)
                 {
-                    GunController gunController = target.GetComponent<GunController>();
+                    WeaponBehaviour gunController = target.GetComponent<WeaponBehaviour>();
                     if (gunController != null)
                     {
-                        gunController.SetRemainAmmo(ammoStoring.RemainAmmo);
-                        gunController.SetTotalAmmo(ammoStoring.TotalAmmo);
-                        gunController.AmmoStoringSystemId = ammoStoring.ID;
+                        gunController.AmmoData.RemainAmmo=ammoStoring.RemainAmmo;
+                        gunController.AmmoData.TotalAmmo=ammoStoring.TotalAmmo;
+                        gunController.AmmoData.AmmoStoringSystemId = ammoStoring.ID;
                     }
                 }
             }
         }
     }
-    public void SetAmmoStorage(int id, GunController gunController)
+    public void SetAmmoStorage(int id, WeaponBehaviour gunController)
     {
-        gunController.SetRemainAmmo(ammoStoringSystem[id].RemainAmmo);
-        gunController.SetTotalAmmo(ammoStoringSystem[id].TotalAmmo);
+        gunController.AmmoData.RemainAmmo =ammoStoringSystem[id].RemainAmmo;
+        gunController.AmmoData.TotalAmmo =ammoStoringSystem[id].TotalAmmo;
     }
-    public void AddAmmoStore(GunController gunController, int id = -1)
+    public void AddAmmoStore(WeaponBehaviour gunController, int id = -1)
     {
         //foreach(AmmoStoring ammoStoring in ammoStoringSystem)
         //{
         //    if (gunController.AmmoStoringSystemId == ammoStoring.ID) return;
         //}
         
-        ammoStoringSystem.Add(new AmmoStoring(gunController.GetRemainAmmo(), gunController.GetTotalAmmo(), id));
-        gunController.AmmoStoringSystemId = id;
+        ammoStoringSystem.Add(new AmmoStoring(gunController.AmmoData.RemainAmmo, gunController.AmmoData.TotalAmmo, id));
+        gunController.AmmoData.AmmoStoringSystemId = id;
     }
     public void RemoveAmmoStore(int id)
     {
