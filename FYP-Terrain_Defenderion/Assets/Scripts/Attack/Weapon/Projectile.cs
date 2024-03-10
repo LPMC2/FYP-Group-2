@@ -34,11 +34,21 @@ public class Projectile : MonoBehaviour
     public ProjectileType Type => projectileType;
     private Vector3 direction;
     private GameObject owner;
+    private bool isDestroyAfterCollision = false;
     private void Start()
     {
+        /*
         if(m_isTravelAtStart)
         {
             InitializeProjectile(gameObject.transform.forward,speed);
+        }
+        */
+    }
+    private void OnEnable()
+    {
+        if (m_isTravelAtStart)
+        {
+            InitializeProjectile(gameObject.transform.forward, speed);
         }
     }
     public void setDestructable(GameObject targetobject)
@@ -83,7 +93,7 @@ public class Projectile : MonoBehaviour
         this.obstacleMask = obstacleMask;
     }
 
-    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default, GameObject owner = null)
+    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default, GameObject owner = null, bool DestroyObject = false)
     {
         if(projectileType != default)
         {
@@ -109,7 +119,19 @@ public class Projectile : MonoBehaviour
                 ShootWithInstantForce();
                 break;
         }
-        Destroy(gameObject, maxTime);
+        isDestroyAfterCollision = DestroyObject;
+        Debug.Log(DestroyObject);
+        if (DestroyObject)
+            Destroy(gameObject, maxTime);
+        else
+            GameObjectExtension.DelayEventInvoke(this, () =>
+            {
+                gameObject.SetActive(false);
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            },
+            maxTime);
+            GameObjectExtension.DisableFromTime(this, gameObject, maxTime);
     }
     private bool IsLayerInMask(int layer, LayerMask layerMask)
     {
@@ -130,23 +152,26 @@ public class Projectile : MonoBehaviour
         {
             rb = GetComponent<Rigidbody>();
 
-            rb.AddForce(direction * speed, ForceMode.Impulse);
+            rb.AddForce(transform.forward * speed, ForceMode.Impulse);
            
         }
     }
 
     private IEnumerator MoveStraight()
     {
+        rb = GetComponent<Rigidbody>();
+
+            Vector3 dampeningDirection = rb.velocity.normalized * -1.0f;
+            rb.AddForce(dampeningDirection * 10);
         
         while (true)
         {
-            rb = GetComponent<Rigidbody>();
 
             float timeElapsed = 0f;
             rb.useGravity = false;
             while (timeElapsed < maxTime)
             {
-                rb.AddForce(direction * speed * Time.deltaTime);
+                rb.AddForce(transform.forward * speed * Time.deltaTime, ForceMode.VelocityChange);
                 timeElapsed += Time.deltaTime;
                 yield return null;
             }
@@ -184,7 +209,10 @@ public class Projectile : MonoBehaviour
         if (enemy != null && owner != null) { enemy.setAggro(owner); }
         if (!m_isPiercing)
         {
-            Destroy(gameObject);
+            if (isDestroyAfterCollision)
+                Destroy(gameObject);
+            else
+                gameObject.SetActive(false);
         }
     }
     public void CastDamageSphere()

@@ -19,8 +19,6 @@ public class AmmoBehaviour : MonoBehaviour
             weaponBehaviour = GetComponent<WeaponBehaviour>();
         }
 
-        //Assign Using Ammo into weapon using event
-        weaponBehaviour.useEvent += UseAmmo;
 
         Inventory = transform.root.GetComponent<InventoryBehaviour>();
         ammoStoringBehaviour = transform.root.GetComponent<AmmoStoringBehaviour>();
@@ -69,11 +67,22 @@ public class AmmoBehaviour : MonoBehaviour
             reloadCoroutine = null;
         }
     }
+    public void AddAmmo(int count)
+    {
+        AmmoData.TotalAmmo+= count;
+        StoreAmmoData();
+        UpdateInv();
+
+    }
     public void UseAmmo()
     {
         AmmoData.RemainAmmo--;
         StoreAmmoData();
         UpdateInv();
+        if(AmmoData.TotalAmmo <= 0)
+        {
+            weaponBehaviour.IsActive = false;
+        }
     }
     private float reloadTime = 0f;
     private IEnumerator ReloadCoroutine()

@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class GameObjectExtension : MonoBehaviour
 {
+    public delegate void VoidEvent();
     public void SetParentFromGameObjectsWithTag(GameObject parent, string tag)
     {
         foreach(Transform child in parent.transform)
@@ -14,6 +15,15 @@ public class GameObjectExtension : MonoBehaviour
                 child.SetParent(parent.transform);
             }
         }
+    }
+    public static void DelayEventInvoke(MonoBehaviour monoBehaviour,VoidEvent targetEvent, float delayTime)
+    {
+        monoBehaviour.StartCoroutine(DelayEventIEnumerator(targetEvent, delayTime));
+    }
+    private static IEnumerator DelayEventIEnumerator(VoidEvent targetEvent, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        targetEvent?.Invoke();
     }
     private static Coroutine delayEvent;
     public static void DelayUnityEventInvoke(UnityEvent action, float delayTime)

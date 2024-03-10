@@ -39,6 +39,7 @@ public class WeaponBehaviour : MonoBehaviour
     //Input Settings
     [SerializeField] private InputActionReference m_useWeaponInputActionReference;
 
+    public Transform FirePoint { get { return m_firePoint; } }
     public float useCD { get { return m_useCD; }  }
     public float damage { get { return m_damage; } }
     public LayerMask affectedLayers { get { return m_affectedLayers; } }
@@ -143,12 +144,19 @@ public class WeaponBehaviour : MonoBehaviour
         {
             AmmoBehaviour ammoBehaviour = gameObject.AddComponent<AmmoBehaviour>();
             ammoBehaviour.SetBehaviour(this);
+            useEvent += ammoBehaviour.UseAmmo;
         }
         if ((m_features & WeaponFeature.WeaponFeatures.PROJECTILE) != 0)
         {
-
+            ItemThrowerBehaviour itemThrowerBehaviour = gameObject.AddComponent<ItemThrowerBehaviour>();
+            itemThrowerBehaviour.WBehaviour = this;
+            useEvent += itemThrowerBehaviour.Shoot;
         }
-        if ((m_features & WeaponFeature.WeaponFeatures.RAYCAST) != 0) { }
+        if ((m_features & WeaponFeature.WeaponFeatures.RAYCAST) != 0) { 
+            RaycastBehaviour rayBehaviour = gameObject.AddComponent<RaycastBehaviour>();
+            rayBehaviour.WBehaviour = this;
+            useEvent += rayBehaviour.StartFireRay;
+        }
         if ((m_features & WeaponFeature.WeaponFeatures.AIM) != 0) { }
     }
     #endregion
@@ -205,6 +213,16 @@ public class WeaponBehaviour : MonoBehaviour
         yield return new WaitForSeconds(m_activeTime);
         m_isActive = true;
 
+    }
+
+    public void HitTakeDamage(GameObject hit)
+    {
+
+        IDamageable healthBehaviour = hit.GetComponent<IDamageable>();
+        if (healthBehaviour != null)
+        {
+            healthBehaviour.TakeDamage(damage);
+        }
     }
 }
 

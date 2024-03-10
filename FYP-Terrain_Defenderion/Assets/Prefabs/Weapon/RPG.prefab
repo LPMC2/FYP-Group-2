@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c4fa2228716fd4293619791b9ce719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_firePoint: {fileID: 0}
+  m_firePoint: {fileID: 1902154798389665754}
   m_useCD: 0.0001
   m_damage: 0
   m_affectedLayers:
@@ -357,10 +357,21 @@ MonoBehaviour:
     m_horizontalSpreadAngle: 1
     m_verticalSpreadAngle: 1
     m_isPiercing: 0
+    m_type: 0
+    m_isVisible: 0
+    m_material: {fileID: 0}
+    m_laserCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_laserClosingTime: 0.5
+    m_fireTime: 0
+    m_preFireCD: 0
   m_projectileSettings:
     m_throwItem: {fileID: 48867486252896457, guid: 647643a6f25670c4092e6f9c9e2122c0, type: 3}
-    m_ProjectileSpeed: 1000
-    m_ProjectileOffset: {x: 0, y: 0, z: 0}
+    m_ProjectileSpeed: 10
     m_isAreaDamage: 1
     m_AOERadius: 3
     m_projectileType: 1
@@ -385,53 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b5f05e54438f746851394f9f801c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_firePoint: {fileID: 0}
-  m_useCD: 0
-  m_damage: 0
-  m_affectedLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_features: 0
-  m_owner: {fileID: 0}
-  m_activeTime: 1
-  m_isActive: 1
-  m_useWeaponInputActionReference: {fileID: 0}
-  isDebug: 0
-  m_ammoSettings:
-    m_totalAmmo: 1
-    m_ammoCount: 1
-    m_remainAmmo: 1
-    m_reloadingTime: 1
-    m_reloadInputActionReference: {fileID: 0}
-  m_raycastSettings:
-    m_range: 10
-    m_bulletCount: 1
-    m_horizontalSpreadAngle: 1
-    m_verticalSpreadAngle: 1
-    m_isPiercing: 0
-  m_projectileSettings:
-    m_throwItem: {fileID: 0}
-    m_ProjectileSpeed: 0
-    m_ProjectileOffset: {x: 0, y: 0, z: 0}
-    m_isAreaDamage: 0
-    m_AOERadius: 1
-    m_projectileType: 0
-  m_animationFeatureSettings:
-    animationSettings:
-      animationLayer: 2
-      playAttackAnimation: []
-      switchAnimationTime: 0.25
-  m_soundEffectSettings:
-    audioSettings:
-      m_audioSO: {fileID: 0}
-      audioList: []
-  firePoint: {fileID: 6742684141474329960}
-  throwItem: {fileID: 48867486252896457, guid: 647643a6f25670c4092e6f9c9e2122c0, type: 3}
-  ProjectileSpeed: 1000
-  ProjectileOffset: {x: 0, y: 0, z: 0}
-  isAreaDamage: 1
-  AOERadius: 5
-  projectileType: 1
+  weaponBehaviour: {fileID: 0}
 --- !u!82 &1454126122770930696
 AudioSource:
   m_ObjectHideFlags: 0

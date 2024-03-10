@@ -33,23 +33,53 @@ public class WeaponFeature
     [Serializable]
     public class RayData
     {
+        [Header("Main Ray Settings")]
         [SerializeField] private float m_range = 10f;
         [SerializeField] private int m_bulletCount = 1;
         [SerializeField] private float m_horizontalSpreadAngle = 1f;
         [SerializeField] private float m_verticalSpreadAngle = 1f;
         [SerializeField] private bool m_isPiercing = false;
+        [SerializeField] private RayType m_type;
+        [Header("Visual Settings")]
+        [SerializeField] private bool m_isVisible = false;
+        [SerializeField] private Material m_material;
+        [SerializeField] private AnimationCurve m_laserCurve;
+        [SerializeField] private float m_laserClosingTime = 0.5f;
+        [Header("Continuous Type Settings")]
+        [SerializeField] private float m_fireTime;
+        [SerializeField] private float m_preFireCD;
+        public bool IsVisible { get { return m_isVisible; } }
+        public Material RayMaterial { get { return m_material; } }
+        public AnimationCurve RayAnimationCurve { get { return m_laserCurve; } }
+        public float RayClosingTime { get { return m_laserClosingTime; } }
+        public float FireDuration { get { return m_fireTime; } }
+        public float PreFireTime { get { return m_preFireCD; } }
+        public RayType rayType { get { return m_type; } }
+        public float Range { get { return m_range; } }
+        public int BulletCount { get { return m_bulletCount; } }
+        public float HSpreadAngle { get { return m_horizontalSpreadAngle; } }
+        public float VSpreadAngle { get { return m_verticalSpreadAngle; } }
+        public bool IsPiercing { get { return m_isPiercing; } }
+        public enum RayType
+        {
+            ONESHOT,
+            CONTINUOUS
+        }
     }
     [Serializable]
     public class ProjectileData
     {
         [SerializeField] private GameObject m_throwItem;
         [SerializeField] private float m_ProjectileSpeed;
-        [SerializeField] private Vector3 m_ProjectileOffset;
         [SerializeField] private bool m_isAreaDamage = false;
         [SerializeField] private float m_AOERadius = 1f;
         [SerializeField] private ProjectileType m_projectileType;
-        private GameObject owner;
-       
+        public GameObject ThrowItem { get { return m_throwItem; } }
+        public float ProjSpeed { get { return m_ProjectileSpeed; } }
+        public bool isAOE { get { return m_isAreaDamage; } }
+        public float AOERadius { get { return m_AOERadius; } }
+        public ProjectileType Type { get { return m_projectileType; } }
+
     }
     [Serializable]
     public class AudioData

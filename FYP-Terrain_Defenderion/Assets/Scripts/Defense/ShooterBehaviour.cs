@@ -10,7 +10,12 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private GameObject HeadObject;
     [SerializeField] private GameObject structure;
     public GameObject Structure { set { structure = value; } }
-    public GameObject ShootObject { get { return arrayBehaviour.GetRandomObjectFromList(m_shootObject); }  }
+    public GameObject ShootObject { 
+        get 
+        { 
+            return arrayBehaviour.GetRandomObjectFromList(objectPools).GetObject(true); 
+        }  
+    }
     [SerializeField] private float preFireCd = 0.1f;
     [SerializeField] private float shootingSpeed = 1f;
     [SerializeField] private float objectSpeed = 1f;
@@ -44,7 +49,7 @@ public class ShooterBehaviour : MonoBehaviour
             m_launchPositionObjects.Add(gameObject);
         }
     }
-
+    List<ObjectPool> objectPools = new List<ObjectPool>();
     // Start is called before the first frame update
     void Start()
     {
@@ -58,6 +63,12 @@ public class ShooterBehaviour : MonoBehaviour
         if(audioSource == null)
         {
             audioSource = gameObject.GetComponent<AudioSource>();
+        }
+        foreach(GameObject fireObj in m_shootObject)
+        {
+            ObjectPool objectPool1 = new ObjectPool();
+            objectPool1.Initialize(fireObj,20, gameObject.transform);
+            objectPools.Add(objectPool1);
         }
     }
 
@@ -310,7 +321,8 @@ public class ShooterBehaviour : MonoBehaviour
             audioSource.clip = fireSound;
             audioSource.Play();
         }
-        GameObject bullet = Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
+        GameObject bullet = ShootObject;//Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
+        bullet.transform.position = targetObj.transform.position;
         Vector3 relativePos = target.transform.position - bullet.transform.position;
         Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         bullet.transform.rotation = rotation;

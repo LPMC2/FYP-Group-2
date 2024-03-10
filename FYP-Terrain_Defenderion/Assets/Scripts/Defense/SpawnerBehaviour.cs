@@ -239,6 +239,8 @@ public class SpawnerBehaviour : MonoBehaviour
 [System.Serializable]
 public class ObjectPool
 {
+    GameObject basePool;
+    GameObject baseTargetObject;
     private List<GameObject> objects = new List<GameObject>();
     public virtual List<GameObject> ObjectPooling { get { return objects; } set { objects = value; } }
     public virtual GameObject GetObject(bool activeObject = false, Vector3 position = default, Quaternion rotation = default)
@@ -249,20 +251,33 @@ public class ObjectPool
         {
             if(!gameObject.activeInHierarchy)
             {
-                if (activeObject)
-                {
-                    gameObject.SetActive(true);
+
+                    gameObject.SetActive(activeObject);
                     gameObject.transform.position = position;
                     gameObject.transform.rotation = rotation;
-                }
+                
                 return gameObject;
             }
         }
+        if (objects[0].gameObject != null)
+        {
+            GameObject NewSlotGameObject = Object.Instantiate(baseTargetObject, Vector3.zero, Quaternion.identity);
+            NewSlotGameObject.transform.SetParent(basePool.transform);
+            NewSlotGameObject.transform.position = position;
+            NewSlotGameObject.transform.rotation = rotation;
+            NewSlotGameObject.name += " - Id: " + (objects.Count + 1);
+            NewSlotGameObject.SetActive(activeObject);
+            objects.Add(NewSlotGameObject);
+            return NewSlotGameObject;
+        } else
         return null;
     }
-    public GameObject Initialize(GameObject targetObject, int count)
+    public GameObject Initialize(GameObject targetObject, int count, Transform parent = null)
     {
-        GameObject basePool = new GameObject("Base Pool: " + targetObject.name);
+        basePool = new GameObject("Base Pool: " + targetObject.name);
+        basePool.tag = "BasePool";
+        if(parent != null) { basePool.transform.SetParent(parent); }
+        baseTargetObject = targetObject;
         string debug = "";
         for(int i=0; i<count; i++)
         {
