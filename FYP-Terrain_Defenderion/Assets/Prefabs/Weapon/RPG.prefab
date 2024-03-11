@@ -293,7 +293,6 @@ GameObject:
   - component: {fileID: 912068172699004969}
   - component: {fileID: 1454126122770930696}
   - component: {fileID: -4404238121373584865}
-  - component: {fileID: 167480190103281255}
   m_Layer: 16
   m_Name: RPG
   m_TagString: Untagged
@@ -335,7 +334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firePoint: {fileID: 1902154798389665754}
-  m_useCD: 0.0001
+  m_useCD: 0.1
   m_damage: 0
   m_affectedLayers:
     serializedVersion: 2
@@ -353,12 +352,12 @@ MonoBehaviour:
       m_Calls: []
   isDebug: 0
   m_ammoSettings:
-    m_totalAmmo: 20
-    m_ammoCount: 1
-    m_remainAmmo: 1
+    m_totalAmmo: 200
+    m_ammoCount: 30
+    m_remainAmmo: 10
     m_reloadingTime: 3
     m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
-    m_animationIDonReload: 2
+    m_animationIDOnReload: 2
     OnReloadEvent:
       m_PersistentCalls:
         m_Calls: []
@@ -524,22 +523,6 @@ MonoBehaviour:
   action:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &167480190103281255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7628509336533531650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a872d19e0f250bc4495423aac5a73f4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_maxDistance: 100
-  m_contactLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &8758536724242065125
 GameObject:
   m_ObjectHideFlags: 0

@@ -85,7 +85,7 @@ public class AmmoBehaviour : MonoBehaviour
         AmmoData.RemainAmmo--;
         StoreAmmoData();
         UpdateInv();
-        if(AmmoData.TotalAmmo <= 0)
+        if(AmmoData.TotalAmmo <= 0 && AmmoData.RemainAmmo <= 0)
         {
             weaponBehaviour.IsActive = false;
         }

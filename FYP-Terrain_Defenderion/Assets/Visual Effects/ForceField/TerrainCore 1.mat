@@ -24,14 +24,18 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 232351aeb0806b74bac12e7d40014e6e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _ALPHAPREMULTIPLY_ON
+  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
+  stringTagMap:
+    RenderType: Transparent
+  disabledShaderPasses:
+  - DepthOnly
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -54,19 +58,35 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 2
+    - _BlendModePreserveSpecular: 1
+    - _CastShadows: 1
+    - _Cull: 2
+    - _DstBlend: 1
     - _Fill: 0.3
     - _FresnelPower: 2.13
     - _Offset: 0.6
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Speed: 0.05
     - _SphereHardness: 0
     - _SphereRadius: 0
+    - _SrcBlend: 1
+    - _Surface: 1
+    - _Test: 2.3
     - _VertexOffsetFreq: 0
+    - _WorkflowMode: 1
+    - _ZTest: 4
+    - _ZWrite: 0
+    - _ZWriteControl: 0
     m_Colors:
     - _Color: {r: 1, g: 0, b: 0.042375565, a: 0}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _SphereCenter: {r: 0, g: 0, b: 0, a: 0}
+    - _Tilling: {r: 2.3, g: 2.3, b: 0, a: 0}
     - _VectorSpeed: {r: 1, g: 0, b: 0, a: 0}
     - _VertexDirection: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
