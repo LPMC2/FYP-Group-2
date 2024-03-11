@@ -28,7 +28,13 @@ public class AmmoBehaviour : MonoBehaviour
           
         }
         reloadAction = AmmoData.ReloadInputActionReference.ToInputAction();
-
+        if((weaponBehaviour.Features & WeaponFeature.WeaponFeatures.ANIMATIONS ) != 0)
+        {
+            AmmoData.OnReloadEvent.AddListener(() =>
+            {
+                weaponBehaviour.PlayAnimation(AmmoData.AnimationIDReload, reloadTime);
+            });
+        }
     }
     private void OnEnable()
     {
@@ -90,6 +96,8 @@ public class AmmoBehaviour : MonoBehaviour
         weaponBehaviour.IsActive = false;
         reloadTime = AmmoData.ReloadTime;
         Inventory.UpdateSlotDisplay("Reloading...");
+        AmmoData.OnReloadEvent?.Invoke();
+        yield return (!weaponBehaviour.isCD);
         while (reloadTime > 0)
         {
             reloadTime -= Time.deltaTime;

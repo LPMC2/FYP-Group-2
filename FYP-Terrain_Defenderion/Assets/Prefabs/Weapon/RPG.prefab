@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 912068172699004969}
   - component: {fileID: 1454126122770930696}
   - component: {fileID: -4404238121373584865}
+  - component: {fileID: 167480190103281255}
   m_Layer: 16
   m_Name: RPG
   m_TagString: Untagged
@@ -339,11 +340,17 @@ MonoBehaviour:
   m_affectedLayers:
     serializedVersion: 2
     m_Bits: 5505
-  m_features: 66
+  m_features: 74
   m_owner: {fileID: 0}
   m_activeTime: 1
   m_isActive: 1
+  m_OnIdleAnimationID: 1
+  m_OnUseAnimationID: 3
+  m_ResetAnimationID: 4
   m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  onUseUnityEvent:
+    m_PersistentCalls:
+      m_Calls: []
   isDebug: 0
   m_ammoSettings:
     m_totalAmmo: 20
@@ -351,6 +358,10 @@ MonoBehaviour:
     m_remainAmmo: 1
     m_reloadingTime: 3
     m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+    m_animationIDonReload: 2
+    OnReloadEvent:
+      m_PersistentCalls:
+        m_Calls: []
   m_raycastSettings:
     m_range: 10
     m_bulletCount: 1
@@ -371,14 +382,19 @@ MonoBehaviour:
     m_preFireCD: 0
   m_projectileSettings:
     m_throwItem: {fileID: 48867486252896457, guid: 647643a6f25670c4092e6f9c9e2122c0, type: 3}
-    m_ProjectileSpeed: 10
+    m_ProjectileSpeed: 100
     m_isAreaDamage: 1
     m_AOERadius: 3
     m_projectileType: 1
   m_animationFeatureSettings:
     animationSettings:
       animationLayer: 2
-      playAttackAnimation: []
+      playAttackAnimation:
+      - AimIdle
+      - AimActive
+      - Reloading
+      - AttackGun
+      - AimRelease
       switchAnimationTime: 0.25
   m_soundEffectSettings:
     audioSettings:
@@ -508,6 +524,22 @@ MonoBehaviour:
   action:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &167480190103281255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7628509336533531650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a872d19e0f250bc4495423aac5a73f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_maxDistance: 100
+  m_contactLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &8758536724242065125
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class WeaponFeature
 {
@@ -10,6 +11,7 @@ public class WeaponFeature
     public class AnimationData
     {
         [SerializeField] private AnimationBehaviour animationSettings;
+        public AnimationBehaviour AniBehaviour { get { return animationSettings; } }
     }
     [Serializable]
     public class AmmoData 
@@ -22,13 +24,17 @@ public class WeaponFeature
         [SerializeField] private int m_remainAmmo = 1;
         [SerializeField] private float m_reloadingTime = 1f;
         [SerializeField] private InputActionReference m_reloadInputActionReference;
+        [SerializeField] private int m_animationIDonReload = -1;
         private int ammoStoringSystemId = -1;
         public int AmmoStoringSystemId { get { return ammoStoringSystemId; } set { ammoStoringSystemId = value; } }
+        public int AnimationIDReload { get { return m_animationIDonReload; } }
         public InputActionReference ReloadInputActionReference { get { return m_reloadInputActionReference; } set { m_reloadInputActionReference = value; } }
         public int TotalAmmo { get { return m_totalAmmo; } set { m_totalAmmo = value; } }
         public int AmmoCount { get { return m_ammoCount; } set { m_ammoCount = value; } }
         public int RemainAmmo { get { return m_remainAmmo; } set { m_remainAmmo = value; } }
         public float ReloadTime { get { return m_reloadingTime; } }
+        public UnityEvent OnReloadEvent;
+
     }
     [Serializable]
     public class RayData
@@ -85,6 +91,7 @@ public class WeaponFeature
     public class AudioData
     {
         [SerializeField] private AudioBehaviour audioSettings;
+        public AudioBehaviour AudioBehaviour { get { return audioSettings; } }
     }
     [Flags]
     public enum WeaponFeatures

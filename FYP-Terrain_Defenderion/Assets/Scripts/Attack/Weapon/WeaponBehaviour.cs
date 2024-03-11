@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 public class WeaponBehaviour : MonoBehaviour
 {
     #region Main Settings
@@ -17,12 +18,16 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField] private GameObject m_owner;
     [SerializeField] private float m_activeTime = 1f;
     [SerializeField] private bool m_isActive = true;
+    [SerializeField] private int m_OnIdleAnimationID = -1;
+    [SerializeField] private int m_OnUseAnimationID = -1;
+    [SerializeField] private int m_ResetAnimationID = -1;
     public bool IsActive { get { return m_isActive; } 
         set
         {
             m_isActive = value;
             if(m_isActive)
             {
+                onActiveEvent?.Invoke();
                 useAction.Enable();
             } else
             {
@@ -44,14 +49,19 @@ public class WeaponBehaviour : MonoBehaviour
     public float damage { get { return m_damage; } }
     public LayerMask affectedLayers { get { return m_affectedLayers; } }
     public GameObject owner { get { return m_owner; } }
+    public OnDestroyEvent onDestroyEvent;
+    public OnActiveEvent onActiveEvent;
+    [SerializeField] private UnityEvent onUseUnityEvent;
     public OnUseEvent useEvent;
     public OnHitEvent hitEvent;
     public OnUseCDStart cdStartEvent;
     public OnUseCDEnd cdEndEvent;
+    public bool isCD { get; private set; }
     InputAction useAction;
     private bool isPerformaned = false;
-    private Coroutine onUseCoroutine;
+    public Coroutine onUseCoroutine { get; private set; }
 
+    private Animator animator;
     //Debug Field
     [SerializeField]private bool isDebug = false;
     private void DebugLog(string text)
@@ -68,22 +78,39 @@ public class WeaponBehaviour : MonoBehaviour
     }
     public virtual void Awake()
     {
-        if (m_activeTime > 0)
-        {
-            StartCoroutine(ActiveEnumerator());
-        } else
-        {
-            IsActive = true;
-        }
+        
         AddFeatures();
     }
     public virtual void Start()
     {
-        if(owner == null && transform.root != transform)
+        if (m_activeTime > 0)
+        {
+            StartCoroutine(ActiveEnumerator());
+        }
+        else
+        {
+            IsActive = true;
+        }
+        if (owner == null && transform.root != transform)
         {
             m_owner = transform.root.gameObject;
         }
-
+        if(animator == null)
+        {
+            animator = gameObject.transform.root.GetComponent<Animator>();
+        }
+        if((Features & WeaponFeature.WeaponFeatures.ANIMATIONS ) != 0)
+        {
+            useEvent += () =>
+            {
+                PlayAnimation(m_OnUseAnimationID, 1f);
+            };
+            onDestroyEvent += () =>
+            {
+                PlayAnimation(m_ResetAnimationID, 1f);
+            };
+            PlayAnimation(m_OnIdleAnimationID, m_activeTime);
+        }
     }
     public virtual void Update()
     {
@@ -115,6 +142,10 @@ public class WeaponBehaviour : MonoBehaviour
         cdStartEvent -= OnUseCDStartEvent;
         cdEndEvent -= OnUseCDEndEvent;
         useAction.Disable();
+    }
+    private void OnDestroy()
+    {
+        onDestroyEvent?.Invoke();
     }
     #endregion
 
@@ -158,6 +189,10 @@ public class WeaponBehaviour : MonoBehaviour
             useEvent += rayBehaviour.StartFireRay;
         }
         if ((m_features & WeaponFeature.WeaponFeatures.AIM) != 0) { }
+        if((m_features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
+        {
+            
+        }
     }
     #endregion
 
@@ -194,11 +229,13 @@ public class WeaponBehaviour : MonoBehaviour
     }
     private IEnumerator OnUseCDEnumerator()
     {
+        isCD = true;
         DebugLog("Start CD!");
         yield return new WaitForSeconds(useCD);
         DebugLog("End CD!");
         StopCoroutine(onUseCoroutine);
         onUseCoroutine = null;
+        isCD = false;
     }
     private void StopUseCDEnumerator()
     {
@@ -209,9 +246,9 @@ public class WeaponBehaviour : MonoBehaviour
 
     private IEnumerator ActiveEnumerator()
     {
-        m_isActive = false;
+        IsActive = false;
         yield return new WaitForSeconds(m_activeTime);
-        m_isActive = true;
+        IsActive = true;
 
     }
 
@@ -224,9 +261,22 @@ public class WeaponBehaviour : MonoBehaviour
             healthBehaviour.TakeDamage(damage);
         }
     }
+
+    #region Animation & Sound Effects Player
+    public void PlayAnimation(int id, float speed)
+    {
+        m_animationFeatureSettings.AniBehaviour.StartAnimationConstant(animator, id, speed);
+    }
+    public void PlaySoundEffect(int id)
+    {
+        m_soundEffectSettings.AudioBehaviour.PlayAudio(id);
+    }
+    #endregion
 }
 
 public delegate void OnUseEvent();
 public delegate void OnHitEvent(GameObject hitTarget);
 public delegate void OnUseCDStart();
 public delegate void OnUseCDEnd();
+public delegate void OnActiveEvent();
+public delegate void OnDestroyEvent();

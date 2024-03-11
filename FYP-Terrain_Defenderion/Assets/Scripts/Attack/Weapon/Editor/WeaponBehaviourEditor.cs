@@ -18,12 +18,14 @@ public class WeaponBehaviourEditor : Editor
     private SerializedProperty m_isDebugProperty;
     private SerializedProperty m_useWeaponInputActionReferenceProperty;
     private SerializedProperty m_ammoSettingsProperty;
-
+    private SerializedProperty m_onUseUnityEventProperty;
     private SerializedProperty m_raycastSettingsProperty;
     private SerializedProperty m_projectileSettingsProperty;
     private SerializedProperty m_animationSettingsProperty;
     private SerializedProperty m_soundEFfectSettingsProperty;
-
+    private SerializedProperty m_onUseAnimationIDProperty;
+    private SerializedProperty m_onIdleAnimationIDProperty;
+    private SerializedProperty m_resetAniIDProperty;
 
     private void OnEnable()
     {
@@ -42,6 +44,10 @@ public class WeaponBehaviourEditor : Editor
         m_projectileSettingsProperty = serializedObject.FindProperty("m_projectileSettings");
         m_animationSettingsProperty = serializedObject.FindProperty("m_animationFeatureSettings");
         m_soundEFfectSettingsProperty = serializedObject.FindProperty("m_soundEffectSettings");
+        m_onUseUnityEventProperty = serializedObject.FindProperty("onUseUnityEvent");
+        m_onUseAnimationIDProperty = serializedObject.FindProperty("m_OnUseAnimationID");
+        m_onIdleAnimationIDProperty = serializedObject.FindProperty("m_OnIdleAnimationID");
+        m_resetAniIDProperty = serializedObject.FindProperty("m_ResetAnimationID");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -59,8 +65,19 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.PropertyField(m_activeTimeProperty);
         EditorGUILayout.PropertyField(m_isActiveProperty);
         EditorGUILayout.Space();
+        if ((weaponBehaviour.Features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
+        {
+            EditorGUILayout.LabelField("Animation Settings", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(m_onIdleAnimationIDProperty);
+            EditorGUILayout.PropertyField(m_onUseAnimationIDProperty);
+            EditorGUILayout.PropertyField(m_resetAniIDProperty);
+            EditorGUILayout.Space();
+        }
         EditorGUILayout.LabelField("Input Settings", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_useWeaponInputActionReferenceProperty);
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Custom Events", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(m_onUseUnityEventProperty);
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Weapon Features", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_featuresProperty);
