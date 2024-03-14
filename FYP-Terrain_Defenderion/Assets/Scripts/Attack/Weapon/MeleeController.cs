@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-public class MeleeController : WeaponBehaviour
+public class MeleeController : MonoBehaviour
 {
+
+    //Obsolete
+    /*
     [Header("Attack Settings")]
     [SerializeField] private AttackMethod attackMethod;
     [SerializeField] private bool areaAttack = true;
@@ -12,12 +15,13 @@ public class MeleeController : WeaponBehaviour
     [SerializeField] private float hitboxSizeX = 1f;
     [SerializeField] private float hitboxSizeY = 1f;
     [SerializeField] private float maxDistance = 1f;
-    [SerializeField] private AudioClip AttackSound;
-    private AudioSource audioSource;
     [Header("Customization Settings")]
     [SerializeField] private UnityEvent AttackFunction;
     [SerializeField] private UnityEvent<GameObject> HitFunction;
+    */
     private GameObject Player;
+    [SerializeField] private AudioClip AttackSound;
+    private AudioSource audioSource;
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
     public enum AttackModeType
@@ -32,28 +36,29 @@ public class MeleeController : WeaponBehaviour
     //[SerializeField] private string[] playAttackAnimation;
     //private int currentAttackAnimation = 0;
     public GameObject Weapon;
+    private WeaponFeature.MeleeData data;
+    public WeaponBehaviour weaponBehaviour { get; set; }
     [SerializeField] private AttackModeType AttackMode;
 
     private bool isAttack = false;
     [Header("Other Settings")]
     [SerializeField] private float SpeedMultiplier = 1f;
+    public void SetData(WeaponFeature.MeleeData data)
+    {
+        this.data = data;
+    }
     private void Start()
     {
 
-        Player = gameObject.transform.parent.GetComponent<OriginManager>().OriginGameObject;
+        Player = gameObject.transform.root.gameObject;
         audioSource = GetComponent<AudioSource>();
-
+        weaponBehaviour = GetComponent<WeaponBehaviour>();
 
     }
-    void Update()
+    public void AttackWeapon()
     {
-     
-
-        if (Input.GetButton("Fire1") && isAttack == false)
-        {
-            
             attack = StartCoroutine(Attack());
-        }
+
     }
     private void OnDisable()
     {
@@ -84,10 +89,10 @@ public class MeleeController : WeaponBehaviour
             audioSource.clip = AttackSound;
             audioSource.Play();
         }
-        isAttack = true;
+        //isAttack = true;
         attackAnimation = StartCoroutine(AttackAnim());
-        yield return new WaitForSeconds(AttackSpeed* StartHitTime);
-        switch (attackMethod)
+        yield return new WaitForSeconds(weaponBehaviour.useCD* data.startHitTime);
+        switch (data.AttackMethod)
         {
             case AttackMethod.HitBox:
                 hitbox();
@@ -97,29 +102,29 @@ public class MeleeController : WeaponBehaviour
                 break;
         }
         
-        yield return new WaitForSeconds(AttackSpeed* (1- StartHitTime));
-        yield return new WaitForSeconds(useCD);
+        /*yield return new WaitForSeconds(AttackSpeed* (1- StartHitTime));
         isAttack = false;
         if (audioSource != null)
         {
             audioSource.clip = null;
         }
+        */
     }
     private HashSet<GameObject> hitObjects = new HashSet<GameObject>();
 
     private void hitbox()
     {
-        AttackFunction.Invoke();
+        //AttackFunction.Invoke();
         // Calculate the area of effect
-        float halfWidth = hitboxSizeX / 2f;
-        float halfHeight = hitboxSizeY / 2f;
+        float halfWidth = data.hitBoxX / 2f;
+        float halfHeight = data.hitBoxY / 2f;
         Vector3 origin = Camera.main.transform.position + Camera.main.transform.forward;
         Vector3 corner1 = origin + Camera.main.transform.right * halfWidth + Camera.main.transform.up * halfHeight;
         Vector3 corner2 = origin - Camera.main.transform.right * halfWidth - Camera.main.transform.up * halfHeight;
 
         // Cast the boxcast
-        Vector3 size = new Vector3(halfWidth, halfHeight, maxDistance);
-        RaycastHit[] hits = Physics.BoxCastAll(origin, size, Camera.main.transform.forward * -1f, Quaternion.identity, maxDistance, affectedLayers);
+        Vector3 size = new Vector3(halfWidth, halfHeight, data.AtkDis);
+        RaycastHit[] hits = Physics.BoxCastAll(origin, size, Camera.main.transform.forward * -1f, Quaternion.identity, data.AtkDis, weaponBehaviour.affectedLayers);
         if (debugMode)
         {
             Vector3[] corners = new Vector3[8];
@@ -127,10 +132,10 @@ public class MeleeController : WeaponBehaviour
             corners[1] = origin + Camera.main.transform.right * halfWidth - Camera.main.transform.up * halfHeight;
             corners[2] = origin - Camera.main.transform.right * halfWidth - Camera.main.transform.up * halfHeight;
             corners[3] = origin - Camera.main.transform.right * halfWidth + Camera.main.transform.up * halfHeight;
-            corners[4] = corners[0] + Camera.main.transform.forward * maxDistance;
-            corners[5] = corners[1] + Camera.main.transform.forward * maxDistance;
-            corners[6] = corners[2] + Camera.main.transform.forward * maxDistance;
-            corners[7] = corners[3] + Camera.main.transform.forward * maxDistance;
+            corners[4] = corners[0] + Camera.main.transform.forward * data.AtkDis;
+            corners[5] = corners[1] + Camera.main.transform.forward * data.AtkDis;
+            corners[6] = corners[2] + Camera.main.transform.forward * data.AtkDis;
+            corners[7] = corners[3] + Camera.main.transform.forward * data.AtkDis;
             Debug.DrawRay(corners[0], corners[1] - corners[0], Color.red, 2f);
             Debug.DrawRay(corners[1], corners[2] - corners[1], Color.red, 2f);
             Debug.DrawRay(corners[2], corners[3] - corners[2], Color.red, 2f);
@@ -149,10 +154,10 @@ public class MeleeController : WeaponBehaviour
 
             if (!hitObjects.Contains(hit.collider.gameObject)) // Check if the object has already been hit
             {
-                HitFunction.Invoke(hit.collider.gameObject);
+                //HitFunction.Invoke(hit.collider.gameObject);
                 hitObjects.Add(hit.collider.gameObject); // Add the object to the HashSet
                 HitDamage(hit.collider.gameObject);
-                if (!areaAttack)
+                if (!data.isAOE)
                 {
                     hitObjects.Clear();
                     return;
@@ -170,8 +175,9 @@ public class MeleeController : WeaponBehaviour
         if(debugMode)
         Debug.Log("StartAttack");
         CollisionDetector collisionDetector = gameObject.GetComponent<CollisionDetector>();
+        collisionDetector.IncludedLayerMask = weaponBehaviour.affectedLayers;
         float attacktimer = 0f;
-        while(attacktimer < AttackSpeed * StartHitTime)
+        while(attacktimer < weaponBehaviour.useCD * data.startHitTime)
         {
             attacktimer += Time.deltaTime;
             if(collisionDetector != null && collisionDetector.isHit && collisionDetector.HitEntity != null)
@@ -180,13 +186,13 @@ public class MeleeController : WeaponBehaviour
                 {
                     if(debugMode)
                     Debug.Log("HitEntity");
-                    HitFunction.Invoke(collisionDetector.HitEntity);
+                    //HitFunction.Invoke(collisionDetector.HitEntity);
                     hitObjects.Add(collisionDetector.HitEntity); // Add the object to the HashSet
                     HitDamage(collisionDetector.HitEntity);
-                    if (!areaAttack)
+                    if (!data.isAOE)
                     {
                         hitObjects.Clear();
-                        attacktimer = AttackSpeed * StartHitTime;
+                        attacktimer = weaponBehaviour.useCD * data.startHitTime;
                     }
 
                 }
@@ -205,7 +211,7 @@ public class MeleeController : WeaponBehaviour
             {
                 if (!teamBehaviour.isOwnTeam(Player, hit.GetComponent<Collider>()))
                 {
-                    damageable.TakeDamage(damage);
+                    damageable.TakeDamage(weaponBehaviour.damage);
                     EnemyController enemyController = hit.GetComponent<EnemyController>();
                     if (enemyController != null)
                     {
@@ -214,7 +220,7 @@ public class MeleeController : WeaponBehaviour
                 }
             }
             else
-                damageable.TakeDamage(damage);
+                damageable.TakeDamage(weaponBehaviour.damage);
         }
     }
     private IEnumerator AttackAnim()
@@ -223,7 +229,7 @@ public class MeleeController : WeaponBehaviour
             Animator weaponAnimator = Player.GetComponent<Animator>();
             if (weaponAnimator != null && animationBehaviour != null)
             {
-            animationBehaviour.StartAnimationRandom(weaponAnimator, AttackSpeed);
+            animationBehaviour.StartAnimationRandom(weaponAnimator, weaponBehaviour.useCD);
                 //if (playAttackAnimation.Length > currentAttackAnimation || playAttackAnimation.Length == 1)
                 //{
                 //    float speedMultiplier = (1.0f / AttackSpeed);

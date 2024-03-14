@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class AimAssistBehaviour : MonoBehaviour
 {
-    [SerializeField] private float m_maxDistance = 100;
-    [SerializeField] private LayerMask m_contactLayers;   
+    [SerializeField] private float m_maxDistance = 1000f;
+    [SerializeField] private LayerMask m_contactLayers;
+    [SerializeField] private float m_movementSpeed = 1f;
     // Start is called before the first frame update
-    public Quaternion Rotation { get; private set; }
+
     void Start()
     {
         
@@ -21,9 +22,15 @@ public class AimAssistBehaviour : MonoBehaviour
         RaycastHit hitPos;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hitPos, m_maxDistance, m_contactLayers))
         {
-            point = hitPos.point;
+            Vector3 targetPosition = hitPos.point;
+            Vector3 newPosition = Vector3.Lerp(gameObject.transform.position, targetPosition, Time.deltaTime * m_movementSpeed);
+            gameObject.transform.position = newPosition;
         }
-        Vector3 direction = point - transform.root.position;
-        Rotation = Quaternion.LookRotation(direction, Vector3.up);
+        else
+        {
+            Vector3 targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, m_maxDistance));
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, Time.deltaTime * m_movementSpeed);
+        }
+
     }
 }

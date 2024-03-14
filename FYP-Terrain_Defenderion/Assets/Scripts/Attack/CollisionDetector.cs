@@ -5,6 +5,7 @@ using UnityEngine;
 public class CollisionDetector : MonoBehaviour
 {
     [SerializeField] private LayerMask includedLayerMask = ~0;
+    public LayerMask IncludedLayerMask { set { includedLayerMask = value; } }
     public delegate void OnCollisionEvent(bool state);
     public  event OnCollisionEvent OnCollision;
     public GameObject HitEntity { get; private set; }

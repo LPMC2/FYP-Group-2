@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -9,6 +10,22 @@ public class PlayerManager : MonoBehaviour
     InputManager inputManager;
     PlayerLocomotion playerLocomotion;
     CameraManager cameraManager;
+    [SerializeField] private Rig rigObject;
+    public bool isRig {
+        get { if (rigObject != null) return isRig; else return false; }
+        set
+        {
+            if (rigObject == null) return;
+            isRig = value;
+            if(isRig)
+            {
+                rigObject.weight = 1f;
+            } else
+            {
+                rigObject.weight = 0f;
+            }
+        }
+    }
 
     [SerializeField] private bool isInteracting;
     #region isInteracting getter

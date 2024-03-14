@@ -93,6 +93,31 @@ public class WeaponFeature
         [SerializeField] private AudioBehaviour audioSettings;
         public AudioBehaviour AudioBehaviour { get { return audioSettings; } }
     }
+    [Serializable]
+    public class MeleeData
+    {
+        [Header("Attack Settings")]
+        [SerializeField] private AttackMethod attackMethod;
+        [SerializeField] private bool areaAttack = true;
+        [SerializeField] private float StartHitTime = 0.5f;
+        [Header("Attack - Hitbox Settings")]
+        [SerializeField] private float attackDistance = 1f;
+        [SerializeField] private float hitboxSizeX = 1f;
+        [SerializeField] private float hitboxSizeY = 1f;
+        [Header("Misc")]
+        [SerializeField] private int AttackSoundID = -1;
+        [SerializeField] private int AttackAnimationID = -1;       
+        [SerializeField] private float SpeedMultiplier = 1f;
+        public AttackMethod AttackMethod { get { return attackMethod; } }
+        public bool isAOE { get { return areaAttack; } }
+        public float startHitTime { get { return StartHitTime; } }
+        public float hitBoxX { get { return hitboxSizeX; } }
+        public float hitBoxY { get { return hitboxSizeY; } }
+        public float AtkDis { get { return attackDistance; } }
+        public int AtkSoundID { get { return AttackSoundID; } }
+        public int AtkAniID { get { return AttackAnimationID; } }
+        public float SpeedMulti { get { return SpeedMultiplier; } }
+    }
     [Flags]
     public enum WeaponFeatures
     {

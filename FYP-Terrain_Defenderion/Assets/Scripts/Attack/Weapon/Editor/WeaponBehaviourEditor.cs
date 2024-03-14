@@ -26,7 +26,7 @@ public class WeaponBehaviourEditor : Editor
     private SerializedProperty m_onUseAnimationIDProperty;
     private SerializedProperty m_onIdleAnimationIDProperty;
     private SerializedProperty m_resetAniIDProperty;
-
+    private SerializedProperty m_meleeSettingsProperty;
     private void OnEnable()
     {
         m_firePointProperty = serializedObject.FindProperty("m_firePoint");
@@ -48,6 +48,7 @@ public class WeaponBehaviourEditor : Editor
         m_onUseAnimationIDProperty = serializedObject.FindProperty("m_OnUseAnimationID");
         m_onIdleAnimationIDProperty = serializedObject.FindProperty("m_OnIdleAnimationID");
         m_resetAniIDProperty = serializedObject.FindProperty("m_ResetAnimationID");
+        m_meleeSettingsProperty = serializedObject.FindProperty("m_meleeSettings");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -93,6 +94,8 @@ public class WeaponBehaviourEditor : Editor
             GenerateFeatureGUI("Raycast Feature", Color.green, ref m_raycastSettingsProperty, WeaponFeature.WeaponFeatures.RAYCAST);
 
             GenerateFeatureGUI("Projectile Feature", Color.green, ref m_projectileSettingsProperty, WeaponFeature.WeaponFeatures.PROJECTILE);
+
+            GenerateFeatureGUI("Attack (Melee) Feature", Color.red, ref m_meleeSettingsProperty, WeaponFeature.WeaponFeatures.ATTACK_COLLISION);
 
             GenerateFeatureGUI("Animation Feature", Color.magenta, ref m_animationSettingsProperty, WeaponFeature.WeaponFeatures.ANIMATIONS);
 

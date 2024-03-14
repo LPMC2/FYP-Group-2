@@ -59,7 +59,7 @@ public class AmmoBehaviour : MonoBehaviour
     }
     private void ReloadAmmo()
     {
-        if (AmmoData.RemainAmmo > AmmoData.AmmoCount || AmmoData.TotalAmmo <= 0 || !weaponBehaviour.IsActive) return;
+        if (AmmoData.RemainAmmo >= AmmoData.AmmoCount || AmmoData.TotalAmmo <= 0 || !weaponBehaviour.IsActive || this == null) return;
         if (reloadCoroutine == null)
         {
             reloadCoroutine = StartCoroutine(ReloadCoroutine());

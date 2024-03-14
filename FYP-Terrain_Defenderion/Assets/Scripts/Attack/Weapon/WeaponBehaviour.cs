@@ -145,6 +145,7 @@ public class WeaponBehaviour : MonoBehaviour
     }
     private void OnDestroy()
     {
+        DebugLog("Destroyed!");
         onDestroyEvent?.Invoke();
     }
     #endregion
@@ -168,6 +169,9 @@ public class WeaponBehaviour : MonoBehaviour
     //Audio Features Settings
     [SerializeField] private WeaponFeature.AudioData m_soundEffectSettings;
     public WeaponFeature.AudioData AudioData { get { return m_soundEffectSettings; } }
+    //Melee Settings
+    [SerializeField] private WeaponFeature.MeleeData m_meleeSettings;
+    public WeaponFeature.MeleeData MeleeData { get { return m_meleeSettings; } }
 
     private void AddFeatures()
     {
@@ -193,10 +197,17 @@ public class WeaponBehaviour : MonoBehaviour
         {
             
         }
+        if((m_features & WeaponFeature.WeaponFeatures.ATTACK_COLLISION) != 0)
+        {
+            MeleeController meleeController = gameObject.AddComponent<MeleeController>();
+            meleeController.weaponBehaviour = this;
+            useEvent += meleeController.AttackWeapon;
+        }
     }
     #endregion
 
     #region Events Functions
+    //For Method Overriding
     public virtual void OnUseEvent()
     {
 
@@ -227,6 +238,17 @@ public class WeaponBehaviour : MonoBehaviour
             onUseCoroutine = StartCoroutine(OnUseCDEnumerator());
         }
     }
+   
+    #endregion
+
+    #region Enumerators
+    private IEnumerator ActiveEnumerator()
+    {
+        IsActive = false;
+        yield return new WaitForSeconds(m_activeTime);
+        IsActive = true;
+
+    }
     private IEnumerator OnUseCDEnumerator()
     {
         isCD = true;
@@ -242,15 +264,8 @@ public class WeaponBehaviour : MonoBehaviour
         StopCoroutine(onUseCoroutine);
         onUseCoroutine = null;
     }
+
     #endregion
-
-    private IEnumerator ActiveEnumerator()
-    {
-        IsActive = false;
-        yield return new WaitForSeconds(m_activeTime);
-        IsActive = true;
-
-    }
 
     public void HitTakeDamage(GameObject hit)
     {
