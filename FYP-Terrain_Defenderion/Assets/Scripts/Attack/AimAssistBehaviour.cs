@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AimAssistBehaviour : MonoBehaviour
 {
+    [SerializeField] private GameObject player;
     [SerializeField] private float m_maxDistance = 1000f;
     [SerializeField] private LayerMask m_contactLayers;
     [SerializeField] private float m_movementSpeed = 1f;
@@ -18,7 +19,7 @@ public class AimAssistBehaviour : MonoBehaviour
     Vector3 point = Vector3.zero;
     void Update()
     {
-
+        if (!player.activeInHierarchy) return;
         RaycastHit hitPos;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hitPos, m_maxDistance, m_contactLayers))
         {

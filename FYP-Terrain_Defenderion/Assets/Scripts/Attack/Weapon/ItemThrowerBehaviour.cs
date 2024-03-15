@@ -9,6 +9,7 @@ public class ItemThrowerBehaviour : MonoBehaviour
     public WeaponBehaviour WBehaviour { set { weaponBehaviour = value; } }
     WeaponFeature.ProjectileData data;
     // Start is called before the first frame update
+    private float m_destroyPoolTime = 0f;
     void Start()
     {
         if(weaponBehaviour == null)
@@ -16,8 +17,13 @@ public class ItemThrowerBehaviour : MonoBehaviour
             weaponBehaviour = gameObject.GetComponent<WeaponBehaviour>();
         }
         data = weaponBehaviour.ProjectileData;
+        m_destroyPoolTime = data.ThrowItem.GetComponent<Projectile>().MaxTime;
         //if (GameObjectExtension.GetGameObjectWithTagFromChilds(transform.root.gameObject, "BasePool") );
         objectPool.Initialize(data.ThrowItem, 10, transform.root);
+    }
+    public void OnDestroy()
+    {
+        Destroy(objectPool.basePool, m_destroyPoolTime);
     }
     [SerializeField]
     ObjectPool objectPool = new ObjectPool(); 
@@ -30,7 +36,7 @@ public class ItemThrowerBehaviour : MonoBehaviour
         if (projectileScript != null)
         {
             projectileInstance.transform.rotation = weaponBehaviour.FirePoint.rotation;
-            projectileScript.InitializeProjectile(projectileInstance.transform.forward * data.ProjSpeed * Time.deltaTime, data.ProjSpeed, weaponBehaviour.damage, data.Type, weaponBehaviour.owner, false);
+            projectileScript.InitializeProjectile(projectileInstance.transform.forward * data.ProjSpeed * Time.deltaTime, data.ProjSpeed, weaponBehaviour.damage, data.Type, weaponBehaviour.owner, false, weaponBehaviour.affectedLayers);
             projectileScript.SetAOE(data.isAOE, data.AOERadius);
         } else
         {

@@ -24,6 +24,7 @@ public class LeadershipBehaviour : MonoBehaviour
     private bool isGathering = false;
     GameObject areaEffect;
     ScaleAnimationCoroutineBehaviour scaleAnimation;
+    private PlayerManager playerManager;
     private void OnDestroy()
     {
         Destroy(areaEffect);
@@ -33,6 +34,8 @@ public class LeadershipBehaviour : MonoBehaviour
         teamBehaviour = TeamBehaviour.Singleton;
         areaEffect = Instantiate(pointedAreaEffectPrefab, transform.position, Quaternion.identity);
         scaleAnimation = areaEffect.transform.GetChild(0).GetComponent<ScaleAnimationCoroutineBehaviour>();
+        playerManager = transform.root.GetComponent<PlayerManager>();
+        playerManager.IsRig = false;
     }
     Vector3 point = Vector3.zero;
     GameObject hitObj;

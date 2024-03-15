@@ -307,7 +307,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7628509336533531650}
-  m_LocalRotation: {x: -0.5788404, y: 0.011732677, z: -0.8149777, w: -0.024850717}
+  m_LocalRotation: {x: 0.5564344, y: -0.14250457, z: 0.8106476, w: -0.113682434}
   m_LocalPosition: {x: -0.326, y: 0.028, z: -0.196}
   m_LocalScale: {x: 0.99999905, y: 0.99999887, z: 0.99999857}
   m_ConstrainProportionsScale: 0
@@ -335,26 +335,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_firePoint: {fileID: 1902154798389665754}
   m_useCD: 0.1
-  m_damage: 0
+  m_damage: 1000
   m_affectedLayers:
     serializedVersion: 2
     m_Bits: 5505
   m_features: 74
+  m_canSprint: 0
   m_owner: {fileID: 0}
   m_activeTime: 1
   m_isActive: 1
   m_OnIdleAnimationID: 1
-  m_OnUseAnimationID: 3
+  m_OnUseAnimationID: 03000000
   m_ResetAnimationID: 4
   m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  m_useInputAsAction: 1
   onUseUnityEvent:
     m_PersistentCalls:
       m_Calls: []
   isDebug: 0
   m_ammoSettings:
-    m_totalAmmo: 200
-    m_ammoCount: 30
-    m_remainAmmo: 10
+    m_totalAmmo: 20
+    m_ammoCount: 1
+    m_remainAmmo: 1
     m_reloadingTime: 3
     m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
     m_animationIDOnReload: 2
@@ -387,6 +389,7 @@ MonoBehaviour:
     m_projectileType: 1
   m_animationFeatureSettings:
     animationSettings:
+      m_useAnimationRig: 1
       animationLayer: 2
       playAttackAnimation:
       - AimIdle
@@ -399,6 +402,16 @@ MonoBehaviour:
     audioSettings:
       m_audioSO: {fileID: 0}
       audioList: []
+  m_meleeSettings:
+    attackMethod: 0
+    areaAttack: 1
+    StartHitTime: 0.5
+    attackDistance: 1
+    hitboxSizeX: 1
+    hitboxSizeY: 1
+    AttackSoundID: -1
+    AttackAnimationID: 
+    SpeedMultiplier: 1
 --- !u!114 &912068172699004969
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -29,6 +29,7 @@ public class Projectile : MonoBehaviour
     private float AOE = -1f;
     [SerializeField]
     private float maxTime = 10f;
+    public float MaxTime { get { return maxTime; } }
     [SerializeField]
     private ProjectileType projectileType;
     public ProjectileType Type => projectileType;
@@ -93,7 +94,7 @@ public class Projectile : MonoBehaviour
         this.obstacleMask = obstacleMask;
     }
 
-    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default, GameObject owner = null, bool DestroyObject = false)
+    public void InitializeProjectile(Vector3 direction,float speedMultiplier, float damageMultiplier = default, ProjectileType projectileType = default, GameObject owner = null, bool DestroyObject = false, LayerMask affectedLayer = default)
     {
         if(projectileType != default)
         {
@@ -102,6 +103,10 @@ public class Projectile : MonoBehaviour
         if(damageMultiplier != default)
         {
             damage *= damageMultiplier;
+        }
+        if (affectedLayer != default)
+        {
+            m_HitLayer = affectedLayer;
         }
         if (owner != null)
         {
@@ -214,6 +219,9 @@ public class Projectile : MonoBehaviour
             else
                 gameObject.SetActive(false);
         }
+        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
     }
     public void CastDamageSphere()
     {

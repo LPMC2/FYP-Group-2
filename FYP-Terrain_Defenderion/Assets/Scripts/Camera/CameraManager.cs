@@ -33,13 +33,23 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float maxPivotAngle = 35f;
 
     [SerializeField] private float lookAngle;
+    public float LookAngle { get { return lookAngle; } }
     [SerializeField] private float pivotAngle;
+    [Header("Default Variables")]
+    [SerializeField] private float m_defaultPivotAngle = 0f;
+    [SerializeField] private float m_defaultLookAngle = 0f;
     private void Awake()
     {
         targetTransform = FindObjectOfType<PlayerManager>().transform;
         inputManager = FindObjectOfType<InputManager>();
         cameraTransform = Camera.main.transform;
         defaultPosition = cameraTransform.localPosition.z;
+        ResetRot();
+    }
+    public void ResetRot()
+    {
+        pivotAngle = m_defaultPivotAngle;
+        lookAngle = m_defaultLookAngle;
     }
     public void HandleAllCameraMovement()
     {

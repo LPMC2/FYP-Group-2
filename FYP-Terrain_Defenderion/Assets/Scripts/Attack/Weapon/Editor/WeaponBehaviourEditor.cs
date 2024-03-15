@@ -27,6 +27,8 @@ public class WeaponBehaviourEditor : Editor
     private SerializedProperty m_onIdleAnimationIDProperty;
     private SerializedProperty m_resetAniIDProperty;
     private SerializedProperty m_meleeSettingsProperty;
+    private SerializedProperty m_useInputProperty;
+    private SerializedProperty m_canSprintProperty;
     private void OnEnable()
     {
         m_firePointProperty = serializedObject.FindProperty("m_firePoint");
@@ -49,6 +51,8 @@ public class WeaponBehaviourEditor : Editor
         m_onIdleAnimationIDProperty = serializedObject.FindProperty("m_OnIdleAnimationID");
         m_resetAniIDProperty = serializedObject.FindProperty("m_ResetAnimationID");
         m_meleeSettingsProperty = serializedObject.FindProperty("m_meleeSettings");
+        m_useInputProperty = serializedObject.FindProperty("m_useInputAsAction");
+        m_canSprintProperty = serializedObject.FindProperty("m_canSprint");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -62,6 +66,7 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.PropertyField(m_useCDProperty, new GUIContent("Cooldown Time on Use"));
         EditorGUILayout.PropertyField(m_damageProperty);
         EditorGUILayout.PropertyField(m_affectedLayersProperty);
+        EditorGUILayout.PropertyField(m_canSprintProperty);
         EditorGUILayout.PropertyField(m_ownerProperty);
         EditorGUILayout.PropertyField(m_activeTimeProperty);
         EditorGUILayout.PropertyField(m_isActiveProperty);
@@ -75,7 +80,11 @@ public class WeaponBehaviourEditor : Editor
             EditorGUILayout.Space();
         }
         EditorGUILayout.LabelField("Input Settings", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(m_useWeaponInputActionReferenceProperty);
+        EditorGUILayout.PropertyField(m_useInputProperty);
+        if (weaponBehaviour.UseInput)
+        {
+            EditorGUILayout.PropertyField(m_useWeaponInputActionReferenceProperty);
+        }
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Custom Events", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_onUseUnityEventProperty);
@@ -107,6 +116,10 @@ public class WeaponBehaviourEditor : Editor
 
         EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_isDebugProperty);
+        if(GUILayout.Button("Use Weapon"))
+        {
+            weaponBehaviour.UseWeapon();
+        }
 
         serializedObject.ApplyModifiedProperties();
     }

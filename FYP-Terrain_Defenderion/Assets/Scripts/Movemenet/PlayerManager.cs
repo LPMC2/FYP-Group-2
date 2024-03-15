@@ -11,13 +11,16 @@ public class PlayerManager : MonoBehaviour
     PlayerLocomotion playerLocomotion;
     CameraManager cameraManager;
     [SerializeField] private Rig rigObject;
-    public bool isRig {
-        get { if (rigObject != null) return isRig; else return false; }
+    [SerializeField] private bool m_isRig = true;
+    public bool EnableSprinting { get { return playerLocomotion.EnableSprint; } set { playerLocomotion.EnableSprint = value; } }
+    public bool IsRig {
+        get { if (rigObject != null) return m_isRig; else return false; }
         set
         {
             if (rigObject == null) return;
-            isRig = value;
-            if(isRig)
+            m_isRig = value;
+            Debug.Log("Test");
+            if(m_isRig)
             {
                 rigObject.weight = 1f;
             } else
@@ -67,10 +70,19 @@ public class PlayerManager : MonoBehaviour
     private void LateUpdate()
     {
         cameraManager.HandleAllCameraMovement();
-
         isInteracting = animator.GetBool("isInteracting");
         isUsingRootMotion = animator.GetBool("isUsingRootMotion");
         playerLocomotion.setIsJumping(animator.GetBool("isJumping"));
         animator.SetBool("isGrounded", playerLocomotion.getIsGrounded());
+    }
+    private void LimitPlayerFromCamera()
+    {
+        if(cameraManager.transform.eulerAngles.y > 60f)
+        {
+            Quaternion targetRotation = cameraManager.transform.rotation;
+            float rotationSpeed = 1000f; // Adjust the rotation speed as desired
+
+            gameObject.transform.rotation = Quaternion.RotateTowards(gameObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 }

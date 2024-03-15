@@ -106,7 +106,7 @@ public class WeaponFeature
         [SerializeField] private float hitboxSizeY = 1f;
         [Header("Misc")]
         [SerializeField] private int AttackSoundID = -1;
-        [SerializeField] private int AttackAnimationID = -1;       
+        [SerializeField] private List<int> AttackAnimationID = new List<int>();       
         [SerializeField] private float SpeedMultiplier = 1f;
         public AttackMethod AttackMethod { get { return attackMethod; } }
         public bool isAOE { get { return areaAttack; } }
@@ -115,7 +115,7 @@ public class WeaponFeature
         public float hitBoxY { get { return hitboxSizeY; } }
         public float AtkDis { get { return attackDistance; } }
         public int AtkSoundID { get { return AttackSoundID; } }
-        public int AtkAniID { get { return AttackAnimationID; } }
+        public List<int> AtkAniID { get { return AttackAnimationID; } }
         public float SpeedMulti { get { return SpeedMultiplier; } }
     }
     [Flags]

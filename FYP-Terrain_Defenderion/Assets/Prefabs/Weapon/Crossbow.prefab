@@ -238,9 +238,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5433450120154415101}
-  - component: {fileID: 3065604318864473921}
-  - component: {fileID: 200360946653294338}
   - component: {fileID: 4714541663831739225}
+  - component: {fileID: 5377142731589646432}
   m_Layer: 0
   m_Name: Crossbow
   m_TagString: Untagged
@@ -264,107 +263,8 @@ Transform:
   - {fileID: 4050363251336627433}
   - {fileID: 5655478678709742623}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 3.788, y: -76.026, z: -180}
---- !u!114 &3065604318864473921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4973049186275048842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15cc07a235173054e8cebcf65b9f77e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TotalAmmo: 2500
-  AmmoCount: 100
-  RemainAmmo: 100
-  ReloadingTime: 1.5
-  ReloadFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  firePoint: {fileID: 2504140924375025597}
-  ShootingTime: 0.1
-  hitLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  Damage: 0
-  Range: 0
-  bulletCount: 1
-  horizontalSpreadAngle: 1
-  verticalSpreadAngle: 1
-  isPiercing: 0
-  HitFunction:
-    m_PersistentCalls:
-      m_Calls: []
-  ShootFunction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 200360946653294338}
-        m_TargetAssemblyTypeName: ItemThrowerBehaviour, Assembly-CSharp
-        m_MethodName: shoot
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AimPosition: {x: 0, y: 0, z: 0}
-  BulletSpreadMultiplier: 1
-  removeAimSymbol: 1
-  recoilAngle: 5
-  recoilSpeed: 10
-  maxRecoilAngle: 20
-  currentRecoilAngle: 0
-  animationBehaviour:
-    animationLayer: 2
-    playAttackAnimation:
-    - AimIdle
-    - AimActive
-    - Reloading
-    - AttackGun
-    - Empty
-    - AimRelease
-    switchAnimationTime: 0.25
-  SpeedMultiplier: 1
-  hitFX: {fileID: 0}
-  ignoreAnimation: 1
-  ignoreAudio: 0
-  Gun: {fileID: 0}
-  SwitchingCD: 0.75
-  muzzleFlashLight: {fileID: 0}
-  MuzzleFlash: {fileID: 0}
-  ShootSound: {fileID: 8300000, guid: 8129cf94c96d480429a2cc1ad25c729d, type: 3}
-  ReloadSound: {fileID: 8300000, guid: a1e1d7dcc5cff954b8664e37dfaa6894, type: 3}
-  isOut: 0
---- !u!114 &200360946653294338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4973049186275048842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90b5f05e54438f746851394f9f801c84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 2504140924375025597}
-  throwItem: {fileID: 4432626763521816269, guid: ca214a6bf239319418f93156dad466ef, type: 3}
-  ProjectileSpeed: -5000
-  ProjectileOffset: {x: 0, y: 0, z: 0}
-  damage: 25
-  isAreaDamage: 0
-  AOERadius: 1
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 7040
-  projectileType: 1
 --- !u!82 &4714541663831739225
 AudioSource:
   m_ObjectHideFlags: 0
@@ -461,3 +361,94 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5377142731589646432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973049186275048842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c4fa2228716fd4293619791b9ce719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_firePoint: {fileID: 6711538130928141941}
+  m_useCD: 0.1
+  m_damage: 20
+  m_affectedLayers:
+    serializedVersion: 2
+    m_Bits: 5504
+  m_features: 74
+  m_canSprint: 0
+  m_owner: {fileID: 0}
+  m_activeTime: 1
+  m_isActive: 1
+  m_OnIdleAnimationID: 0
+  m_OnUseAnimationID: 02000000
+  m_ResetAnimationID: 4
+  m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  m_useInputAsAction: 1
+  onUseUnityEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  isDebug: 0
+  m_ammoSettings:
+    m_totalAmmo: 1000
+    m_ammoCount: 100
+    m_remainAmmo: 100
+    m_reloadingTime: 2.5
+    m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+    m_animationIDOnReload: 3
+    OnReloadEvent:
+      m_PersistentCalls:
+        m_Calls: []
+  m_raycastSettings:
+    m_range: 10
+    m_bulletCount: 1
+    m_horizontalSpreadAngle: 1
+    m_verticalSpreadAngle: 1
+    m_isPiercing: 0
+    m_type: 0
+    m_isVisible: 0
+    m_material: {fileID: 0}
+    m_laserCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_laserClosingTime: 0.5
+    m_fireTime: 0
+    m_preFireCD: 0
+  m_projectileSettings:
+    m_throwItem: {fileID: 4432626763521816269, guid: ca214a6bf239319418f93156dad466ef, type: 3}
+    m_ProjectileSpeed: 1000
+    m_isAreaDamage: 0
+    m_AOERadius: 1
+    m_projectileType: 1
+  m_animationFeatureSettings:
+    animationSettings:
+      m_useAnimationRig: 1
+      animationLayer: 2
+      playAttackAnimation:
+      - AimActive
+      - AimIdle
+      - AttackGun
+      - Reloading
+      - AimRelease
+      switchAnimationTime: 0.25
+  m_soundEffectSettings:
+    audioSettings:
+      m_audioSO: {fileID: 0}
+      audioList: []
+  m_meleeSettings:
+    attackMethod: 0
+    areaAttack: 1
+    StartHitTime: 0.5
+    attackDistance: 1
+    hitboxSizeX: 1
+    hitboxSizeY: 1
+    AttackSoundID: -1
+    AttackAnimationID: 
+    SpeedMultiplier: 1

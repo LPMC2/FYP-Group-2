@@ -29,12 +29,20 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("Movement Flags")]
     [SerializeField] private bool isSprinting;
+    [SerializeField] private bool enableSprinting = true;
+    public bool EnableSprint { get { return enableSprinting; } set { enableSprinting = value; } }
     [SerializeField] private bool isGrounded;
     [SerializeField] private bool isJumping;
     #region isSprinting & isJumping Setter and isGrounded getter
     public void setIsSprinting(bool value)
     {
-        isSprinting = value;
+        if (enableSprinting)
+        {
+            isSprinting = value;
+        } else
+        {
+            isSprinting = false;
+        }
     }
     public void setIsJumping(bool value)
     {
@@ -82,7 +90,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-        if(isJumping)
+        if (isJumping)
         {
             return;
         }

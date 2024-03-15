@@ -259,7 +259,7 @@ public class InventoryBehaviour : MonoBehaviour
                     int inputIndex = i - 1; // Adjust the index to match array or list indices
 
                     // Check if the inventory slot at the input index exists
-                    if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null)
+                    if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null && inputIndex != selectedSlot)
                     {
                         EquipItem(inputIndex);
                     }

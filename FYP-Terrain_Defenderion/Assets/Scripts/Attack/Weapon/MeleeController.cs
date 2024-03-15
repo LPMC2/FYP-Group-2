@@ -53,6 +53,7 @@ public class MeleeController : MonoBehaviour
         Player = gameObject.transform.root.gameObject;
         audioSource = GetComponent<AudioSource>();
         weaponBehaviour = GetComponent<WeaponBehaviour>();
+        data = weaponBehaviour.MeleeData;
 
     }
     public void AttackWeapon()
@@ -90,7 +91,7 @@ public class MeleeController : MonoBehaviour
             audioSource.Play();
         }
         //isAttack = true;
-        attackAnimation = StartCoroutine(AttackAnim());
+        //attackAnimation = StartCoroutine(AttackAnim());
         yield return new WaitForSeconds(weaponBehaviour.useCD* data.startHitTime);
         switch (data.AttackMethod)
         {
@@ -225,11 +226,10 @@ public class MeleeController : MonoBehaviour
     }
     private IEnumerator AttackAnim()
     {
-
-            Animator weaponAnimator = Player.GetComponent<Animator>();
-            if (weaponAnimator != null && animationBehaviour != null)
-            {
-            animationBehaviour.StartAnimationRandom(weaponAnimator, weaponBehaviour.useCD);
+        int test = arrayBehaviour.GetRandomObjectFromList(data.AtkAniID);
+        if (weaponBehaviour != null)
+        weaponBehaviour.PlayAnimation(arrayBehaviour.GetRandomObjectFromList(data.AtkAniID), weaponBehaviour.useCD);
+            //animationBehaviour.StartAnimationRandom(weaponAnimator, weaponBehaviour.useCD);
                 //if (playAttackAnimation.Length > currentAttackAnimation || playAttackAnimation.Length == 1)
                 //{
                 //    float speedMultiplier = (1.0f / AttackSpeed);
@@ -260,7 +260,7 @@ public class MeleeController : MonoBehaviour
 
                 //yield return new WaitForSeconds(weaponAnimator.GetCurrentAnimatorStateInfo(0).length / speedMultiplier);
                 //weaponAnimator.Play("Idle");
-            }
+            
         
     }
 

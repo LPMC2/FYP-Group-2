@@ -239,7 +239,7 @@ public class SpawnerBehaviour : MonoBehaviour
 [System.Serializable]
 public class ObjectPool
 {
-    GameObject basePool;
+    public GameObject basePool { get; private set; }
     GameObject baseTargetObject;
     private List<GameObject> objects = new List<GameObject>();
     public virtual List<GameObject> ObjectPooling { get { return objects; } set { objects = value; } }

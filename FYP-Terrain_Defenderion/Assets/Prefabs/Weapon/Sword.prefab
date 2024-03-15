@@ -28,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719598565401989821}
-  m_LocalRotation: {x: -0.04272152, y: 0.8286316, z: 0.5483119, w: -0.104396746}
+  m_LocalRotation: {x: -0.46563473, y: 0.68675953, z: 0.52313256, w: 0.19462273}
   m_LocalPosition: {x: 0.081, y: -0.306, z: 0.088}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -36,7 +36,7 @@ Transform:
   - {fileID: 6281075580589345481}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -64.129, y: 210.256, z: -25.127}
+  m_LocalEulerAnglesHint: {x: -64.129, y: 210.256, z: -87.5}
 --- !u!114 &1068686206666811395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55,14 +55,16 @@ MonoBehaviour:
   m_affectedLayers:
     serializedVersion: 2
     m_Bits: 4480
-  m_features: 128
+  m_features: 136
+  m_canSprint: 0
   m_owner: {fileID: 0}
   m_activeTime: 1
   m_isActive: 1
-  m_OnIdleAnimationID: -1
-  m_OnUseAnimationID: -1
+  m_OnIdleAnimationID: 5
+  m_OnUseAnimationID: 0000000001000000
   m_ResetAnimationID: -1
-  m_useWeaponInputActionReference: {fileID: 0}
+  m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
+  m_useInputAsAction: 1
   onUseUnityEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -103,22 +105,29 @@ MonoBehaviour:
     m_projectileType: 0
   m_animationFeatureSettings:
     animationSettings:
+      m_useAnimationRig: 0
       animationLayer: 2
-      playAttackAnimation: []
+      playAttackAnimation:
+      - SwordSwing1
+      - SwordSwing2
+      - SwordSwing3
+      - SwordSwing4
+      - SwordIdle
+      - SwordDraw1
       switchAnimationTime: 0.25
   m_soundEffectSettings:
     audioSettings:
       m_audioSO: {fileID: 0}
       audioList: []
   m_meleeSettings:
-    attackMethod: 0
+    attackMethod: 1
     areaAttack: 1
-    StartHitTime: 0.5
+    StartHitTime: 0.2
     attackDistance: 1
     hitboxSizeX: 1
     hitboxSizeY: 1
     AttackSoundID: -1
-    AttackAnimationID: -1
+    AttackAnimationID: 00000000
     SpeedMultiplier: 1
 --- !u!95 &8205448148089867952
 Animator:

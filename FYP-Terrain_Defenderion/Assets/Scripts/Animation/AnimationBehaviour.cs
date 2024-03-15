@@ -7,11 +7,13 @@ using UnityEngine;
 public class AnimationBehaviour
 {
     Animator animator;
+    [SerializeField] private bool m_useAnimationRig = true;
     [SerializeField] private int animationLayer = 2;
     [SerializeField] private string[] playAttackAnimation;
     private int currentAttackAnimation = 0;
     [SerializeField] private float switchAnimationTime = 0.25f;
     // Start is called before the first frame update
+    public bool UseAniRig { get { return m_useAnimationRig; } }
     public int GetAnimationLength()
     {
         return playAttackAnimation.Length;
@@ -41,9 +43,10 @@ public class AnimationBehaviour
     }
     public void StartAnimationConstant(Animator animator, int animationId, float speed)
     {
-        if (animator == null) return;
+        if (animator == null || animationId == -1) return;
         if (playAttackAnimation.Length > animationId || playAttackAnimation.Length == 1)
         {
+            Debug.Log("original speed: " + speed + "\nnew speed: " + (1.0f / speed));
             float speedMultiplier = (1.0f / speed);
             if (HasParameter("SpeedMultiplier", animator))
                 animator.SetFloat("SpeedMultiplier", speedMultiplier);

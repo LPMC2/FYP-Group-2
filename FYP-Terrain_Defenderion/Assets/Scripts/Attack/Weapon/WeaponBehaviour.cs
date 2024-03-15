@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using UnityEngine.Animations.Rigging;
+
 public class WeaponBehaviour : MonoBehaviour
 {
     #region Main Settings
@@ -14,12 +16,13 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField] private float m_damage;
     [SerializeField] private LayerMask m_affectedLayers;
     [SerializeField] private WeaponFeature.WeaponFeatures m_features;
+    [SerializeField] private bool m_canSprint = false;
     public WeaponFeature.WeaponFeatures Features { get { return m_features; } }
     [SerializeField] private GameObject m_owner;
     [SerializeField] private float m_activeTime = 1f;
     [SerializeField] private bool m_isActive = true;
     [SerializeField] private int m_OnIdleAnimationID = -1;
-    [SerializeField] private int m_OnUseAnimationID = -1;
+    [SerializeField] private List<int> m_OnUseAnimationID = new List<int>();
     [SerializeField] private int m_ResetAnimationID = -1;
     public bool IsActive { get { return m_isActive; } 
         set
@@ -28,10 +31,13 @@ public class WeaponBehaviour : MonoBehaviour
             if(m_isActive)
             {
                 onActiveEvent?.Invoke();
-                useAction.Enable();
+                if(UseInput)
+                    useAction.Enable();
             } else
             {
-                useAction.Disable();
+
+                if (UseInput)
+                    useAction.Disable();
                 if (onUseCoroutine != null)
                 {
                     StopCoroutine(onUseCoroutine);
@@ -43,6 +49,8 @@ public class WeaponBehaviour : MonoBehaviour
 
     //Input Settings
     [SerializeField] private InputActionReference m_useWeaponInputActionReference;
+    [SerializeField] private bool m_useInputAsAction = true;
+    public bool UseInput { get { return m_useInputAsAction; } }
 
     public Transform FirePoint { get { return m_firePoint; } }
     public float useCD { get { return m_useCD; }  }
@@ -60,7 +68,7 @@ public class WeaponBehaviour : MonoBehaviour
     InputAction useAction;
     private bool isPerformaned = false;
     public Coroutine onUseCoroutine { get; private set; }
-
+    private PlayerManager player;
     private Animator animator;
     //Debug Field
     [SerializeField]private bool isDebug = false;
@@ -73,16 +81,20 @@ public class WeaponBehaviour : MonoBehaviour
     #region Unity Functions
     private void OnValidate()
     {
-        if (m_useWeaponInputActionReference == null)
+        if (m_useWeaponInputActionReference == null && m_useInputAsAction)
             m_useWeaponInputActionReference = InputActionReference.Create(new PlayerInput().PlayerActions.Right_Click);
     }
     public virtual void Awake()
     {
-        
         AddFeatures();
     }
     public virtual void Start()
     {
+        InitialFunction();
+    }
+    private void InitialFunction()
+    {
+        //Time for enable to use
         if (m_activeTime > 0)
         {
             StartCoroutine(ActiveEnumerator());
@@ -95,22 +107,34 @@ public class WeaponBehaviour : MonoBehaviour
         {
             m_owner = transform.root.gameObject;
         }
-        if(animator == null)
+        if (animator == null)
         {
             animator = gameObject.transform.root.GetComponent<Animator>();
         }
-        if((Features & WeaponFeature.WeaponFeatures.ANIMATIONS ) != 0)
+
+        //Animations Feature
+        if ((Features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
         {
             useEvent += () =>
             {
-                PlayAnimation(m_OnUseAnimationID, 1f);
+                PlayAnimation(arrayBehaviour.GetRandomObjectFromList(m_OnUseAnimationID), useCD);
             };
             onDestroyEvent += () =>
             {
                 PlayAnimation(m_ResetAnimationID, 1f);
             };
-            PlayAnimation(m_OnIdleAnimationID, m_activeTime);
+            GameObjectExtension.DelayEventInvoke(this, () => { PlayAnimation(m_OnIdleAnimationID, m_activeTime); }, 0.01f);
+
+            if (owner.GetComponent<PlayerManager>() != null)
+            {
+                player = owner.GetComponent<PlayerManager>();
+                player.IsRig = m_animationFeatureSettings.AniBehaviour.UseAniRig;
+            }
         }
+
+        //Sprinting Settings
+        GameObjectExtension.DelayEventInvoke(this, () => { player.EnableSprinting = m_canSprint; }, 0.01f);
+        onDestroyEvent += () => { player.EnableSprinting = true; };
     }
     public virtual void Update()
     {
@@ -121,18 +145,21 @@ public class WeaponBehaviour : MonoBehaviour
     }
     public virtual void OnEnable()
     {
-        if(m_useWeaponInputActionReference == null)
+        if(m_useWeaponInputActionReference == null && m_useInputAsAction)
             m_useWeaponInputActionReference = InputActionReference.Create(new PlayerInput().PlayerActions.Right_Click);
-        useAction = m_useWeaponInputActionReference.ToInputAction();
-        
-        useAction.performed += i => { isPerformaned = true; };
-        useAction.canceled += i => { isPerformaned = false; };
+        if (m_useInputAsAction)
+        {
+            useAction = m_useWeaponInputActionReference.ToInputAction();
+
+            useAction.performed += i => { isPerformaned = true; };
+            useAction.canceled += i => { isPerformaned = false; };
+            useAction.Enable();
+        }
         //useAction.canceled += ;
         useEvent += OnUseEvent;
         hitEvent += OnHitEvent;
         cdStartEvent += OnUseCDStartEvent;
         cdEndEvent += OnUseCDEndEvent;
-        useAction.Enable();
     }
     public virtual void OnDisable()
     {
@@ -141,7 +168,8 @@ public class WeaponBehaviour : MonoBehaviour
         hitEvent -= OnHitEvent;
         cdStartEvent -= OnUseCDStartEvent;
         cdEndEvent -= OnUseCDEndEvent;
-        useAction.Disable();
+        if (m_useInputAsAction)
+            useAction.Disable();
     }
     private void OnDestroy()
     {
@@ -238,7 +266,10 @@ public class WeaponBehaviour : MonoBehaviour
             onUseCoroutine = StartCoroutine(OnUseCDEnumerator());
         }
     }
-   
+    public void UseWeapon()
+    {
+        OnUse();
+    }
     #endregion
 
     #region Enumerators
@@ -280,11 +311,13 @@ public class WeaponBehaviour : MonoBehaviour
     #region Animation & Sound Effects Player
     public void PlayAnimation(int id, float speed)
     {
-        m_animationFeatureSettings.AniBehaviour.StartAnimationConstant(animator, id, speed);
+        if((Features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
+            m_animationFeatureSettings.AniBehaviour.StartAnimationConstant(animator, id, speed);
     }
     public void PlaySoundEffect(int id)
     {
-        m_soundEffectSettings.AudioBehaviour.PlayAudio(id);
+        if ((Features & WeaponFeature.WeaponFeatures.SOUNDEFFECTS) != 0)
+            m_soundEffectSettings.AudioBehaviour.PlayAudio(id);
     }
     #endregion
 }
