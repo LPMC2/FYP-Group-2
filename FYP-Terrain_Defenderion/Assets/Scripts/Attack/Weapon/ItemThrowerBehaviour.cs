@@ -19,7 +19,7 @@ public class ItemThrowerBehaviour : MonoBehaviour
         data = weaponBehaviour.ProjectileData;
         m_destroyPoolTime = data.ThrowItem.GetComponent<Projectile>().MaxTime;
         //if (GameObjectExtension.GetGameObjectWithTagFromChilds(transform.root.gameObject, "BasePool") );
-        objectPool.Initialize(data.ThrowItem, 10, transform.root);
+        objectPool.Initialize(data.ThrowItem, 10);
     }
     public void OnDestroy()
     {

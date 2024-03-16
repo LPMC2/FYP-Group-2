@@ -102,7 +102,7 @@ public class Projectile : MonoBehaviour
         }
         if(damageMultiplier != default)
         {
-            damage *= damageMultiplier;
+            damage = damageMultiplier;
         }
         if (affectedLayer != default)
         {
