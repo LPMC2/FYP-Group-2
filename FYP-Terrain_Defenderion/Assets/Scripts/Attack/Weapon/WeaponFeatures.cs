@@ -24,7 +24,9 @@ public class WeaponFeature
         [SerializeField] private int m_remainAmmo = 1;
         [SerializeField] private float m_reloadingTime = 1f;
         [SerializeField] private InputActionReference m_reloadInputActionReference;
+        [Header("MISC")]
         [SerializeField] private int m_animationIDOnReload = -1;
+        [SerializeField] private int m_soundEffectIDOnReload = -1;
         private int ammoStoringSystemId = -1;
         public int AmmoStoringSystemId { get { return ammoStoringSystemId; } set { ammoStoringSystemId = value; } }
         public int AnimationIDReload { get { return m_animationIDOnReload; } }
@@ -33,6 +35,7 @@ public class WeaponFeature
         public int AmmoCount { get { return m_ammoCount; } set { m_ammoCount = value; } }
         public int RemainAmmo { get { return m_remainAmmo; } set { m_remainAmmo = value; } }
         public float ReloadTime { get { return m_reloadingTime; } }
+        public int SoundEffectIDReload { get { return m_soundEffectIDOnReload; } }
         public UnityEvent OnReloadEvent;
 
     }

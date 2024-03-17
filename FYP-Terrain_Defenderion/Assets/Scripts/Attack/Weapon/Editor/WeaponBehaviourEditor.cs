@@ -29,6 +29,11 @@ public class WeaponBehaviourEditor : Editor
     private SerializedProperty m_meleeSettingsProperty;
     private SerializedProperty m_useInputProperty;
     private SerializedProperty m_canSprintProperty;
+    private SerializedProperty m_OnUseSoundEffectIDroperty;
+    private SerializedProperty m_OnActiveSoundEffectIDroperty;
+    private SerializedProperty m_ResetSoundEffectIDProperty;
+    private SerializedProperty m_onLeaveAnimationIDProperty;
+    private SerializedProperty m_onCancelUnityEventProperty;
     private void OnEnable()
     {
         m_firePointProperty = serializedObject.FindProperty("m_firePoint");
@@ -48,11 +53,16 @@ public class WeaponBehaviourEditor : Editor
         m_soundEFfectSettingsProperty = serializedObject.FindProperty("m_soundEffectSettings");
         m_onUseUnityEventProperty = serializedObject.FindProperty("onUseUnityEvent");
         m_onUseAnimationIDProperty = serializedObject.FindProperty("m_OnUseAnimationID");
-        m_onIdleAnimationIDProperty = serializedObject.FindProperty("m_OnIdleAnimationID");
+        m_onIdleAnimationIDProperty = serializedObject.FindProperty("m_OnActiveAnimationID");
         m_resetAniIDProperty = serializedObject.FindProperty("m_ResetAnimationID");
         m_meleeSettingsProperty = serializedObject.FindProperty("m_meleeSettings");
         m_useInputProperty = serializedObject.FindProperty("m_useInputAsAction");
         m_canSprintProperty = serializedObject.FindProperty("m_canSprint");
+        m_OnUseSoundEffectIDroperty = serializedObject.FindProperty("m_OnUseSoundEffectID");
+        m_OnActiveSoundEffectIDroperty = serializedObject.FindProperty("m_OnActiveSoundEffectID");
+        m_ResetSoundEffectIDProperty = serializedObject.FindProperty("m_ResetSoundEffectID");
+        m_onLeaveAnimationIDProperty = serializedObject.FindProperty("m_OnLeaveAnimationID");
+        m_onCancelUnityEventProperty = serializedObject.FindProperty("onCancelUnityEvent");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -73,11 +83,25 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.Space();
         if ((weaponBehaviour.Features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
         {
-            EditorGUILayout.LabelField("Animation Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.button);
+            EditorGUILayout.LabelField("Animation Settings", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.red } });
             EditorGUILayout.PropertyField(m_onIdleAnimationIDProperty);
             EditorGUILayout.PropertyField(m_onUseAnimationIDProperty);
             EditorGUILayout.PropertyField(m_resetAniIDProperty);
+            EditorGUILayout.PropertyField(m_onLeaveAnimationIDProperty);
+            EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
+        }
+        if ((weaponBehaviour.Features & WeaponFeature.WeaponFeatures.SOUNDEFFECTS) != 0)
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.button);
+            EditorGUILayout.LabelField("Sound Effect Settings", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.yellow } });
+            EditorGUILayout.PropertyField(m_OnActiveSoundEffectIDroperty);
+            EditorGUILayout.PropertyField(m_OnUseSoundEffectIDroperty);
+            EditorGUILayout.PropertyField(m_ResetSoundEffectIDProperty);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space();
+            
         }
         EditorGUILayout.LabelField("Input Settings", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_useInputProperty);
@@ -88,6 +112,7 @@ public class WeaponBehaviourEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Custom Events", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_onUseUnityEventProperty);
+        EditorGUILayout.PropertyField(m_onCancelUnityEventProperty);
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Weapon Features", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(m_featuresProperty);

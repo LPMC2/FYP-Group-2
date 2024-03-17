@@ -223,6 +223,16 @@ public class Projectile : MonoBehaviour
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
     }
+    public void ResetProj()
+    {
+        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
+        if (isDestroyAfterCollision)
+            Destroy(gameObject);
+        else
+            gameObject.SetActive(false);
+    }
     public void CastDamageSphere()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, AOE, m_HitLayer);

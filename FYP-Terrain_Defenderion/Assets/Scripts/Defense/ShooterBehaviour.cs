@@ -22,6 +22,7 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private float fireRange = 0.5f;
     [SerializeField] private int shootCount = 1;
     [SerializeField] private float shootSpeedPerCount = 0.1f;
+    [SerializeField] private Vector3 directionOffset = Vector3.zero;
     [SerializeField] private float rotateDuration = 1f;
     [SerializeField] private Quaternion rotateOffset = Quaternion.identity;
     [SerializeField] private bool isActive = true;
@@ -323,7 +324,7 @@ public class ShooterBehaviour : MonoBehaviour
         }
         GameObject bullet = ShootObject;//Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
         bullet.transform.position = targetObj.transform.position;
-        Vector3 relativePos = target.transform.position - bullet.transform.position;
+        Vector3 relativePos = target.transform.position - bullet.transform.position + directionOffset;
         Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         bullet.transform.rotation = rotation;
         Projectile projectile = bullet.GetComponent<Projectile>();

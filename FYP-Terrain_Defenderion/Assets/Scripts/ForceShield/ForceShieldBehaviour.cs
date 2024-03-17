@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForceShieldBehaviour : MonoBehaviour
+public class ForceShieldBehaviour : CollisionDetector
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        
+        if(HitEntity != null)
+        {
+            Projectile projectile = HitEntity.GetComponent<Projectile>();
+            if(projectile != null)
+            {
+                projectile.ResetProj();
+            } else
+            Destroy(HitEntity);
+        }
     }
 }

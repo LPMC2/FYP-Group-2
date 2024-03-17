@@ -21,9 +21,15 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField] private GameObject m_owner;
     [SerializeField] private float m_activeTime = 1f;
     [SerializeField] private bool m_isActive = true;
-    [SerializeField] private int m_OnIdleAnimationID = -1;
+    //Animations
+    [SerializeField] private int m_OnActiveAnimationID = -1;
     [SerializeField] private List<int> m_OnUseAnimationID = new List<int>();
     [SerializeField] private int m_ResetAnimationID = -1;
+    [SerializeField] private int m_OnLeaveAnimationID = -1;
+    //Sound Effects
+    [SerializeField] private List<int> m_OnUseSoundEffectID = new List<int>();
+    [SerializeField] private int m_OnActiveSoundEffectID = -1;
+    [SerializeField] private int m_ResetSoundEffectID = -1;
     public bool IsActive { get { return m_isActive; } 
         set
         {
@@ -60,10 +66,12 @@ public class WeaponBehaviour : MonoBehaviour
     public OnDestroyEvent onDestroyEvent;
     public OnActiveEvent onActiveEvent;
     [SerializeField] private UnityEvent onUseUnityEvent;
+    [SerializeField] private UnityEvent onCancelUnityEvent;
     public OnUseEvent useEvent;
     public OnHitEvent hitEvent;
     public OnUseCDStart cdStartEvent;
     public OnUseCDEnd cdEndEvent;
+    public OnUseCancelEvent cancelEvent;
     public bool isCD { get; private set; }
     InputAction useAction;
     private bool isPerformaned = false;
@@ -92,8 +100,17 @@ public class WeaponBehaviour : MonoBehaviour
     {
         InitialFunction();
     }
+    private void ResetEvent()
+    {
+        useEvent = null;
+        hitEvent = null;
+        cdStartEvent = null;
+        cdEndEvent = null;
+        cancelEvent = null;
+    }
     private void InitialFunction()
     {
+        ResetEvent();
         //Time for enable to use
         if (m_activeTime > 0)
         {
@@ -113,6 +130,11 @@ public class WeaponBehaviour : MonoBehaviour
         }
 
         //Animations Feature
+        if (owner != null && owner.GetComponent<PlayerManager>() != null)
+        {
+            player = owner.GetComponent<PlayerManager>();
+
+        }
         if ((Features & WeaponFeature.WeaponFeatures.ANIMATIONS) != 0)
         {
             useEvent += () =>
@@ -123,18 +145,33 @@ public class WeaponBehaviour : MonoBehaviour
             {
                 PlayAnimation(m_ResetAnimationID, 1f);
             };
-            GameObjectExtension.DelayEventInvoke(this, () => { PlayAnimation(m_OnIdleAnimationID, m_activeTime); }, 0.01f);
-
-            if (owner.GetComponent<PlayerManager>() != null)
+            cancelEvent += () =>
             {
-                player = owner.GetComponent<PlayerManager>();
-                player.IsRig = m_animationFeatureSettings.AniBehaviour.UseAniRig;
-            }
+                PlayAnimation(m_OnLeaveAnimationID, 1f);
+            };
+            GameObjectExtension.DelayEventInvoke(this, () => { PlayAnimation(m_OnActiveAnimationID, m_activeTime); }, 0.01f);
+            player.IsRig = m_animationFeatureSettings.AniBehaviour.UseAniRig;
+        }
+
+        //Sound Effect Feature
+        if ((Features & WeaponFeature.WeaponFeatures.SOUNDEFFECTS) != 0)
+        {
+            useEvent += () =>
+            {
+                PlaySoundEffect(arrayBehaviour.GetRandomObjectFromList(m_OnUseSoundEffectID));
+            };
+            onDestroyEvent += () =>
+            {
+                PlaySoundEffect(m_ResetSoundEffectID);
+            };
+            PlaySoundEffect(m_OnActiveSoundEffectID);
         }
 
         //Sprinting Settings
         GameObjectExtension.DelayEventInvoke(this, () => { player.EnableSprinting = m_canSprint; }, 0.01f);
         onDestroyEvent += () => { player.EnableSprinting = true; };
+        useEvent += () => { onUseUnityEvent?.Invoke(); };
+        cancelEvent += () => { onCancelUnityEvent?.Invoke(); };
     }
     public virtual void Update()
     {
@@ -150,9 +187,10 @@ public class WeaponBehaviour : MonoBehaviour
         if (m_useInputAsAction)
         {
             useAction = m_useWeaponInputActionReference.ToInputAction();
-
+            if (useAction != null)
+                useAction.Reset();
             useAction.performed += i => { isPerformaned = true; };
-            useAction.canceled += i => { isPerformaned = false; };
+            useAction.canceled += ReleaseUse;
             useAction.Enable();
         }
         //useAction.canceled += ;
@@ -161,6 +199,10 @@ public class WeaponBehaviour : MonoBehaviour
         cdStartEvent += OnUseCDStartEvent;
         cdEndEvent += OnUseCDEndEvent;
     }
+    private void ReleaseUse(InputAction.CallbackContext callbackContext)
+    {
+        isPerformaned = false; cancelEvent?.Invoke();
+    }
     public virtual void OnDisable()
     {
         isPerformaned = false;
@@ -168,6 +210,7 @@ public class WeaponBehaviour : MonoBehaviour
         hitEvent -= OnHitEvent;
         cdStartEvent -= OnUseCDStartEvent;
         cdEndEvent -= OnUseCDEndEvent;
+        useAction.canceled -= ReleaseUse;
         if (m_useInputAsAction)
             useAction.Disable();
     }
@@ -175,6 +218,10 @@ public class WeaponBehaviour : MonoBehaviour
     {
         DebugLog("Destroyed!");
         onDestroyEvent?.Invoke();
+        if (useAction != null)
+        {
+            useAction.canceled -= ReleaseUse;
+        }
     }
     #endregion
 
@@ -321,7 +368,7 @@ public class WeaponBehaviour : MonoBehaviour
     }
     #endregion
 }
-
+public delegate void OnUseCancelEvent();
 public delegate void OnUseEvent();
 public delegate void OnHitEvent(GameObject hitTarget);
 public delegate void OnUseCDStart();

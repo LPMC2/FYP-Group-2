@@ -12,6 +12,7 @@ public class AudioBehaviour : IAudioBehaviour
 
     public void PlayAudio(int index)
     {
+        if (index == -1) return;
         AudioManager.Singleton.PlayOneShotSound(audioList[index]);
     }
     public string GetList()

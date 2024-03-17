@@ -50,22 +50,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firePoint: {fileID: 3773285791066968284}
-  m_useCD: 0.8
+  m_useCD: 1
   m_damage: 100
   m_affectedLayers:
     serializedVersion: 2
     m_Bits: 4480
-  m_features: 136
+  m_features: 152
   m_canSprint: 0
   m_owner: {fileID: 0}
   m_activeTime: 1
   m_isActive: 1
-  m_OnIdleAnimationID: 5
+  m_OnActiveAnimationID: 5
   m_OnUseAnimationID: 0000000001000000
   m_ResetAnimationID: -1
+  m_OnLeaveAnimationID: -1
+  m_OnUseSoundEffectID: 00000000
+  m_OnActiveSoundEffectID: 1
+  m_ResetSoundEffectID: -1
   m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
   m_useInputAsAction: 1
   onUseUnityEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onCancelUnityEvent:
     m_PersistentCalls:
       m_Calls: []
   isDebug: 0
@@ -76,6 +83,7 @@ MonoBehaviour:
     m_reloadingTime: 1
     m_reloadInputActionReference: {fileID: 0}
     m_animationIDOnReload: -1
+    m_soundEffectIDOnReload: -1
     OnReloadEvent:
       m_PersistentCalls:
         m_Calls: []
@@ -114,15 +122,17 @@ MonoBehaviour:
       - SwordSwing4
       - SwordIdle
       - SwordDraw1
-      switchAnimationTime: 0.25
+      switchAnimationTime: 0.1
   m_soundEffectSettings:
     audioSettings:
-      m_audioSO: {fileID: 0}
-      audioList: []
+      m_audioSO: {fileID: 11400000, guid: 2b314a8e101bf804187839d0db6ccd91, type: 2}
+      audioList:
+      - SwordSwing
+      - DrawSword
   m_meleeSettings:
     attackMethod: 1
     areaAttack: 1
-    StartHitTime: 0.6
+    StartHitTime: 0.5
     attackDistance: 1
     hitboxSizeX: 1
     hitboxSizeY: 1

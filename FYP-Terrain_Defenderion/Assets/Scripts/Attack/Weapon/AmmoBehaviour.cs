@@ -35,6 +35,13 @@ public class AmmoBehaviour : MonoBehaviour
                 weaponBehaviour.PlayAnimation(AmmoData.AnimationIDReload, reloadTime);
             });
         }
+        if ((weaponBehaviour.Features & WeaponFeature.WeaponFeatures.SOUNDEFFECTS) != 0)
+        {
+            AmmoData.OnReloadEvent.AddListener(() =>
+            {
+                weaponBehaviour.PlaySoundEffect(AmmoData.SoundEffectIDReload);
+            });
+        }
     }
     private void OnEnable()
     {

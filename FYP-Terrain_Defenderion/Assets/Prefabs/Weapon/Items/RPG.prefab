@@ -339,17 +339,24 @@ MonoBehaviour:
   m_affectedLayers:
     serializedVersion: 2
     m_Bits: 5505
-  m_features: 74
+  m_features: 90
   m_canSprint: 0
   m_owner: {fileID: 0}
   m_activeTime: 1
   m_isActive: 1
-  m_OnIdleAnimationID: 1
+  m_OnActiveAnimationID: 1
   m_OnUseAnimationID: 03000000
   m_ResetAnimationID: 4
+  m_OnLeaveAnimationID: -1
+  m_OnUseSoundEffectID: 01000000
+  m_OnActiveSoundEffectID: -1
+  m_ResetSoundEffectID: -1
   m_useWeaponInputActionReference: {fileID: -6996764652493877271, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
   m_useInputAsAction: 1
   onUseUnityEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onCancelUnityEvent:
     m_PersistentCalls:
       m_Calls: []
   isDebug: 0
@@ -360,6 +367,7 @@ MonoBehaviour:
     m_reloadingTime: 3
     m_reloadInputActionReference: {fileID: 1751935274745767958, guid: 84ccbcd10452b9c41a7302f88ae379b2, type: 3}
     m_animationIDOnReload: 2
+    m_soundEffectIDOnReload: 0
     OnReloadEvent:
       m_PersistentCalls:
         m_Calls: []
@@ -400,8 +408,10 @@ MonoBehaviour:
       switchAnimationTime: 0.1
   m_soundEffectSettings:
     audioSettings:
-      m_audioSO: {fileID: 0}
-      audioList: []
+      m_audioSO: {fileID: 11400000, guid: 2b314a8e101bf804187839d0db6ccd91, type: 2}
+      audioList:
+      - RPGReload
+      - RPGFire
   m_meleeSettings:
     attackMethod: 0
     areaAttack: 1
