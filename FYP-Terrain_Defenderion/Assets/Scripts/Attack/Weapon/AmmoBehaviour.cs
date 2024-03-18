@@ -63,6 +63,7 @@ public class AmmoBehaviour : MonoBehaviour
     {
         reloadAction.performed -= i => { ReloadAmmo(); };
         reloadAction.Disable();
+        reloadCoroutine = null;
     }
     private void ReloadAmmo()
     {
@@ -89,6 +90,7 @@ public class AmmoBehaviour : MonoBehaviour
     }
     public void UseAmmo()
     {
+
         AmmoData.RemainAmmo--;
         StoreAmmoData();
         UpdateInv();

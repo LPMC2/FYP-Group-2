@@ -40,7 +40,7 @@ public class InventoryLoadoutUIManager : MonoBehaviour
     {
         playerInventory.InitialSlotItem = arrayBehaviour.ListToArray(m_inventoryLoadouts[m_currentLoadout].loadoutSO.slot);
         //Require Fix
-        playerInventory.inventory.slot = new List<InventorySystem.Slot>(m_inventoryLoadouts[m_currentLoadout].loadoutSO.slot.Count);
+        InventorySystem.Slot.Resize(ref playerInventory.inventory.slot, m_inventoryLoadouts[m_currentLoadout].loadoutSO.slot.Count);
         playerInventory.inventory.SetMaxFrontSlots(m_inventoryLoadouts[m_currentLoadout].loadoutSO.slot.Count);
         
     }

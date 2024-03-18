@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class FlightController : MonoBehaviour
 {
+    [SerializeField] private Vector2 m_initialRotation;
     [SerializeField] Transform cameraTransform;
     [SerializeField] float movementSpeed = 5f;
     [SerializeField] float movementSpeedMultiplier = 1f;
@@ -90,7 +91,7 @@ public class FlightController : MonoBehaviour
     }
     public void ResetValues()
     {
-        look = Vector2.zero;
+        look = m_initialRotation;
         cameraTransform.localRotation = Quaternion.identity;
 
     }

@@ -251,7 +251,7 @@ public class InventoryBehaviour : MonoBehaviour
     }
     public void inputNumDetection()
     {
-        if (inventory.slot.Count > 1)
+        if (inventory.slot.Length > 1)
         {
             for (int i = 1; i <= 9; i++)
             {
@@ -260,7 +260,7 @@ public class InventoryBehaviour : MonoBehaviour
                     int inputIndex = i - 1; // Adjust the index to match array or list indices
 
                     // Check if the inventory slot at the input index exists
-                    if (inputIndex >= 0 && inputIndex < inventory.slot.Count && inventory.slot[inputIndex] != null && inputIndex != selectedSlot)
+                    if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null && inputIndex != selectedSlot)
                     {
                         EquipItem(inputIndex);
                     }
@@ -322,14 +322,14 @@ public class InventoryBehaviour : MonoBehaviour
     {
         if (type == "hotbar")
         {
-            for (int i = 0; i < inventory.slot.Count || i < inventory.GetMaxFrontSlots(); i++)
+            for (int i = 0; i < inventory.slot.Length || i < inventory.GetMaxFrontSlots(); i++)
             {
                 setSlotImg(slotPH);
             }
         }
         else if (type == "bag")
         {
-            for (int i = 0; i < inventory.slot.Count; i++)
+            for (int i = 0; i < inventory.slot.Length; i++)
             {
                 setSlotImg(slotPH);
             }
@@ -451,7 +451,7 @@ public class InventoryBehaviour : MonoBehaviour
         {
             selectedSlot = slotId;
         }
-        if (inventory.slot[slotId].getId() >= -1 && slotId < inventory.slot.Count)
+        if (inventory.slot[slotId].getId() >= -1 && slotId < inventory.slot.Length)
         {
 
             GameObject targetItem = null;
@@ -559,7 +559,7 @@ public class InventoryBehaviour : MonoBehaviour
                         float height = rectTransform.rect.height * 2f;
                         rectTransform.sizeDelta = new Vector2(width, height);
                       
-                        uiImg.sprite = InventoryLoadoutImageSaver.Singleton.ItemSprites[id];
+                        uiImg.sprite = InventoryLoadoutImageSaver.Singleton.ItemSprites[inventory.slot[id].getId()];
                         uiImg.raycastTarget = false;
                     }
                     if(itemData.item[inventory.slot[id].getId()].useItemSprite)
@@ -741,6 +741,7 @@ public class InventoryBehaviour : MonoBehaviour
     #region Text Display
     public void StartFadeInText(int itemId, Color color = default(Color))
     {
+        if(!gameObject.activeInHierarchy) { return; }
         int invId = inventory.slot[itemId].getId();
         if (color == default(Color))
         {

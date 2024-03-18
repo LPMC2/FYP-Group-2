@@ -12,8 +12,11 @@ public class ShooterBehaviour : MonoBehaviour
     public GameObject Structure { set { structure = value; } }
     public GameObject ShootObject { 
         get 
-        { 
-            return arrayBehaviour.GetRandomObjectFromList(objectPools).GetObject(true); 
+        {
+            if (objectPools != null)
+                return arrayBehaviour.GetRandomObjectFromList(objectPools).GetObject(true);
+            else
+                return null;
         }  
     }
     [SerializeField] private float preFireCd = 0.1f;

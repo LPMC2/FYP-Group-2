@@ -20,7 +20,7 @@ public class InventorySystem : MonoBehaviour
         maxFrontSlots = value;
     }
     #endregion
-    public List<Slot> slot = new List<Slot>();
+    public Slot[] slot;
 
     [System.Serializable]
     public class Slot
@@ -54,6 +54,15 @@ public class InventorySystem : MonoBehaviour
         public string getName()
         {
             return name;
+        }
+        public static void Resize(ref Slot[] targetArray, int newSize)
+        {
+            targetArray = new Slot[newSize];
+            for(int i=0; i<targetArray.Length; i++)
+            {
+                targetArray[i] = new Slot();
+                targetArray[i].item = new Item();
+            }
         }
     }
     [System.Serializable]

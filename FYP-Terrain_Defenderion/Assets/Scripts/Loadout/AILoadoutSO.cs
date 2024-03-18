@@ -49,6 +49,7 @@ public class AILoadoutSO : ScriptableObject
             GameObject newStructure = Instantiate(StructureManager.Singleton.structurePoolings[structure.id].structures[0], StructureManager.EnemyStructurePos.transform.localPosition, structure.rotation, StructureManager.EnemyStructurePos.transform);
             newStructure.transform.position = -structure.position;
             newStructure.SetActive(true);
+            newStructure.layer = LayerMask.NameToLayer("Defense");
             TeamBehaviour.Singleton.TeamManager[1].AddMember(newStructure);
             SaveSpawner(newStructure);
         }

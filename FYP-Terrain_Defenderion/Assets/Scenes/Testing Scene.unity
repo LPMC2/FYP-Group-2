@@ -585,6 +585,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 546937960}
+  - {fileID: 1620616742}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1306,6 +1307,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6510669044762333747, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
   m_PrefabInstance: {fileID: 3504124980707921737}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &787457539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 271263641462748502, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
+  m_PrefabInstance: {fileID: 3504124980707921737}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 787457532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dadd4b340e011143861ab44ea3b288e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &936224304
 GameObject:
   m_ObjectHideFlags: 0
@@ -2514,6 +2526,80 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1620616741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1620616742}
+  - component: {fileID: 1620616744}
+  - component: {fileID: 1620616743}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1620616742
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620616741}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 545775842}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1620616743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620616741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8f6ff8f0947604493a0dd6778fb3cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemSO: {fileID: 11400000, guid: a240db99a74ed2b4ea6a0710086b7297, type: 2}
+  savePath: /Inventory/Images/
+  m_itemSpriteList: []
+  targetCamera: {fileID: 1046691345}
+--- !u!114 &1620616744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620616741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 342e04f7d5a48e149a097baa60a42057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventoryLoadouts: []
+  m_slotUIPrefab: {fileID: 0}
+  m_slotPlaceLocation: {fileID: 0}
+  itemSlotName: {fileID: 0}
+  m_rotators: []
+  m_currentLoadout: 0
+  inventoryLoadoutImageSaver: {fileID: 1620616743}
+  playerInventory: {fileID: 787457539}
 --- !u!1 &1640977714
 GameObject:
   m_ObjectHideFlags: 0
@@ -3308,7 +3394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 271263641462748502, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
       propertyPath: initialSlotItem.Array.data[0]
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 271263641462748502, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
       propertyPath: initialSlotItem.Array.data[1]
@@ -3316,7 +3402,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 271263641462748502, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
       propertyPath: initialSlotItem.Array.data[2]
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 271263641462748502, guid: 07681d455f8d1f54d913d610d92b92e9, type: 3}
       propertyPath: initialSlotItem.Array.data[3]

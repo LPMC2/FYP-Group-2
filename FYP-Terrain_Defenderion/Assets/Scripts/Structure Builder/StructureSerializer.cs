@@ -324,6 +324,7 @@ public static class StructureSerializer
         GameObject structure = new GameObject();
         GridData gridData1 = structure.AddComponent<GridData>();
         structure.transform.localPosition = position;
+        structure.layer = LayerMask.NameToLayer("Defense");
         InteractType interactType = InteractType.none;
         for (int i = 0; i < structureStorage.Length; i++)
         {

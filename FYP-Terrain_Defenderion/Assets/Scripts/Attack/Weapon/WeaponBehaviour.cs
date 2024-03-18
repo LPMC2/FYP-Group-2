@@ -95,11 +95,12 @@ public class WeaponBehaviour : MonoBehaviour
     }
     public virtual void Awake()
     {
-        AddFeatures();
+       
     }
     public virtual void Start()
     {
         InitialFunction();
+        AddFeatures();
     }
     private void ResetEvent()
     {
@@ -251,7 +252,8 @@ public class WeaponBehaviour : MonoBehaviour
 
     private void AddFeatures()
     {
-        if((m_features & WeaponFeature.WeaponFeatures.AMMO)!= 0)
+       
+        if ((m_features & WeaponFeature.WeaponFeatures.AMMO)!= 0)
         {
             AmmoBehaviour ammoBehaviour = gameObject.AddComponent<AmmoBehaviour>();
             ammoBehaviour.SetBehaviour(this);
