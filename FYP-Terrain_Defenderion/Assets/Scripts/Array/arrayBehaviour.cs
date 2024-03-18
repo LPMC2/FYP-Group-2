@@ -189,6 +189,17 @@ public class arrayBehaviour
         }
         Debug.Log(DebugArr);
     }
+    public static T[] ListToArray<T>(List<T> lst)
+    {
+        T[] newArr = new T[lst.Count];
+        int i = 0;
+        foreach(T t in lst)
+        {
+            newArr[i] = t;
+            i++;
+        }
+        return newArr;
+    }
     public static T GetRandomObjectFromList<T>(List<T> lst)
     {
         if (lst == null || lst.Count == 0) return default(T);

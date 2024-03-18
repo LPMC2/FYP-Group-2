@@ -49,6 +49,7 @@ public class ObjectRotateAroundBehaviour : MonoBehaviour
     }
     public void StartRotateAngle(Transform specificGameObject = null)
     {
+
         if(specificGameObject != null) { targetTransform = specificGameObject; }
         if(rotateType == RotateType.Callable)
             StartCoroutine(RotateObject());
@@ -57,17 +58,18 @@ public class ObjectRotateAroundBehaviour : MonoBehaviour
             rotateType = RotateType.Continuous;
         }
     }
+    [SerializeField] private float CURRENTANGLE = 0f;
     private IEnumerator RotateObject()
     {
-
-        bool isRotating = true;
-        while (isRotating)
+        float currentAngle = 0f;
+        while (currentAngle < targetAngle)
         {
+            currentAngle += Time.deltaTime * rotationSpeed;
             // Calculate the desired position in the rotation circle
             Vector3 desiredPosition = rotationPoint.position + Quaternion.Euler(
-                 axis == Axis.X ? baseAngle + Time.time * rotationSpeed : 0f,
-                 axis == Axis.Y ? baseAngle + Time.time * rotationSpeed : 0f,
-                 axis == Axis.Z ? baseAngle + Time.time * rotationSpeed : 0f
+                 axis == Axis.X ? baseAngle + currentAngle : 0f,
+                 axis == Axis.Y ? baseAngle + currentAngle : 0f,
+                 axis == Axis.Z ? baseAngle + currentAngle : 0f
                  ) * Vector3.forward * distance;
 
             // Rotate the object around the rotation point
@@ -84,14 +86,8 @@ public class ObjectRotateAroundBehaviour : MonoBehaviour
             // Apply the rotation to the target transform
             targetTransform.rotation = desiredRotation;
 
-            // Check if the target angle is reached
-            float currentAngle = Time.time * rotationSpeed;
-            if (currentAngle >= targetAngle)
-            {
-                // Stop rotating
-                isRotating = false;
-                yield break;
-            }
+
+            CURRENTANGLE = currentAngle;
 
             yield return null;
         }

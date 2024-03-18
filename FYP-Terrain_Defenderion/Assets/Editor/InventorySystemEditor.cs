@@ -27,7 +27,7 @@ public class InventorySystemEditor : Editor
         if (inventorySystem != null)
         {
             // Limit the maxFrontSlots value to the count of slot array
-            int slotCount = Mathf.Clamp(inventorySystem.slot.Length, 0, 9);
+            int slotCount = Mathf.Clamp(inventorySystem.slot.Count, 0, 9);
 
             inventorySystem.SetMaxFrontSlots(Mathf.Clamp(inventorySystem.GetMaxFrontSlots(), 1, slotCount));
         }

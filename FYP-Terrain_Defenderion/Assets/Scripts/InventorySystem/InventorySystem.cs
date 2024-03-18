@@ -20,7 +20,7 @@ public class InventorySystem : MonoBehaviour
         maxFrontSlots = value;
     }
     #endregion
-    public Slot[] slot;
+    public List<Slot> slot = new List<Slot>();
 
     [System.Serializable]
     public class Slot

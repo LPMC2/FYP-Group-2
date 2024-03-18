@@ -194,4 +194,18 @@ public class ModelPictureSaver : MonoBehaviour
         string fileName = name + "." + type;
         return fileName;
     }
+    public static Sprite LoadSpriteFromFile(string filePath, bool includePersistentDataPath = true)
+    {
+        filePath = (includePersistentDataPath == true? Application.persistentDataPath : "") + filePath;
+        //Debug.Log(filePath);
+        byte[] imageData = File.ReadAllBytes(filePath);
+
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(imageData);
+
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Sprite sprite = Sprite.Create(texture, rect, Vector2.zero);
+
+        return sprite;
+    }
 }

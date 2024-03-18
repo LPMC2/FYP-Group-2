@@ -64,6 +64,7 @@ public class InventoryBehaviour : MonoBehaviour
             }
         }
     }
+    public int[] InitialSlotItem { set { initialSlotItem = value; } }
     [Header("Custom Events")]
     [SerializeField] private UnityEvent<GameObject> CustomEquipItemEvent = new UnityEvent<GameObject>();
     [SerializeField] private UnityEvent CustomInitialEvent;
@@ -250,7 +251,7 @@ public class InventoryBehaviour : MonoBehaviour
     }
     public void inputNumDetection()
     {
-        if (inventory.slot.Length > 1)
+        if (inventory.slot.Count > 1)
         {
             for (int i = 1; i <= 9; i++)
             {
@@ -259,7 +260,7 @@ public class InventoryBehaviour : MonoBehaviour
                     int inputIndex = i - 1; // Adjust the index to match array or list indices
 
                     // Check if the inventory slot at the input index exists
-                    if (inputIndex >= 0 && inputIndex < inventory.slot.Length && inventory.slot[inputIndex] != null && inputIndex != selectedSlot)
+                    if (inputIndex >= 0 && inputIndex < inventory.slot.Count && inventory.slot[inputIndex] != null && inputIndex != selectedSlot)
                     {
                         EquipItem(inputIndex);
                     }
@@ -321,14 +322,14 @@ public class InventoryBehaviour : MonoBehaviour
     {
         if (type == "hotbar")
         {
-            for (int i = 0; i < inventory.slot.Length || i < inventory.GetMaxFrontSlots(); i++)
+            for (int i = 0; i < inventory.slot.Count || i < inventory.GetMaxFrontSlots(); i++)
             {
                 setSlotImg(slotPH);
             }
         }
         else if (type == "bag")
         {
-            for (int i = 0; i < inventory.slot.Length; i++)
+            for (int i = 0; i < inventory.slot.Count; i++)
             {
                 setSlotImg(slotPH);
             }
@@ -361,7 +362,7 @@ public class InventoryBehaviour : MonoBehaviour
         }
 
     }
-    private void setInitialInventory()
+    public void setInitialInventory()
     {
         for (int i = 0; i < initialSlotItem.Length; i++)
         {
@@ -450,7 +451,7 @@ public class InventoryBehaviour : MonoBehaviour
         {
             selectedSlot = slotId;
         }
-        if (inventory.slot[slotId].getId() >= -1 && slotId < inventory.slot.Length)
+        if (inventory.slot[slotId].getId() >= -1 && slotId < inventory.slot.Count)
         {
 
             GameObject targetItem = null;
@@ -557,27 +558,9 @@ public class InventoryBehaviour : MonoBehaviour
                         float width = rectTransform.rect.width * 2f;
                         float height = rectTransform.rect.height * 2f;
                         rectTransform.sizeDelta = new Vector2(width, height);
-                        GameObject captureItem = Instantiate(itemData.item[inventory.slot[id].getId()].model);
-                        float cameraSize = captureCamera.orthographicSize;
-                        captureItem.transform.SetParent(captureCamera.transform);
-                        captureItem.transform.eulerAngles = itemData.item[inventory.slot[id].getId()].captureAngle;
-                        captureItem.transform.localPosition = Vector3.forward * 10 + itemData.item[inventory.slot[id].getId()].captureOffset;
-                        /*
-                        if (displayText != null)
-                        {
-                            //Gun Specific Setup
-                            GunController gunController = captureItem.GetComponent<GunController>();
-                            if (gunController != null)
-                            {
-                                displayText.text = gunController.GetRemainAmmo() + "/" + gunController.GetTotalAmmo();
-                            }
-                        }
-                        */
-                        ModelPictureSaver.CaptureAndSaveImage(captureCamera, captureItem, captureSavePath, id.ToString(), true, true, itemData.item[inventory.slot[id].getId()].CustomBuffer);
-
-                        uiImg.sprite = StructureSerializer.LoadSpriteFromFile(captureSavePath + "/" + id + ".png");
+                      
+                        uiImg.sprite = InventoryLoadoutImageSaver.Singleton.ItemSprites[id];
                         uiImg.raycastTarget = false;
-                        captureCamera.orthographicSize = cameraSize;
                     }
                     if(itemData.item[inventory.slot[id].getId()].useItemSprite)
                     {

@@ -56,8 +56,9 @@ public class WeaponBehaviour : MonoBehaviour
     //Input Settings
     [SerializeField] private InputActionReference m_useWeaponInputActionReference;
     [SerializeField] private bool m_useInputAsAction = true;
+    public float ActiveTime { get { return m_activeTime; } }
     public bool UseInput { get { return m_useInputAsAction; } }
-
+    public bool CanSprint { get { return m_canSprint; } }
     public Transform FirePoint { get { return m_firePoint; } }
     public float useCD { get { return m_useCD; }  }
     public float damage { get { return m_damage; } }
