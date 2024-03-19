@@ -25,9 +25,20 @@ public class LeadershipBehaviour : MonoBehaviour
     GameObject areaEffect;
     ScaleAnimationCoroutineBehaviour scaleAnimation;
     private PlayerManager playerManager;
+    [Header("Targeted Lead Settings")]
+    [SerializeField] private Material m_targetedMaterial;
+    private GameObject owner;
     private void OnDestroy()
     {
         Destroy(areaEffect);
+        if(hitObj != null)
+        {
+            SetMaterial(false);
+        }
+    }
+    private void OnEnable()
+    {
+        owner = gameObject.transform.root.gameObject;
     }
     private void Start()
     {
@@ -47,9 +58,17 @@ public class LeadershipBehaviour : MonoBehaviour
             point = hitPos.point;
             if (hitPos.collider.GetComponent<IDamageable>() != null)
             {
-                hitObj = hitPos.collider.gameObject;
+                if (!TeamBehaviour.Singleton.isOwnTeam(transform.root.gameObject, hitPos.collider))
+                {
+                    hitObj = hitPos.collider.gameObject;
+                    SetMaterial(true);
+                }
             } else
             {
+                if(hitObj != null)
+                {
+                    SetMaterial(false);
+                }
                 hitObj = null;
             }
         }
@@ -97,6 +116,19 @@ public class LeadershipBehaviour : MonoBehaviour
         }
         Gather();
     }
+    private void SetMaterial(bool state)
+    {
+        if (hitObj == null) return;
+        MaterialBehaviour materialBehaviour = hitObj.GetComponent<MaterialBehaviour>();
+        if(materialBehaviour == null) { materialBehaviour = hitObj.AddComponent<MaterialBehaviour>(); }
+        if(state)
+        {
+            materialBehaviour.SetMaterial(m_targetedMaterial);
+        } else
+        {
+            materialBehaviour.ResetMat();
+        }
+    }
     private void SearchingFriendly()
     {
         if (Time.time >= cacheExpirationTimer)
@@ -122,6 +154,8 @@ public class LeadershipBehaviour : MonoBehaviour
 
             foreach (Collider gameObject in inRangedTeamMembers)
             {
+            EnemyController enemyController = gameObject.GetComponent<EnemyController>();
+            enemyController.ResetTarget();
                 NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
                 navMeshAgent.SetDestination(transform.root.position);
             }
@@ -141,9 +175,17 @@ public class LeadershipBehaviour : MonoBehaviour
 
         foreach (Collider gameObject in inRangedTeamMembers)
         {
-            SetAIState(gameObject.GetComponent<EnemyController>());
-            NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
-            navMeshAgent.SetDestination(point);
+            EnemyController enemyController = gameObject.GetComponent<EnemyController>();
+            SetAIState(enemyController);
+            if (hitObj == null)
+            {
+                NavMeshAgent navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+                navMeshAgent.SetDestination(point);
+            } else
+            {
+                SetAIAggro(enemyController, hitObj);
+                SetMaterial(false);
+            }
         }
         inRangedTeamMembers.Clear();
 

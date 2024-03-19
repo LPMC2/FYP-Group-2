@@ -9,6 +9,10 @@ public class MaterialBehaviour : MonoBehaviour
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        if(meshRenderer == null)
+        {
+            meshRenderer = GetComponentInChildren<MeshRenderer>();
+        }
         Material[] materials = meshRenderer.materials;
 
         for (int i = 0; i < materials.Length; i++)

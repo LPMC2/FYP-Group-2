@@ -48,7 +48,7 @@ public class InventoryLoadoutUIManager : MonoBehaviour
     {
         foreach(ObjectRotateAroundBehaviour objectRotateAround in m_rotators)
         {
-            objectRotateAround.StartRotateAngle(objectRotateAround.transform.GetChild(0));
+            objectRotateAround.StartRotateAngle();
         }
         GameObjectExtension.RemoveAllObjectsFromParent(m_slotPlaceLocation);
         InventoryLoadoutSO loadout = m_inventoryLoadouts[m_currentLoadout].loadoutSO;

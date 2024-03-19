@@ -461,11 +461,9 @@ public class EnemyController : MonoBehaviour
                 FaceTarget();
                 StartAttack();
             }
-            else if (distance > agent.stoppingDistance)
+           if (distance > agent.stoppingDistance)
             {
-                AttackTime = 0f;
-                if(AttackCor != null)
-                StopCoroutine(AttackCor);
+                ResetAttack();
                 if (AnimateObject != null)
                 {
                     //if (!enemyAnimator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
@@ -534,7 +532,22 @@ public class EnemyController : MonoBehaviour
             AttackTime = 0;
         }
     }
-
+    public void ResetTarget()
+    {
+        currentTarget = null;
+        target = null;
+        isAggro = false;
+    }
+    private void ResetAttack()
+    {
+        AttackTime = 0f;
+        LastTargetPosition = Vector3.zero;
+        if (AttackCor != null)
+        {
+            StopCoroutine(AttackCor);
+            AttackCor = null;
+        }
+    }
     private IEnumerator AttackCoroutine()
     {
         if (target == null) { StopCoroutine(AttackCor); }

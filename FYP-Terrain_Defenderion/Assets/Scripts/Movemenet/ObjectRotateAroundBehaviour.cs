@@ -58,6 +58,26 @@ public class ObjectRotateAroundBehaviour : MonoBehaviour
             rotateType = RotateType.Continuous;
         }
     }
+    public void ResetRot()
+    {
+        Vector3 desiredPosition = rotationPoint.position + Quaternion.Euler(
+               axis == Axis.X ? baseAngle  : 0f,
+               axis == Axis.Y ? baseAngle  : 0f,
+               axis == Axis.Z ? baseAngle  : 0f
+               ) * Vector3.forward * distance;
+        targetTransform.position = desiredPosition;
+        // Calculate the direction from targetTransform to rotationPoint
+        Vector3 direction = rotationPoint.position - targetTransform.position;
+
+        // Calculate the reversed look direction
+        Vector3 lookDirection = facingSide == FacingSide.FRONT ? direction : -direction;
+
+        // Calculate the desired rotation
+        Quaternion desiredRotation = Quaternion.LookRotation(lookDirection, rotationPoint.up);
+
+        // Apply the rotation to the target transform
+        targetTransform.rotation = desiredRotation;
+    }
     [SerializeField] private float CURRENTANGLE = 0f;
     private IEnumerator RotateObject()
     {
