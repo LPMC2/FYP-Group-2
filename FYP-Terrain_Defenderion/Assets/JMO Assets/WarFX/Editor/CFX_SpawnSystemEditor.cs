@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
-
+using DragAndDrop;
 // Cartoon FX  - (c) 2012-2016 Jean Moreno
 
 // CFX Spawn System Editor interface
-
+/*
 [CustomEditor(typeof(CFX_SpawnSystem))]
 public class CFX_SpawnSystemEditor : Editor
 {
@@ -191,3 +191,4 @@ public class CFX_SpawnSystemEditor : Editor
 		}
 	}
 }
+*/
