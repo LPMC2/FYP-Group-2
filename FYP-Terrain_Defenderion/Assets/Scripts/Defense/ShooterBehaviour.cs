@@ -320,10 +320,9 @@ public class ShooterBehaviour : MonoBehaviour
         {
             GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, Quaternion.identity);
         }
-        if(audioSource != null && fireSound != null)
+        if(fireSound != null)
         {
-            audioSource.clip = fireSound;
-            audioSource.Play();
+            AudioManager.Singleton.PlayOneShotSound(fireSound);
         }
         GameObject bullet = ShootObject;//Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
         bullet.transform.position = targetObj.transform.position;

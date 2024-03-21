@@ -5,8 +5,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AILoadout", menuName = "AI/Create AI Loadout(Structure)")]
 public class AILoadoutSO : ScriptableObject
 {
+    [SerializeField] private Sprite m_structureIcon;
     [SerializeField]
     private List<StructureData> structureDatas = new List<StructureData>();
+    public Sprite StructureIcon { get { return m_structureIcon; } }
     public List<StructureData> StructureDatas { get { return structureDatas; } }
     public void SaveData()
     {
@@ -53,6 +55,7 @@ public class AILoadoutSO : ScriptableObject
             TeamBehaviour.Singleton.TeamManager[1].AddMember(newStructure);
             SaveSpawner(newStructure);
         }
+        StructureManager.EnemyStructurePos.transform.position += new Vector3(0f, 1f, 0f);
         StructureManager.EnemyStructurePos.transform.eulerAngles = new Vector3(0f, 0, 0f);
     }
     List<SpawnerBehaviour> spawnerBehaviours = new List<SpawnerBehaviour>();
