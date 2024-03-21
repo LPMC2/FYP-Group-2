@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 */
 public class LeadershipBehaviour : MonoBehaviour
 {
+    [SerializeField] private bool useInput = true;
     private InputManager playerInput;
     private TeamBehaviour teamBehaviour;
     private int teamId;
@@ -27,6 +28,7 @@ public class LeadershipBehaviour : MonoBehaviour
     private PlayerManager playerManager;
     [Header("Targeted Lead Settings")]
     [SerializeField] private Material m_targetedMaterial;
+    private MaterialBehaviour targetMatBehaviour;
     private GameObject owner;
     private void OnDestroy()
     {
@@ -78,7 +80,7 @@ public class LeadershipBehaviour : MonoBehaviour
             teamId = teamBehaviour.GetTeamID(transform.root.gameObject);
             playerInput = transform.root.GetComponent<InputManager>();
         }
-        if (playerInput.LeftMouseClick)
+        if (useInput && playerInput.LeftMouseClick)
         {
             areaEffect.transform.position = point;
             if (!isLeading)
@@ -87,13 +89,13 @@ public class LeadershipBehaviour : MonoBehaviour
                 areaEffect.transform.localScale = new Vector3(1f, 1f, 1f);
                 isLeading = true;
             }
-        } else if(!playerInput.LeftMouseClick && isLeading)
+        } else if(useInput && !playerInput.LeftMouseClick && isLeading)
         {
             scaleAnimation.StartAnimation();
             isLeading = false;
             Lead();
         }
-        if(playerInput.RightMouseClick)
+        if(useInput && playerInput.RightMouseClick)
         {
             SearchingFriendly();
             if (!isGathering)
@@ -105,7 +107,7 @@ public class LeadershipBehaviour : MonoBehaviour
             areaEffect.transform.localScale = new Vector3(m_GatherRadius, 1f, m_GatherRadius);
         } else
         {
-            if (isGathering)
+            if (useInput && isGathering)
             {
                 isGathering = false;
                 if (areaEffect != null)
@@ -119,14 +121,15 @@ public class LeadershipBehaviour : MonoBehaviour
     private void SetMaterial(bool state)
     {
         if (hitObj == null) return;
-        MaterialBehaviour materialBehaviour = hitObj.GetComponent<MaterialBehaviour>();
-        if(materialBehaviour == null) { materialBehaviour = hitObj.AddComponent<MaterialBehaviour>(); }
+         targetMatBehaviour = hitObj.GetComponent<MaterialBehaviour>();
+        if(targetMatBehaviour == null) { targetMatBehaviour = hitObj.AddComponent<MaterialBehaviour>(); }
         if(state)
         {
-            materialBehaviour.SetMaterial(m_targetedMaterial);
+            targetMatBehaviour.SetMaterial(m_targetedMaterial);
         } else
         {
-            materialBehaviour.ResetMat();
+            targetMatBehaviour.ResetMat();
+            targetMatBehaviour = null;
         }
     }
     private void SearchingFriendly()
