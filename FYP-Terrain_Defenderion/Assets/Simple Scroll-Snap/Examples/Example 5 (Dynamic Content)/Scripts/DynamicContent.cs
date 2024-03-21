@@ -25,16 +25,31 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             toggleWidth = (togglePrefab.transform as RectTransform).sizeDelta.x * (Screen.width / 2048f); ;
         }
 
-        public void Add(int index)
+        public GameObject Add(int index)
         {
             // Pagination
             Toggle toggle = Instantiate(togglePrefab, scrollSnap.Pagination.transform.position + new Vector3(toggleWidth * (scrollSnap.NumberOfPanels + 1), 0, 0), Quaternion.identity, scrollSnap.Pagination.transform);
             toggle.group = toggleGroup;
-            scrollSnap.Pagination.transform.position -= new Vector3(toggleWidth / 2f, 0, 0);
+            //scrollSnap.Pagination.transform.position -= new Vector3(toggleWidth / 2f, 0, 0);
 
             // Panel
-            panelPrefab.GetComponent<Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-            scrollSnap.Add(panelPrefab, index);
+            //panelPrefab.GetComponent<Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+            return scrollSnap.Add(panelPrefab, index);
+        }
+        public GameObject AddContent(SimpleScrollSnap.AddPanelType addType)
+        {
+            if (addType == SimpleScrollSnap.AddPanelType.Front)
+            {
+                return Add(0);
+            }
+            else if (addType == SimpleScrollSnap.AddPanelType.Back)
+            {
+                return Add(scrollSnap.NumberOfPanels);
+            }
+            else
+            {
+                return null;
+            }
         }
         public void AddAtIndex()
         {

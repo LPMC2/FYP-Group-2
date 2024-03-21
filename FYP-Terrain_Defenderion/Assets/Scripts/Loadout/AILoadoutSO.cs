@@ -6,8 +6,10 @@ using UnityEngine;
 public class AILoadoutSO : ScriptableObject
 {
     [SerializeField] private Sprite m_structureIcon;
+    [SerializeField, TextArea] private string m_description;
     [SerializeField]
     private List<StructureData> structureDatas = new List<StructureData>();
+    public string Description { get { return m_description; } }
     public Sprite StructureIcon { get { return m_structureIcon; } }
     public List<StructureData> StructureDatas { get { return structureDatas; } }
     public void SaveData()
