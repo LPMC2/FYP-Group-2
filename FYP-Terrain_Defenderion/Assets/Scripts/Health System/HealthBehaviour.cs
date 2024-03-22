@@ -26,13 +26,15 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [SerializeField] private bool destroyOnDeath = true;
     [SerializeField] private bool isRespawn = false;
     [SerializeField] private float respawnTime = 5f;
+    [SerializeField] private UnityEvent m_onHitEvent;
+    public UnityEvent OnHitEvent { get { return m_onHitEvent; } set { m_onHitEvent = value; } }
     [SerializeField] private UnityEvent m_DeathEvents;
     [SerializeField] private UnityEvent OnDisableEvent;
     [SerializeField] private UnityEvent m_RespawnEvents;
     [Header("Respawn Display Settings")]
     [SerializeField] private DisplayBehaviour m_RespawnDisplay;
     [SerializeField] private string m_RespawnText = "Respawn in ";
-    [SerializeField] private Camera respawnCamera;
+    [SerializeField] private GameObject respawnCamera;
     private event Action deathEvent;
 
     public event Action DeathEvent
@@ -171,9 +173,14 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             {
                 Death();
             }
-        
+            if(BehaviourTracker.Singleton != null)
+            {
+                Debug.Log("Owner: " + owner);
+                BehaviourTracker.Singleton.TrackerData.AddTrackedDamage(owner, damage);
+            }
         }
-        if(health > 0 && gameObject.activeInHierarchy)
+        m_onHitEvent?.Invoke();
+        if (health > 0 && gameObject.activeInHierarchy)
         StartCoroutine(HitEnumerator());
     }
     private void Death()
@@ -203,6 +210,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
         }
         else
         {
+            if(BehaviourTracker.Singleton != null)
+            {
+                BehaviourTracker.Singleton.TrackerData.AddTrackedDeath(gameObject);
+            }
             m_DeathEvents.Invoke();
             if (destroyOnDeath)
                 Destroy(gameObject);
@@ -233,11 +244,15 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
         lerpTimer = 0f;
         GameObjectExtension.GetGameObjectWithTagFromChilds(gameObject, "HealthBar").SetActive(true);
     }
-    private IEnumerator RespawnTimer()
+    public void StartInviTimer()
     {
-
-        yield return new WaitForSeconds(DeathTime);
-        
+        StartCoroutine(InvinTimer());
+    }
+    private IEnumerator InvinTimer()
+    {
+        DeezNuts(true);
+        yield return new WaitForSeconds(3f);
+        DeezNuts(false);
     }
     private void UpdateHealthBar()
     {

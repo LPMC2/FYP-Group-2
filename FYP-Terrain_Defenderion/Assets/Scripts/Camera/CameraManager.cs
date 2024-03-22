@@ -16,6 +16,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Transform targetTransform;
     [SerializeField] private Transform cameraPivot;
     [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform cameraFollower;
     [SerializeField] private LayerMask collisionLayers;
     private float defaultPosition;
      private Vector3 cameraFollorVelocity = Vector3.zero;
@@ -42,6 +43,7 @@ public class CameraManager : MonoBehaviour
     {
         targetTransform = FindObjectOfType<PlayerManager>().transform;
         inputManager = FindObjectOfType<InputManager>();
+        if(cameraTransform == null)
         cameraTransform = Camera.main.transform;
         defaultPosition = cameraTransform.localPosition.z;
         ResetRot();
@@ -83,6 +85,7 @@ public class CameraManager : MonoBehaviour
         rotation.x = pivotAngle;
         targetRotation = Quaternion.Euler(rotation);
         cameraPivot.localRotation = targetRotation;
+
     }
 
     private void HandleCameraCollisions()

@@ -62,19 +62,28 @@ public class LeadershipBehaviour : MonoBehaviour
             {
                 if (!TeamBehaviour.Singleton.isOwnTeam(transform.root.gameObject, hitPos.collider))
                 {
+                    SetMaterial(false);
                     hitObj = hitPos.collider.gameObject;
                     SetMaterial(true);
                 }
-            } else
+            }  else
             {
-                if(hitObj != null)
+                if (hitObj != null)
                 {
                     SetMaterial(false);
                 }
                 hitObj = null;
             }
         }
-        
+        else
+        {
+            if (hitObj != null)
+            {
+                SetMaterial(false);
+            }
+            hitObj = null;
+        }
+
         if (playerInput == null && transform.root.gameObject != gameObject && transform.root.GetComponent<InputManager>() != null)
         {
             teamId = teamBehaviour.GetTeamID(transform.root.gameObject);
@@ -125,6 +134,7 @@ public class LeadershipBehaviour : MonoBehaviour
         if(targetMatBehaviour == null) { targetMatBehaviour = hitObj.AddComponent<MaterialBehaviour>(); }
         if(state)
         {
+
             targetMatBehaviour.SetMaterial(m_targetedMaterial);
         } else
         {

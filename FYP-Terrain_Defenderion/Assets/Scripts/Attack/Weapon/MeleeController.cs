@@ -204,25 +204,7 @@ public class MeleeController : MonoBehaviour
     }
     private void HitDamage(GameObject hit)
     {
-        IDamageable damageable = hit.GetComponent<IDamageable>();
-        if (damageable != null)
-        {
-            TeamBehaviour teamBehaviour = TeamBehaviour.Singleton;
-            if (teamBehaviour != null)
-            {
-                if (!teamBehaviour.isOwnTeam(Player, hit.GetComponent<Collider>()))
-                {
-                    damageable.TakeDamage(weaponBehaviour.damage);
-                    EnemyController enemyController = hit.GetComponent<EnemyController>();
-                    if (enemyController != null)
-                    {
-                        enemyController.setAggro(Player);
-                    }
-                }
-            }
-            else
-                damageable.TakeDamage(weaponBehaviour.damage);
-        }
+        weaponBehaviour.HitTakeDamage(hit);
     }
     private IEnumerator AttackAnim()
     {

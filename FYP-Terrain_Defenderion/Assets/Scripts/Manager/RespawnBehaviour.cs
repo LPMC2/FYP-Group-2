@@ -10,7 +10,7 @@ public class RespawnBehaviour : TimeManager
     [SerializeField] private static float invincibleTimerOnRespawn = 3f;
     public float RespawnTime { get { return m_RespawnTime; } set { m_RespawnTime = value; } }
     [SerializeField] private string m_DefaultRespawnText = "Respawn in ";
-    public void AddRespawnObject(GameObject obj, float time = default, DisplayBehaviour display = null, string text = default, Camera camera = null, UnityEvent respawnEvent = null)
+    public void AddRespawnObject(GameObject obj, float time = default, DisplayBehaviour display = null, string text = default, GameObject camera = null, UnityEvent respawnEvent = null)
     {
         if(time == default) { time = m_RespawnTime; }
         if(display != null && text == default) { text = m_DefaultRespawnText; }
@@ -24,12 +24,12 @@ public class RespawnBehaviour : TimeManager
     {
         target.SetActive(true);
     }
-    private void SetCamera(Camera camera, bool state)
+    private void SetCamera(GameObject camera, bool state)
     {
         if (camera == null) return;
         camera.gameObject.SetActive(state);
     }
-    private IEnumerator RespawnCoroutine(GameObject obj, float duration, DisplayBehaviour display = null, string text = null, Camera camera = null, UnityEvent respawnEvent = null)
+    private IEnumerator RespawnCoroutine(GameObject obj, float duration, DisplayBehaviour display = null, string text = null, GameObject camera = null, UnityEvent respawnEvent = null)
     {
         SetCamera(camera, true);
         yield return StartCoroutine(RunTimer(duration, display, text, Color.red));

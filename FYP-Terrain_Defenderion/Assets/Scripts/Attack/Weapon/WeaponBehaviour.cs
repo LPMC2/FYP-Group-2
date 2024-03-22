@@ -116,7 +116,7 @@ public class WeaponBehaviour : MonoBehaviour
         //Time for enable to use
         if (m_activeTime > 0)
         {
-            StartCoroutine(ActiveEnumerator());
+            StartActiveCoroutine();
         }
         else
         {
@@ -323,6 +323,11 @@ public class WeaponBehaviour : MonoBehaviour
     #endregion
 
     #region Enumerators
+    public void StartActiveCoroutine()
+    {
+        if(gameObject.activeInHierarchy)
+        StartCoroutine(ActiveEnumerator());
+    }
     private IEnumerator ActiveEnumerator()
     {
         IsActive = false;
@@ -354,7 +359,13 @@ public class WeaponBehaviour : MonoBehaviour
         IDamageable healthBehaviour = hit.GetComponent<IDamageable>();
         if (healthBehaviour != null)
         {
-            healthBehaviour.TakeDamage(damage);
+            Debug.Log("Owner - Weapon: " + owner);
+            healthBehaviour.TakeDamage(damage, owner);
+            EnemyController enemyController = hit.GetComponent<EnemyController>();
+            if (enemyController != null)
+            {
+                enemyController.setAggro(owner);
+            }
         }
     }
 

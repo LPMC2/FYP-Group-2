@@ -18,6 +18,7 @@ public class AILoadoutManager : MonoBehaviour
         Data.LoadData(id);
         SetTurretTeam();
     }
+
     public void LoadData()
     {
         Data.LoadData(m_loadoutID);
