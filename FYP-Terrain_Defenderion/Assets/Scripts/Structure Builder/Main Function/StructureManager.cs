@@ -81,6 +81,12 @@ public class StructureManager : MonoBehaviour
                 if (shooterManager != null)
                 {
                     TeamBehaviour.Singleton.TeamManager[id].AddMember(shooterManager.ShooterObj);
+                } else
+                {
+                    if(child.gameObject.layer == LayerMask.NameToLayer("Defense"))
+                    {
+                        TeamBehaviour.Singleton.TeamManager[id].AddMember(child.gameObject);
+                    }
                 }
             }
         }

@@ -37,7 +37,7 @@ public class ShooterBehaviour : MonoBehaviour
     private LayerMask m_HitLayer;
     [Header("Misc")]
     [SerializeField] private GameObject fireParticleEffect;
-    [SerializeField] private AudioClip fireSound;
+    [SerializeField] private string fireSound;
     [SerializeField] private AudioSource audioSource;
     private bool isRotating = false; // Track if the shooter is currently rotating
     private bool isFiring = false;
@@ -263,34 +263,42 @@ public class ShooterBehaviour : MonoBehaviour
                     yield return new WaitForSeconds(preFireCd);
                     isCD = false;
                 }
-                for (int i = 0; i < shootCount; i++)
+                Vector3 currentForward = HeadObject.transform.forward;
+                Vector3 rotatedForward = rotateOffset * currentForward;
+                rotatedForward.Normalize();
+                if (Physics.Raycast(HeadObject.transform.position, rotatedForward, range, m_HitLayer))
                 {
-                    if (target == null || !IsTargetInRange(target))
-                    {
-                        isFiring = false;
-                        targetLocked = false;
-                        yield break; // Stop shooting if target is null or out of range
-                    }
 
-                    switch(bulletType)
-                    {
-                        case ShootType.ForwardObject:
-                            FireBullet(ProjectileType.StraightForward, structure);
-                            break;
-                        case ShootType.MotionObject:
-                            FireBullet(ProjectileType.InstantForce, structure);
-                            break;
-                        case ShootType.Ray:
-                            LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
-                            if(laserBehaviour != null)
-                            {
-                                laserBehaviour.fire(damageMultiplier);
-                            }
-                            break;
-                    }
 
-                    if (shootCount > 1)
-                        yield return new WaitForSeconds(shootSpeedPerCount);
+                    for (int i = 0; i < shootCount; i++)
+                    {
+                        if (target == null || !IsTargetInRange(target))
+                        {
+                            isFiring = false;
+                            targetLocked = false;
+                            yield break; // Stop shooting if target is null or out of range
+                        }
+
+                        switch (bulletType)
+                        {
+                            case ShootType.ForwardObject:
+                                FireBullet(ProjectileType.StraightForward, structure);
+                                break;
+                            case ShootType.MotionObject:
+                                FireBullet(ProjectileType.InstantForce, structure);
+                                break;
+                            case ShootType.Ray:
+                                LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
+                                if (laserBehaviour != null)
+                                {
+                                    laserBehaviour.fire(damageMultiplier);
+                                }
+                                break;
+                        }
+
+                        if (shootCount > 1)
+                            yield return new WaitForSeconds(shootSpeedPerCount);
+                    }
                 }
                 yield return new WaitForSeconds(shootingSpeed);
 
@@ -316,19 +324,25 @@ public class ShooterBehaviour : MonoBehaviour
     private void FireBullet(ProjectileType projectileType, GameObject owner = null)
     {
         GameObject targetObj = RandomLaunchPositionObj();
-        if (fireParticleEffect != null)
-        {
-            GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, Quaternion.identity);
-        }
+
         if(fireSound != null)
         {
             AudioManager.Singleton.PlayOneShotSound(fireSound);
         }
+       
+        Vector3 relativePos = target.transform.position - HeadObject.transform.position + directionOffset;
+        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+        RaycastHit hit;
+
+
         GameObject bullet = ShootObject;//Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
         bullet.transform.position = targetObj.transform.position;
-        Vector3 relativePos = target.transform.position - bullet.transform.position + directionOffset;
-        Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
         bullet.transform.rotation = rotation;
+        if (fireParticleEffect != null)
+        {
+            GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, rotation*fireParticleEffect.transform.rotation, targetObj.transform);
+            particle.transform.localPosition = fireParticleEffect.transform.position;
+        }
         Projectile projectile = bullet.GetComponent<Projectile>();
         projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner);
 

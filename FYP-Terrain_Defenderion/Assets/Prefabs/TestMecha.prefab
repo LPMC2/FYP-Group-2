@@ -564,18 +564,22 @@ MonoBehaviour:
   AttackSound: {fileID: 0}
   DeathSound: {fileID: 0}
   attackAnimations:
+    m_useAnimationRig: 1
     animationLayer: 2
     playAttackAnimation: []
     switchAnimationTime: 0.25
   movementAnimations:
+    m_useAnimationRig: 1
     animationLayer: 2
     playAttackAnimation: []
     switchAnimationTime: 0.25
   deathAnimations:
+    m_useAnimationRig: 1
     animationLayer: 2
     playAttackAnimation: []
     switchAnimationTime: 0.25
   currentAttackAnimation: -1
+  isControlled: 0
   DebugMode: 0
 --- !u!65 &9063873985251698710
 BoxCollider:
@@ -698,8 +702,11 @@ MonoBehaviour:
   healthBarColor: {r: 1, g: 0, b: 0, a: 1}
   DeathTime: 0
   destroyOnDeath: 0
-  isRespawn: 1
+  isRespawn: 0
   respawnTime: 5
+  m_onHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
   m_DeathEvents:
     m_PersistentCalls:
       m_Calls: []

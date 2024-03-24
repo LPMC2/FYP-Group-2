@@ -12,6 +12,7 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     [Tooltip("This unityevent will be invoked and use the collided gameobject as the parameter when hit")]
     private UnityEvent<GameObject> m_HitFunction;
+    [SerializeField] private UnityEvent m_onInitializeFunction;
     [SerializeField]
     private LayerMask m_HitLayer;
     public GameObject ParticleEffect;
@@ -113,6 +114,7 @@ public class Projectile : MonoBehaviour
             //Debug.Log(owner);
             this.owner = owner;
         }
+        m_onInitializeFunction?.Invoke();
         this.direction = direction;
          speed = speedMultiplier;
         switch (this.projectileType)

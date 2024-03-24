@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 using InputDeviceControl.Manager;
 using Cinemachine;
+using UnityEngine.Rendering.Universal;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private ReferenceObject<Slider> m_MusicSlider = new ReferenceObject<Slider>();
     [SerializeField] private ReferenceObject<Slider> m_MainSlider = new ReferenceObject<Slider>();
     [SerializeField] private TMP_Dropdown m_GraphicsTypeDropdown;
+    [SerializeField] private TMP_Dropdown m_GraphicsQualityDropDown;
     [SerializeField] private ReferenceObject<Slider> m_POVSlider = new ReferenceObject<Slider>();
     [SerializeField] private ReferenceObject<Slider> m_SensitivitySlider = new ReferenceObject<Slider>();
 
@@ -122,6 +124,20 @@ public class SettingsManager : MonoBehaviour
         }
        
     }
+    public void SetGraphicsQuality(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                settingsData.Settings.GraphicsQualityType.Value = GraphicsType.Normal;
+                break;
+            case 1:
+                settingsData.Settings.GraphicsQualityType.Value = GraphicsType.Low;
+                break;
+        }
+        SaveSettingsData();
+        UpdateGraphicsQuality();
+    }
     public void SetGraphicsData(int index)
     {
         switch (index)
@@ -135,6 +151,7 @@ public class SettingsManager : MonoBehaviour
         }
         SaveSettingsData();
         UpdateGraphics();
+        UpdateGraphicsQuality();
     }
     #region -----------------------------Update Data-----------------------------
     public void UpdateAll()
@@ -151,7 +168,7 @@ public class SettingsManager : MonoBehaviour
         m_MainSlider.TargetObject.value = settingsData.Settings.MainVolume.Value;
         m_MusicSlider.TargetObject.value = settingsData.Settings.MusicVolume.Value;
         m_GraphicsTypeDropdown.value = (int)settingsData.Settings.screenType.Value;
-
+        m_GraphicsQualityDropDown.value = (int)settingsData.Settings.GraphicsQualityType.Value;
         m_POVSlider.TargetObject.value = settingsData.Settings.POV.Value;
         m_SensitivitySlider.TargetObject.value = settingsData.Settings.Sensitivity.Value;
     }
@@ -232,6 +249,29 @@ public class SettingsManager : MonoBehaviour
                 break;
         }
     }
+    public void UpdateGraphicsQuality()
+    {
+        UniversalAdditionalCameraData[] universalAdditionalCameraDatas = FindObjectsOfType<UniversalAdditionalCameraData>(true);
+        foreach (UniversalAdditionalCameraData universalAdditionalCameraData in universalAdditionalCameraDatas)
+        {
+            switch (settingsData.Settings.GraphicsQualityType.Value)
+            {
+                case GraphicsType.Normal:
+                    if (universalAdditionalCameraData != null)
+                    {
+                        universalAdditionalCameraData.renderPostProcessing = true;
+                    }
+                    break;
+                case GraphicsType.Low:
+                    if (universalAdditionalCameraData != null)
+                    {
+                        universalAdditionalCameraData.renderPostProcessing = false;
+                    }
+                    break;
+            }
+        }
+    }
+
     #endregion
     [System.Serializable]
     public class ReferenceObject<T>

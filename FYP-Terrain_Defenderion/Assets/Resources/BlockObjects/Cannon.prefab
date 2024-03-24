@@ -282,7 +282,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7110484092606448470}
-  - component: {fileID: 8028294026523372419}
   - component: {fileID: 4522546459236642492}
   m_Layer: 0
   m_Name: Barrel
@@ -308,49 +307,6 @@ Transform:
   m_Father: {fileID: 6633013472452466067}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8028294026523372419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5147011996573150547}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee4d12787835a1341bba9d5617df92fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletType: 0
-  m_launchPositionObjects:
-  - {fileID: 7408921695263465437}
-  m_shootObject:
-  - {fileID: 3760000531308150246, guid: ee4747e3dab28a94ea3b22dcd3f9d847, type: 3}
-  HeadObject: {fileID: 5147011996573150547}
-  structure: {fileID: 0}
-  preFireCd: 2
-  shootingSpeed: 4
-  objectSpeed: 250
-  fireRange: 5
-  shootCount: 1
-  shootSpeedPerCount: 0.1
-  directionOffset: {x: 0, y: 0, z: 0}
-  rotateDuration: 0.25
-  rotateOffset: {x: 0, y: 0, z: 0, w: 1}
-  isActive: 1
-  range: 40
-  target: {fileID: 0}
-  damageMultiplier: 75
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 2176
-  m_HitLayer:
-    serializedVersion: 2
-    m_Bits: 32640
-  fireParticleEffect: {fileID: 3891807718660639789, guid: 4d52bd799d267a648ae10f5b2078d7da, type: 3}
-  fireSound: {fileID: 8300000, guid: e5c5d8e637c1d8d4b881532e2ae8be03, type: 3}
-  audioSource: {fileID: 4522546459236642492}
-  isDebug: 0
-  cooldownDuration: 0.1
 --- !u!82 &4522546459236642492
 AudioSource:
   m_ObjectHideFlags: 0
@@ -457,8 +413,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6633013472452466067}
   - component: {fileID: 2370690499431698728}
-  - component: {fileID: -7941653262554035160}
-  m_Layer: 0
+  - component: {fileID: 6177535503016891756}
+  - component: {fileID: 5115722433706504277}
+  m_Layer: 8
   m_Name: Cannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -505,7 +462,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-7941653262554035160
+--- !u!114 &6177535503016891756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -514,11 +471,89 @@ MonoBehaviour:
   m_GameObject: {fileID: 6763844269381134948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ebd0ce3ac8eafb4c8f6ca1b7dbc0868, type: 3}
+  m_Script: {fileID: 11500000, guid: 9963e530a8565df44a76ba02fd59d2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShooterObject: {fileID: 5147011996573150547}
-  m_shooterBehaviour: {fileID: 8028294026523372419}
+  m_healthBarType: 2
+  isDynamicHealthBar: 1
+  showHPBarOnStart: 0
+  health: 750
+  hitTime: 0.1
+  hitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  healthBarPrefab: {fileID: 7817960711757863714, guid: 14471a63829ad374c971348f47ad3c16, type: 3}
+  healthbarOffset: {x: 0, y: 1, z: 0}
+  healthBarSize: {x: 1, y: 1, z: 1}
+  healthBarColor: {r: 1, g: 0, b: 0, a: 1}
+  DeathTime: 0
+  destroyOnDeath: 1
+  isRespawn: 0
+  respawnTime: 5
+  m_onHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeathEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisableEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_RespawnEvents:
+    m_PersistentCalls:
+      m_Calls: []
+  m_RespawnDisplay: {fileID: 0}
+  m_RespawnText: 'Respawn in '
+  respawnCamera: {fileID: 0}
+  healthBarUI: {fileID: 0}
+  chipSpeed: 2
+  HurtSound: {fileID: 0}
+  Invincible: 0
+  frontHealthBar: {fileID: 0}
+  backHealthBar: {fileID: 0}
+--- !u!114 &5115722433706504277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6763844269381134948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4d12787835a1341bba9d5617df92fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletType: 0
+  m_launchPositionObjects:
+  - {fileID: 7408921695263465437}
+  m_shootObject:
+  - {fileID: 3760000531308150246, guid: ee4747e3dab28a94ea3b22dcd3f9d847, type: 3}
+  HeadObject: {fileID: 5147011996573150547}
+  structure: {fileID: 0}
+  preFireCd: 2
+  shootingSpeed: 4
+  objectSpeed: 250
+  fireRange: 5
+  shootCount: 1
+  shootSpeedPerCount: 0.1
+  directionOffset: {x: 0, y: 0, z: 0}
+  rotateDuration: 0.25
+  rotateOffset: {x: 0, y: 0, z: 0, w: 1}
+  isActive: 1
+  range: 40
+  target: {fileID: 0}
+  damageMultiplier: 150
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 2176
+  m_HitLayer:
+    serializedVersion: 2
+    m_Bits: 32640
+  fireParticleEffect: {fileID: 3891807718660639789, guid: 4d52bd799d267a648ae10f5b2078d7da, type: 3}
+  fireSound: 
+  audioSource: {fileID: 4522546459236642492}
+  isDebug: 0
+  cooldownDuration: 0.1
 --- !u!1 &7408921695263465437
 GameObject:
   m_ObjectHideFlags: 0

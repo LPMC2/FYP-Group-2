@@ -30,8 +30,8 @@ public class AILoadoutManager : MonoBehaviour
     }
     public void SetTurretTeam()
     {
-        ShooterBehaviour[] shooterBehaviours =  StructureManager.EnemyStructurePos.GetComponentsInChildren<ShooterBehaviour>();
-        foreach(ShooterBehaviour child in shooterBehaviours)
+        HealthBehaviour[] structures =  StructureManager.EnemyStructurePos.GetComponentsInChildren<HealthBehaviour>();
+        foreach(HealthBehaviour child in structures)
         {
             TeamBehaviour.Singleton.TeamManager[1].AddMember(child.gameObject);
         }
