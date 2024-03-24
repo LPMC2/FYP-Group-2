@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ButtonHoldPressBheaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
@@ -13,6 +14,27 @@ public class ButtonHoldPressBheaviour : MonoBehaviour, IPointerDownHandler, IPoi
     [SerializeField] private UnityEvent m_onCancelEvent;
     [SerializeField] private UnityEvent m_onPressEvent;
     [SerializeField] private float m_chargeSpeed = 1f;
+    [SerializeField] private InputActionReference m_activateInputAction;
+    InputAction useAction;
+    private void OnEnable()
+    {
+        if (m_activateInputAction != null)
+        {
+            useAction = m_activateInputAction.ToInputAction();
+            if (useAction != null)
+                useAction.Reset();
+            useAction.performed += i => { m_btnPressed = true; };
+            useAction.canceled += i => { m_btnPressed = false; };
+            useAction.Enable();
+        }
+    }
+    private void OnDisable()
+    {
+        if(useAction != null)
+        {
+            useAction.Disable();
+        }
+    }
     private bool isFull = false;
     public void OnPointerDown(PointerEventData eventData)
     {

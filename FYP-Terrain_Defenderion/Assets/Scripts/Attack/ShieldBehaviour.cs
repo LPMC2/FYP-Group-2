@@ -27,7 +27,10 @@ public class ShieldBehaviour : MonoBehaviour
     public void OnDestroy()
     {
         if (healthBehaviour != null)
+        {
             healthBehaviour.OnHitEvent.RemoveListener(OnHit);
+            SetShieldUse(false);
+        }
     }
     public void SetShieldUse(bool state)
     {

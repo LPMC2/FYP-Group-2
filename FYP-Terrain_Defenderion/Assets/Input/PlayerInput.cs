@@ -388,6 +388,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""7b1e07c7-f59d-455f-9bde-29e06dc4e322"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -445,6 +454,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1ac89a0d-3486-4bc6-b8ed-17586c4aee6f"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -465,6 +485,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_PlayerActions_Right_Click = m_PlayerActions.FindAction("Right_Click", throwIfNotFound: true);
         m_PlayerActions_Left_Click = m_PlayerActions.FindAction("Left_Click", throwIfNotFound: true);
         m_PlayerActions_Reload = m_PlayerActions.FindAction("Reload", throwIfNotFound: true);
+        m_PlayerActions_Skip = m_PlayerActions.FindAction("Skip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -616,6 +637,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerActions_Right_Click;
     private readonly InputAction m_PlayerActions_Left_Click;
     private readonly InputAction m_PlayerActions_Reload;
+    private readonly InputAction m_PlayerActions_Skip;
     public struct PlayerActionsActions
     {
         private @PlayerInput m_Wrapper;
@@ -624,6 +646,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Right_Click => m_Wrapper.m_PlayerActions_Right_Click;
         public InputAction @Left_Click => m_Wrapper.m_PlayerActions_Left_Click;
         public InputAction @Reload => m_Wrapper.m_PlayerActions_Reload;
+        public InputAction @Skip => m_Wrapper.m_PlayerActions_Skip;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -645,6 +668,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
         }
 
         private void UnregisterCallbacks(IPlayerActionsActions instance)
@@ -661,6 +687,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
         }
 
         public void RemoveCallbacks(IPlayerActionsActions instance)
@@ -693,5 +722,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnRight_Click(InputAction.CallbackContext context);
         void OnLeft_Click(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
 }

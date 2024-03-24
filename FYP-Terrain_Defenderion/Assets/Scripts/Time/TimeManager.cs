@@ -7,8 +7,9 @@ using Unity.Netcode;
 public class TimeManager : NetworkBehaviour
 {
     [Header("Unit: second")]
-    [SerializeField] private NetworkVariable<float> m_TimeRemain = new NetworkVariable<float>();
-    public float TimeRemain { get { return m_TimeRemain.Value; } }
+    [SerializeField] private float m_TimeRemain =0f;
+    public float TimeRemain { get { return m_TimeRemain; } }
+    public void SkipTimeRemain() { m_TimeRemain = 0.1f; }
     [SerializeField] private float m_MaxTime = 600;
     [SerializeField] private bool isActive = false;
     [SerializeField] public UnityEvent m_EndTimeEvent;
@@ -34,15 +35,15 @@ public class TimeManager : NetworkBehaviour
     public event CustomEvent EndTimeEvent;
     private void Start()
     {
-        m_TimeRemain.Value = 0f;
+        m_TimeRemain = 0f;
     }
     public virtual void ActiveTimer(float customTime = default)
     {
         if (customTime == default)
-            m_TimeRemain.Value = m_MaxTime;
+            m_TimeRemain = m_MaxTime;
         else if (customTime > 0)
         {
-            m_TimeRemain.Value = customTime;
+            m_TimeRemain = customTime;
         }
         if (customTime > 0 || customTime == default)
         {
@@ -53,7 +54,7 @@ public class TimeManager : NetworkBehaviour
     }
     public void ActiveReturnTimer()
     {
-        m_TimeRemain.Value = returnTime;
+        m_TimeRemain = returnTime;
         isActive = true;
         isReturning = true;
         if (m_DisplayText != null)
@@ -62,14 +63,14 @@ public class TimeManager : NetworkBehaviour
     public void Reset()
     {
         isActive = false;
-        m_TimeRemain.Value = 0f;
+        m_TimeRemain = 0f;
     }
     public virtual void EndTimeInvoke()
     {
         if(!isReturning)
          m_EndTimeEvent.Invoke();
         isActive = false;
-        m_TimeRemain.Value = 0f;
+        m_TimeRemain = 0f;
         isReturning = false;
     }
     private void Update()
@@ -82,7 +83,7 @@ public class TimeManager : NetworkBehaviour
             }
             if(isInfinite)
         {
-            m_TimeRemain.Value = Mathf.Infinity;
+            m_TimeRemain = Mathf.Infinity;
             isInfinite = false;
         }
             if(debugEndTimer)
@@ -114,14 +115,14 @@ public class TimeManager : NetworkBehaviour
     }
     private void RunTimer()
     {
-        if (m_TimeRemain.Value > 0)
+        if (m_TimeRemain > 0)
         {
-            m_TimeRemain.Value -= Time.deltaTime;
+            m_TimeRemain -= Time.deltaTime;
             if (!isReturning)
-                SetDisplayText(m_TimeDisplayHeader + TimeUnit.getTimeUnit(m_TimeRemain.Value));
+                SetDisplayText(m_TimeDisplayHeader + TimeUnit.getTimeUnit(m_TimeRemain));
             else
             {
-                string text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain.Value) + "s";
+                string text = m_ReturnDisplayHeader + "\n" + "Return in " + (int)(m_TimeRemain) + "s";
                 if (displayBehaviour == null)
                     SetDisplayText(text);
                 else

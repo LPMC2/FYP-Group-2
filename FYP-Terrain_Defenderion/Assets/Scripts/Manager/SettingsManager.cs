@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using InputDeviceControl.Manager;
+using Cinemachine;
+
 public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Singleton;
@@ -177,7 +179,14 @@ public class SettingsManager : MonoBehaviour
         m_POVSlider.DisplayText = value.ToString();
         if (Camera.main != null)
         {
-            Camera.main.fieldOfView = value;
+            CinemachineBrain cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
+            if (cinemachineBrain ==null)
+            {
+                Camera.main.fieldOfView = value;
+            } else
+            {
+                cinemachineBrain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = value;
+            }
         }
         if(saveData)
         SaveSettingsData();
