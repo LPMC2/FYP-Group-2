@@ -372,6 +372,7 @@ public static class StructureSerializer
         if(combineObjects)
         {
             CombineGameObjects(structure);
+            StaticBatchingUtility.Combine(structure);
         }
         if(calculateStats)
         {

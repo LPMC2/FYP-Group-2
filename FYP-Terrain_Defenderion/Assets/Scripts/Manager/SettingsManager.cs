@@ -35,7 +35,11 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown m_GraphicsQualityDropDown;
     [SerializeField] private ReferenceObject<Slider> m_POVSlider = new ReferenceObject<Slider>();
     [SerializeField] private ReferenceObject<Slider> m_SensitivitySlider = new ReferenceObject<Slider>();
-
+    private CinemachineBrain m_cinemachineBrain;
+    private CinemachineVirtualCamera[] m_cinemachineVirtualCameras;
+    private Camera[] m_camera;
+    CameraManager[] inputManager;
+    FlightController[] flightControllers;
     private void OnEnable()
     {
         openMenuButton.performed += OnClick;
@@ -75,6 +79,11 @@ public class SettingsManager : MonoBehaviour
     {
         Singleton = this;
         Obj = this.gameObject;
+        m_camera = GameObject.FindObjectsOfType<Camera>(true);
+       
+        m_cinemachineVirtualCameras = GameObject.FindObjectsOfType<CinemachineVirtualCamera>(true);
+        inputManager = GameObject.FindObjectsOfType<CameraManager>(true);
+        flightControllers = GameObject.FindObjectsOfType<FlightController>(true);
     }
     
     void Start()
@@ -113,6 +122,7 @@ public class SettingsManager : MonoBehaviour
     private float cacheExpirationTimer; // Timer to track cache expiration
     void Update()
     {
+        /*
         if (Time.time >= cacheExpirationTimer)
         {
             if (File.Exists(settingsLocation) && !SettingsPanel.activeInHierarchy)
@@ -122,6 +132,7 @@ public class SettingsManager : MonoBehaviour
             }
             cacheExpirationTimer = Time.time + cacheExpirationTime;
         }
+        */
        
     }
     public void SetGraphicsQuality(int index)
@@ -151,7 +162,7 @@ public class SettingsManager : MonoBehaviour
         }
         SaveSettingsData();
         UpdateGraphics();
-        UpdateGraphicsQuality();
+
     }
     #region -----------------------------Update Data-----------------------------
     public void UpdateAll()
@@ -194,17 +205,18 @@ public class SettingsManager : MonoBehaviour
     {
         settingsData.Settings.POV.Value = value;
         m_POVSlider.DisplayText = value.ToString();
-        if (Camera.main != null)
-        {
-            CinemachineBrain cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
-            if (cinemachineBrain ==null)
-            {
-                Camera.main.fieldOfView = value;
-            } else
-            {
-                cinemachineBrain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = value;
-            }
-        }
+
+                foreach (Camera camera in m_camera)
+                {
+                    camera.fieldOfView = value;
+                }
+
+                foreach (CinemachineVirtualCamera cinemachineVirtualCamera in m_cinemachineVirtualCameras)
+                {
+                    cinemachineVirtualCamera.m_Lens.FieldOfView = value;
+                }
+            
+        
         if(saveData)
         SaveSettingsData();
     }
@@ -220,7 +232,6 @@ public class SettingsManager : MonoBehaviour
     public void TriggerSensitivityValue(float value) { UpdateSensitivityValue(value, true); }
     private void SetControlSensitivity(float value)
     {
-        CameraManager[] inputManager = GameObject.FindObjectsOfType<CameraManager>();
         if(inputManager.Length > 0)
         {
             foreach(CameraManager inputManager1 in inputManager)
@@ -228,7 +239,6 @@ public class SettingsManager : MonoBehaviour
                 inputManager1.CameraLookSpeed = value * 2;
             }
         }
-        FlightController[] flightControllers = GameObject.FindObjectsOfType<FlightController>();
         if(flightControllers.Length > 0)
         {
             foreach(FlightController flightController in flightControllers)

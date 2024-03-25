@@ -256,17 +256,16 @@ public class ShooterBehaviour : MonoBehaviour
     {
         while (true)
         {
-            if (targetLocked)
+            if (targetLocked && target != null)
             {
                 if (isCD)
                 {
                     yield return new WaitForSeconds(preFireCd);
                     isCD = false;
                 }
-                Vector3 currentForward = HeadObject.transform.forward;
-                Vector3 rotatedForward = rotateOffset * currentForward;
-                rotatedForward.Normalize();
-                if (Physics.Raycast(HeadObject.transform.position, rotatedForward, range, m_HitLayer))
+                Vector3 relativePos = target.transform.position - HeadObject.transform.position + directionOffset;
+                if(isDebug) { Debug.DrawRay(HeadObject.transform.position, relativePos, Color.red, 3f); }
+                if (Physics.Raycast(HeadObject.transform.position, relativePos, range, m_HitLayer))
                 {
 
 

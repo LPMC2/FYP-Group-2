@@ -26,10 +26,10 @@ public class TeamBehaviour : MonoBehaviour
         }
         return -1;
     }
-    public List<Collider> RemoveFriendlyMembers(int teamId, List<Collider> mainColliders)
+    public List<GameObject> RemoveFriendlyMembers(int teamId, List<GameObject> mainColliders)
     {
         if(teamId == -1) { return mainColliders; }
-        mainColliders.RemoveAll(itemA => Singleton.TeamManager[teamId].TeamList.Contains(itemA.gameObject));
+        mainColliders.RemoveAll(itemA => Singleton.TeamManager[teamId].TeamList.Contains(itemA));
         return mainColliders;
 
     }

@@ -69,6 +69,7 @@ public class EnemyController : MonoBehaviour
     private bool isActive = true;
     [Header("Debug")]
     [SerializeField] private bool DebugMode = false;
+    private List<GameObject> targets = new List<GameObject>();
     private void DebugLog(string text)
     {
         if (!DebugMode) return;
@@ -148,6 +149,13 @@ public class EnemyController : MonoBehaviour
         }
         agent.stoppingDistance = AttackDistance;
     }
+    private void OnEnable()
+    {
+        GameObjectExtension.DelayEventInvoke(this, () =>
+        {
+            GetAllTargets();
+        }, 0.1f);
+    }
     public void setAggro(GameObject originTarget)
     {
         if (!isAggro)
@@ -197,89 +205,74 @@ public class EnemyController : MonoBehaviour
     }
     GameObject currentTarget;
     Collider excludedTarget = null;
+    private void GetAllTargets()
+    {
+        targets.Clear();
+        HealthBehaviour[] allTargets = FindObjectsOfType<HealthBehaviour>(true);
+        foreach(HealthBehaviour t in allTargets)
+        {
+            if(targetLayer == (targetLayer|(1<<t.gameObject.layer)))
+            {
+                targets.Add(t.gameObject);
+            }
+        }
+        targets = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID, targets);
+    }
+    private GameObject GetPreferredTarget()
+    {
+        Vector3 baseVec3 = transform.position;
+        GameObject nearestTarget = null;
+        float dis = 0f;
+        foreach (GameObject t in targets)
+        {
+            if (t.activeInHierarchy && (preferredTargetLayer == t.layer))
+            {
+                float newDis = Vector3.Distance(baseVec3, t.transform.position);
+                if (dis < newDis && newDis <= lookRadius)
+                {
+                    dis = newDis;
+                    nearestTarget = t;
+                }
+            }
+        }
+        return nearestTarget;
+    }
+    private GameObject GetNearestTarget()
+    {
+        Vector3 baseVec3 = transform.position;
+        GameObject nearestTarget = null;
+        float dis = 0f;
+        foreach(GameObject t in targets)
+        {
+            if (t.activeInHierarchy)
+            {
+                float newDis = Vector3.Distance(baseVec3, t.transform.position);
+                if (dis < newDis && newDis <= lookRadius)
+                {
+                    dis = newDis;
+                    nearestTarget = t;
+                }
+            }
+        }
+        return nearestTarget;
+    }
+    GameObject preftarget;
     private void FindTarget()
     {
-        Collider[] colliderArray = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
-        List<Collider> colliders = new List<Collider>(colliderArray);
-        if (target != null && (!target.gameObject.activeInHierarchy || !colliders.Contains(target.GetComponent<Collider>())))
+        if(target == null) { isAggro = false; }
+        if((target != null && !target.gameObject.activeInHierarchy)) {DebugLog("Reset!"); ResetTarget(); }
+        if (target != null || isAggro == true)
         {
-            DebugLog("Target is inactive!");
-            excludedTarget = null;
-            target = null;
-            currentTarget = null;
-            isAggro = false;
+            return;
         }
-        if (DebugMode)
+        SetTarget(GetNearestTarget());
+         preftarget = GetPreferredTarget();
+       
+        if(preferredTargetLayer != 0 && preftarget != null)
         {
-            string Debug = "Collider List(Before):\n";
-            foreach (Collider collider in colliders)
-            {
-                Debug += collider.gameObject.name + "\n";
-            }
-            DebugLog(Debug);
+            setAggro(preftarget);
         }
-        if (isAggro) return;
-        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
-        colliders = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID ,colliders);
-        if(excludedTarget != null)
-        {
-            colliders.Remove(excludedTarget);
-        }
-        if(DebugMode)
-        {
-            string Debug = "Collider List:\n";
-            foreach (Collider collider in colliders)
-            {
-               Debug+= collider.gameObject.name + "\n";
-            }
-            DebugLog(Debug);
-        }
-        if (colliders.Count > 0)
-        {
-            float closestDistance = Mathf.Infinity;
-            GameObject closestObject = null;
-            if (target != null) return;
 
-            foreach (Collider collider in colliders)
-            {
-                float distance = Vector3.Distance(transform.position, collider.transform.position);
-
-                if ((collider.gameObject.layer == preferredTargetLayer))
-                {
-                    closestObject = collider.gameObject;
-                    break;
-                }
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestObject = collider.gameObject;
-                    
-
-                }
-            }
-
-            if (closestObject != null)
-            {
-                DebugLog("Closest Obj:" + closestObject.name);
-                if (target == null || target.gameObject.activeInHierarchy == false || target.GetComponent<Collider>().enabled == false)
-                {
-                    if (currentTarget != closestObject)
-                    {
-                        SetTarget(closestObject);
-                    }
-
-                }
-            }
-
-        }
-        else
-        {
-            DebugLog("No Target Found!");
-            target = null;
-            currentTarget = null;
-            isInRange = false;
-            excludedTarget = null;
-        }
     }
     bool PathIsReachable(Transform targetDestination)
     {
@@ -290,7 +283,7 @@ public class EnemyController : MonoBehaviour
     }
     private void SetTarget(GameObject targetObj)
     {
-        if (targetObj != gameObject)
+        if (targetObj != gameObject && targetObj != null)
         {
             target = targetObj.transform;
             currentTarget = targetObj;
@@ -534,9 +527,10 @@ public class EnemyController : MonoBehaviour
     }
     public void ResetTarget()
     {
+        isAggro = false;
         currentTarget = null;
         target = null;
-        isAggro = false;
+        excludedTarget = null;
     }
     private void ResetAttack()
     {
