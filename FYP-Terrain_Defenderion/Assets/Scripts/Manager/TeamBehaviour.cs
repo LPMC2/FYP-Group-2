@@ -40,6 +40,18 @@ public class TeamBehaviour : MonoBehaviour
         return mainColliders;
 
     }
+    public bool IsOwnTeam(GameObject origin, GameObject target)
+    {
+        int teamID = TeamBehaviour.Singleton.GetTeamID(origin);
+        if (teamID != -1)
+        {
+            return TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(target);
+        }
+        else
+        {
+            return true;
+        }
+    }
     public bool isOwnTeam(GameObject origin, Collider target)
     {
         int teamID = TeamBehaviour.Singleton.GetTeamID(origin);

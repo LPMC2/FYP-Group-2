@@ -149,9 +149,9 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     public void TakeDamage(float damage, GameObject owner = null)
     {
         if (isHit) return;
-        if (owner != null && gameObject.GetComponent<Collider>() != null)
+        if (owner != null)
         {
-            if(TeamBehaviour.Singleton.isOwnTeam(owner, gameObject.GetComponent<Collider>())) { return; }
+            if(TeamBehaviour.Singleton.IsOwnTeam(owner, gameObject)){ return; }
         }
         if (audioSource != null)
         {

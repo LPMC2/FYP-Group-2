@@ -36,6 +36,7 @@ public class Projectile : MonoBehaviour
     public ProjectileType Type => projectileType;
     private Vector3 direction;
     private GameObject owner;
+    public GameObject Owner { set { owner = value; } }
     private bool isDestroyAfterCollision = false;
     private void Start()
     {

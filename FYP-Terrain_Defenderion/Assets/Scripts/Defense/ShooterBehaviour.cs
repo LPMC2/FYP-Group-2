@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ShooterBehaviour : MonoBehaviour
 {
+    [SerializeField] private bool m_findTargetAtStart = false;
     [SerializeField] private ShootType bulletType;
     [SerializeField] private List<GameObject> m_launchPositionObjects =new List<GameObject>();
     [SerializeField] private List<GameObject> m_shootObject = new List<GameObject>();
@@ -74,6 +75,8 @@ public class ShooterBehaviour : MonoBehaviour
             objectPool1.Initialize(fireObj,20, gameObject.transform);
             objectPools.Add(objectPool1);
         }
+        if(m_findTargetAtStart)
+        GetAllTargets();
     }
 
     private bool isCooldown = false; // Track cooldown state
@@ -144,14 +147,16 @@ public class ShooterBehaviour : MonoBehaviour
 
     }
     private List<GameObject> targets = new List<GameObject>();
-    private void GetAllTargets()
+    int teamID = -1;
+
+    public void GetAllTargets()
     {
-        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
+         teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
         targets.Clear();
         HealthBehaviour[] allTargets = FindObjectsOfType<HealthBehaviour>(true);
         foreach (HealthBehaviour t in allTargets)
         {
-            if (targetLayer == (targetLayer | (1 << t.gameObject.layer)))
+            if (targetLayer == (targetLayer | (1 << t.gameObject.layer)) && !TeamBehaviour.Singleton.IsOwnTeam(gameObject, t.gameObject))
             {
                 targets.Add(t.gameObject);
             }
@@ -166,7 +171,7 @@ public class ShooterBehaviour : MonoBehaviour
         float dis = 0f;
         foreach (GameObject t in targets)
         {
-            if (t.activeInHierarchy)
+            if (t != null && t.activeInHierarchy)
             {
                 float newDis = Vector3.Distance(baseVec3, t.transform.position);
                 if (dis < newDis && newDis <= range)
@@ -181,60 +186,27 @@ public class ShooterBehaviour : MonoBehaviour
     private List<Collider> test = new List<Collider>();
     private void FindTarget()
     {
-        Collider[] collidersArray = Physics.OverlapSphere(transform.position, range, targetLayer);
-        List<Collider> colliders = new List<Collider>(collidersArray);
-        arrayBehaviour.DebugList(colliders, "Before:", isDebug);
-        test = colliders;
-        if (TeamBehaviour.Singleton != null)
+        if (target != null && !target.gameObject.activeInHierarchy) { ResetTarget(); }
+        if (target != null)
         {
-            int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
-            if (teamID != -1)
-            {
-                colliders.RemoveAll(itemA => TeamBehaviour.Singleton.TeamManager[teamID].TeamList.Contains(itemA.gameObject));
-                arrayBehaviour.DebugList(colliders, "After:", isDebug);
-            }
+            return;
         }
-        if (colliders.Count > 0)
-        {
-            float closestDistance = Mathf.Infinity;
-            GameObject closestObject = null;
-
-            foreach (Collider collider in colliders)
-            {
-                float distance = Vector3.Distance(transform.position, collider.transform.position);
-
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestObject = collider.gameObject;
-
-                }
-            }
-
-            if (closestObject != null)
-            {
-                if (target == null || target.activeInHierarchy == false || target.GetComponent<Collider>().enabled == false)
-                {
-                    if (currentTarget != closestObject)
-                    {
-                        target =closestObject;
-                        currentTarget = closestObject;
-                        isCooldown = true;
-                        if(bulletType == ShootType.Ray)
-                        CloseLaser();
-                    }
-                   
-                }
-            }
-           
-        }
-        else
-        {
-            currentTarget = null;
-            target = null;
-            if(bulletType == ShootType.Ray)
+        SetTarget(GetNearestTarget());
+    }
+    private void SetTarget(GameObject mainTarget)
+    {
+        target = mainTarget;
+        currentTarget = mainTarget;
+        isCooldown = true;
+        if (bulletType == ShootType.Ray)
             CloseLaser();
-        }
+    }
+    private void ResetTarget()
+    {
+        target = null;
+        currentTarget = null;
+        if (bulletType == ShootType.Ray)
+            CloseLaser();
     }
     private void CloseLaser()
     {
@@ -378,7 +350,7 @@ public class ShooterBehaviour : MonoBehaviour
             particle.transform.localPosition = fireParticleEffect.transform.position;
         }
         Projectile projectile = bullet.GetComponent<Projectile>();
-        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner);
+        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner, false, m_HitLayer);
 
     }
 }

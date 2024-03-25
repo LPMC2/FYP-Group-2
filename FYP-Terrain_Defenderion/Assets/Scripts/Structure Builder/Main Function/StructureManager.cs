@@ -70,6 +70,21 @@ public class StructureManager : MonoBehaviour
         }
         structureSO.SetItemSize(structureSO.inventoryBag[structureSO.GetIndexFromTypeName("Custom")].invMenus[0], count-defaultCount, true, true, defaultCount++);
     }
+    public void LoadTargetsOnDefensesDelayed(float time)
+    {
+        GameObjectExtension.DelayEventInvoke(this, () =>
+        {
+            LoadTargetsOnDefenses();
+        }, time);
+    }
+    private void LoadTargetsOnDefenses()
+    {
+        ShooterBehaviour[] shooterBehaviours = FindObjectsOfType<ShooterBehaviour>();
+        foreach(ShooterBehaviour shooterBehaviour in shooterBehaviours)
+        {
+            shooterBehaviour.GetAllTargets();
+        }
+    }
     public void SetDefenseFriendly(GameObject structure, GameObject user)
     {
         int id = TeamBehaviour.Singleton.GetTeamID(user);
@@ -141,7 +156,11 @@ public class StructureManager : MonoBehaviour
             GameObject child = new GameObject(structurePooling.name);
             child.transform.SetParent(main.transform);
             GameObject structure = StructureSerializer.GenerateStructure(structurePooling.StructureData, default, true, true);
-
+            ShooterBehaviour[] shooterManagers = structure.GetComponentsInChildren<ShooterBehaviour>(true);
+            foreach(ShooterBehaviour shooterManager in shooterManagers)
+            {
+                shooterManager.Structure = structure;
+            }
             structure.SetActive(false);
             for (int i = 0; i < maxStructures; i++)
             {

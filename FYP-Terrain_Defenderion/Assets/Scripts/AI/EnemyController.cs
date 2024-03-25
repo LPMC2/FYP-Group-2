@@ -154,7 +154,7 @@ public class EnemyController : MonoBehaviour
         GameObjectExtension.DelayEventInvoke(this, () =>
         {
             GetAllTargets();
-        }, 0.1f);
+        },1f);
     }
     public void setAggro(GameObject originTarget)
     {
@@ -211,7 +211,7 @@ public class EnemyController : MonoBehaviour
         HealthBehaviour[] allTargets = FindObjectsOfType<HealthBehaviour>(true);
         foreach(HealthBehaviour t in allTargets)
         {
-            if(targetLayer == (targetLayer|(1<<t.gameObject.layer)))
+            if(targetLayer == (targetLayer|(1<<t.gameObject.layer)) && !TeamBehaviour.Singleton.IsOwnTeam(gameObject, t.gameObject))
             {
                 targets.Add(t.gameObject);
             }
@@ -260,6 +260,12 @@ public class EnemyController : MonoBehaviour
     private void FindTarget()
     {
         if(target == null) { isAggro = false; }
+
+        if (target != null 
+            && TeamBehaviour.Singleton.IsOwnTeam(gameObject, target.gameObject)) {
+            targets.Remove(target.gameObject);
+            ResetTarget(); 
+        }
         if((target != null && !target.gameObject.activeInHierarchy)) {DebugLog("Reset!"); ResetTarget(); }
         if (target != null || isAggro == true)
         {
