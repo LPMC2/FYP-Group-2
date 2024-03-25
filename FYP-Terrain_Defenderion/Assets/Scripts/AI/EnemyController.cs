@@ -433,8 +433,7 @@ public class EnemyController : MonoBehaviour
         {
             DebugLog(agent.pathStatus.ToString());
             excludedTarget = target.GetComponent<Collider>();
-            target = null;
-            currentTarget = null;
+            ResetTarget();
             return;
         }
         float distance = Vector3.Distance(target.position, transform.position);

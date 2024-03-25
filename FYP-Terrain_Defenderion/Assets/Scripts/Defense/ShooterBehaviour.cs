@@ -143,6 +143,41 @@ public class ShooterBehaviour : MonoBehaviour
         }
 
     }
+    private List<GameObject> targets = new List<GameObject>();
+    private void GetAllTargets()
+    {
+        int teamID = TeamBehaviour.Singleton.GetTeamID(gameObject);
+        targets.Clear();
+        HealthBehaviour[] allTargets = FindObjectsOfType<HealthBehaviour>(true);
+        foreach (HealthBehaviour t in allTargets)
+        {
+            if (targetLayer == (targetLayer | (1 << t.gameObject.layer)))
+            {
+                targets.Add(t.gameObject);
+            }
+        }
+        targets = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID, targets);
+    }
+   
+    private GameObject GetNearestTarget()
+    {
+        Vector3 baseVec3 = transform.position;
+        GameObject nearestTarget = null;
+        float dis = 0f;
+        foreach (GameObject t in targets)
+        {
+            if (t.activeInHierarchy)
+            {
+                float newDis = Vector3.Distance(baseVec3, t.transform.position);
+                if (dis < newDis && newDis <= range)
+                {
+                    dis = newDis;
+                    nearestTarget = t;
+                }
+            }
+        }
+        return nearestTarget;
+    }
     private List<Collider> test = new List<Collider>();
     private void FindTarget()
     {
