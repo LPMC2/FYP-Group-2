@@ -272,7 +272,7 @@ public class EnemyController : MonoBehaviour
         {
             return;
         }
-        arrayBehaviour.DebugArray(colliderArray);
+       
         SetTarget(GetNearestTarget(colliderArray));
          preftarget = GetPreferredTarget(colliderArray);
        

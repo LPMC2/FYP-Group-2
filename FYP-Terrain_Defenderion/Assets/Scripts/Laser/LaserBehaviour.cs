@@ -109,7 +109,7 @@ private IEnumerator FireLaserForDuration(float duration)
             RaycastHit[] hits;
 
             Vector3 raycastStart = laserOriginGameObject.transform.position + laserOffset;
-            Vector3 raycastDirection = transform.forward;
+            Vector3 raycastDirection = laserOriginGameObject.transform.forward;
 #if UNITY_EDITOR
             Debug.DrawRay(raycastStart, raycastDirection * laserLength, Color.red, 2f);
 #endif

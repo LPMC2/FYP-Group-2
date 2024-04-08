@@ -164,20 +164,20 @@ public class ShooterBehaviour : MonoBehaviour
         targets = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID, targets);
     }
    
-    private GameObject GetNearestTarget()
+       private GameObject GetNearestTarget(Collider[] list)
     {
         Vector3 baseVec3 = transform.position;
         GameObject nearestTarget = null;
         float dis = 0f;
-        foreach (GameObject t in targets)
+        foreach(Collider t in list)
         {
-            if (t != null && t.activeInHierarchy)
+            if (t.gameObject.activeInHierarchy && !TeamBehaviour.Singleton.IsOwnTeam(gameObject, t.gameObject))
             {
                 float newDis = Vector3.Distance(baseVec3, t.transform.position);
                 if (dis < newDis && newDis <= range)
                 {
                     dis = newDis;
-                    nearestTarget = t;
+                    nearestTarget = t.gameObject;
                 }
             }
         }
@@ -191,7 +191,8 @@ public class ShooterBehaviour : MonoBehaviour
         {
             return;
         }
-        SetTarget(GetNearestTarget());
+        Collider[] colliderArray = Physics.OverlapSphere(transform.position, range, targetLayer);
+        SetTarget(GetNearestTarget(colliderArray));
     }
     private void SetTarget(GameObject mainTarget)
     {
