@@ -179,6 +179,7 @@ public class StructureManager : MonoBehaviour
                     healthBehaviour.AddDeathEvents(ScenesManager.Singleton.UpdateNavMeshSurface);
                 }
             }
+            StaticBatchingUtility.Combine(child);
             Destroy(structure);
         }
         //NetworkManager.Singleton.AddNetworkPrefab(gameObject);

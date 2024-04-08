@@ -218,39 +218,39 @@ public class EnemyController : MonoBehaviour
         }
         targets = TeamBehaviour.Singleton.RemoveFriendlyMembers(teamID, targets);
     }
-    private GameObject GetPreferredTarget()
+    private GameObject GetPreferredTarget(Collider[] colliders)
     {
         Vector3 baseVec3 = transform.position;
         GameObject nearestTarget = null;
         float dis = 0f;
-        foreach (GameObject t in targets)
+        foreach (Collider t in colliders)
         {
-            if (t.activeInHierarchy && (preferredTargetLayer == t.layer))
+            if (t.gameObject.activeInHierarchy && (preferredTargetLayer == t.gameObject.layer))
             {
                 float newDis = Vector3.Distance(baseVec3, t.transform.position);
                 if (dis < newDis && newDis <= lookRadius)
                 {
                     dis = newDis;
-                    nearestTarget = t;
+                    nearestTarget = t.gameObject;
                 }
             }
         }
         return nearestTarget;
     }
-    private GameObject GetNearestTarget()
+    private GameObject GetNearestTarget(Collider[] list)
     {
         Vector3 baseVec3 = transform.position;
         GameObject nearestTarget = null;
         float dis = 0f;
-        foreach(GameObject t in targets)
+        foreach(Collider t in list)
         {
-            if (t.activeInHierarchy)
+            if (t.gameObject.activeInHierarchy && !TeamBehaviour.Singleton.IsOwnTeam(gameObject, t.gameObject))
             {
                 float newDis = Vector3.Distance(baseVec3, t.transform.position);
                 if (dis < newDis && newDis <= lookRadius)
                 {
                     dis = newDis;
-                    nearestTarget = t;
+                    nearestTarget = t.gameObject;
                 }
             }
         }
@@ -263,16 +263,18 @@ public class EnemyController : MonoBehaviour
 
         if (target != null 
             && TeamBehaviour.Singleton.IsOwnTeam(gameObject, target.gameObject)) {
-            targets.Remove(target.gameObject);
+            
             ResetTarget(); 
         }
-        if((target != null && !target.gameObject.activeInHierarchy)) {DebugLog("Reset!"); ResetTarget(); }
+        Collider[] colliderArray = Physics.OverlapSphere(transform.position, lookRadius, targetLayer);
+        if ((target != null && !target.gameObject.activeInHierarchy)) {DebugLog("Reset!"); ResetTarget(); }
         if (target != null || isAggro == true)
         {
             return;
         }
-        SetTarget(GetNearestTarget());
-         preftarget = GetPreferredTarget();
+        arrayBehaviour.DebugArray(colliderArray);
+        SetTarget(GetNearestTarget(colliderArray));
+         preftarget = GetPreferredTarget(colliderArray);
        
         if(preferredTargetLayer != 0 && preftarget != null)
         {
@@ -304,7 +306,7 @@ public class EnemyController : MonoBehaviour
             isMoving = false;
         }
     }
-    private float cacheExpirationTime = 0.1f; // Time in seconds before cache expires
+    private float cacheExpirationTime = 1f; // Time in seconds before cache expires
     private float cacheExpirationTimer; // Timer to track cache expiration
     // Update is called once per frame
     private bool isMoving = false;
