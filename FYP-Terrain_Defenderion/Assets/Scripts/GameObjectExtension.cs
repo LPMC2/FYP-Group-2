@@ -25,6 +25,10 @@ public class GameObjectExtension : MonoBehaviour
         yield return new WaitForSeconds(delayTime);
         targetEvent?.Invoke();
     }
+    public static void DelayUnityEventInvoke(MonoBehaviour monoBehaviour, UnityEvent targetEvent, float delayTime)
+    {
+        monoBehaviour.StartCoroutine(DelayUnityEventInvokeCoroutine(targetEvent, delayTime));
+    }
     private static Coroutine delayEvent;
     public static void DelayUnityEventInvoke(UnityEvent action, float delayTime)
     {
@@ -35,6 +39,7 @@ public class GameObjectExtension : MonoBehaviour
         }
         delayEvent = GameManager.Singleton.StartCoroutine(DelayUnityEventInvokeCoroutine(action, delayTime));
     }
+
     private static IEnumerator DelayUnityEventInvokeCoroutine(UnityEvent action, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);

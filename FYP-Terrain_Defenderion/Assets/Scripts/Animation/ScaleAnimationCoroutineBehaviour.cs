@@ -14,7 +14,7 @@ public class ScaleAnimationCoroutineBehaviour : ObjectAnimationCoroutineBehaviou
     {
         if(coroutine != null)
         {
-            gameObject.transform.localScale = currentValue;
+            gameObject.transform.localScale = CurrentValue;
         }
     }
 }

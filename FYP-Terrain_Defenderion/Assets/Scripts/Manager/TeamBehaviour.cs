@@ -49,7 +49,7 @@ public class TeamBehaviour : MonoBehaviour
         }
         else
         {
-            return true;
+            return false;
         }
     }
     public bool isOwnTeam(GameObject origin, Collider target)

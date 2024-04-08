@@ -6,14 +6,16 @@ using UnityEngine.Events;
 
 public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObjectAnimationCoroutineBehaviour
 {
-
+    [SerializeField] private UnityEvent m_startAnimationEvent;
+    [SerializeField] private UnityEvent m_endAnimationEvent;
     [SerializeField] private UnityEvent m_openAnimationEvent;
     [SerializeField] private UnityEvent m_closeAnimationEvent;
     [SerializeField] private float m_animationSpeed = 1f;
+    [SerializeField] private AnimationCurve m_animationCurve; 
     [SerializeField] private T m_StartValue;
     [SerializeField] private T m_EndValue;
     [SerializeField] private State m_state = State.CLOSE;
-    public T currentValue { get; private set; }
+    public T CurrentValue { get; private set; }
     float timer = 0f;
     public Coroutine coroutine { get; private set; }
     public virtual void StartAnimation()
@@ -24,8 +26,28 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
             coroutine = StartCoroutine(CoroutineAnimation());
         
     }
+    public void PlayAnimationState(State state)
+    {
+        m_state = state;
+        timer = 0f;
+        StopAllCoroutines();
+        coroutine = StartCoroutine(CoroutineAnimation());
+        switch(m_state)
+        {
+            case State.OPEN:
+                m_openAnimationEvent.Invoke();
+                break;
+            case State.CLOSE:
+                m_closeAnimationEvent.Invoke();
+                break;
+        }
+    }
     private void Start()
     {
+        if (m_animationCurve == null || m_animationCurve.length == 0)
+        {
+            m_animationCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+        }
         timer = 0f;
         StopAllCoroutines();
         coroutine = StartCoroutine(CoroutineAnimation());
@@ -37,7 +59,7 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
         //m_state = (State)nextNum;
         if(m_state == State.OPEN)
         {
-            GameObjectExtension.DelayUnityEventInvoke(m_closeAnimationEvent, m_animationSpeed);
+            GameObjectExtension.DelayUnityEventInvoke(this,m_closeAnimationEvent , m_animationSpeed);
             m_state = State.CLOSE;
         } else
         {
@@ -57,10 +79,10 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
         {
             if (timer <= m_animationSpeed)
             {
-
+                if(timer == 0f) { m_startAnimationEvent.Invoke(); }
                 timer += Time.deltaTime;
                 float t = timer / m_animationSpeed;
-
+                float curveValue = m_animationCurve.Evaluate(t);
                 if (typeof(T) == typeof(float))
                 {
                     float SValue = (float)(object)(m_StartValue);
@@ -69,7 +91,7 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
                     {
                         SwitchValues(ref SValue, ref EValue);
                     }
-                    currentValue = (T)(object)Mathf.Lerp(SValue, EValue, t);
+                    CurrentValue = (T)(object)Mathf.LerpUnclamped(SValue, EValue, curveValue);
                 } else if(typeof(T) == typeof(Vector3))
                 {
                     Vector3 Vector3SValue = (Vector3)(object)m_StartValue;
@@ -78,7 +100,7 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
                     {
                         SwitchValues(ref Vector3SValue, ref Vector3EValue);
                     }
-                    currentValue = (T)(object)Vector3.Lerp(Vector3SValue, Vector3EValue, t);
+                    CurrentValue = (T)(object)Vector3.LerpUnclamped(Vector3SValue, Vector3EValue, curveValue);
                 } else if(typeof(T) == typeof(Vector2))
                 {
                     Vector2 Vector2SValue = (Vector2)(object)m_StartValue;
@@ -87,7 +109,7 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
                     {
                         SwitchValues(ref Vector2SValue, ref Vector2EValue);
                     }
-                    currentValue = (T)(object)Vector2.Lerp(Vector2SValue, Vector2EValue, t);
+                    CurrentValue = (T)(object)Vector2.LerpUnclamped(Vector2SValue, Vector2EValue, curveValue);
                 } else
                 {
                     Debug.LogWarning("Error: Incorrect type as T. Only accepts Float, Vector2 and Vector3");
@@ -96,6 +118,7 @@ public abstract class ObjectAnimationCoroutineBehaviour<T> : MonoBehaviour, IObj
             } else
             {
                 timer = 0f;
+                m_endAnimationEvent.Invoke();
                 StopAllCoroutines();
                 coroutine = null;
             }
