@@ -7,14 +7,18 @@ public class ForceShieldBehaviour : CollisionDetector
     // Update is called once per frame
     void Update()
     {
-        if(HitEntity != null)
+        if(HitEntities != null)
         {
-            Projectile projectile = HitEntity.GetComponent<Projectile>();
-            if(projectile != null)
+            foreach (GameObject hitObj in HitEntities)
             {
-                projectile.ResetProj();
-            } else
-            Destroy(HitEntity);
+                Projectile projectile = hitObj.GetComponent<Projectile>();
+                if (projectile != null)
+                {
+                    projectile.ResetProj();
+                }
+                else
+                    HitEntities.Remove(hitObj);
+            }
         }
     }
 }

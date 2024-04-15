@@ -78,7 +78,7 @@ public class WeaponBehaviour : MonoBehaviour
     private bool isPerformaned = false;
     public Coroutine onUseCoroutine { get; private set; }
     private PlayerManager player;
-    private Animator animator;
+    [SerializeField] private Animator animator;
     //Debug Field
     [SerializeField]private bool isDebug = false;
     private void DebugLog(string text)
@@ -170,8 +170,8 @@ public class WeaponBehaviour : MonoBehaviour
         }
 
         //Sprinting Settings
-        GameObjectExtension.DelayEventInvoke(this, () => { player.EnableSprinting = m_canSprint; }, 0.01f);
-        onDestroyEvent += () => { player.EnableSprinting = true; };
+        GameObjectExtension.DelayEventInvoke(this, () => { if(player!=null)player.EnableSprinting = m_canSprint; }, 0.01f);
+        onDestroyEvent += () => { if (player != null) player.EnableSprinting = true; };
         useEvent += () => { onUseUnityEvent?.Invoke(); };
         cancelEvent += () => { onCancelUnityEvent?.Invoke(); };
     }

@@ -19,11 +19,12 @@ public class MeleeController : MonoBehaviour
     [SerializeField] private UnityEvent AttackFunction;
     [SerializeField] private UnityEvent<GameObject> HitFunction;
     */
-    private GameObject Player;
+
     [SerializeField] private AudioClip AttackSound;
     private AudioSource audioSource;
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
+ 
     public enum AttackModeType
     {
         Sword,
@@ -50,10 +51,13 @@ public class MeleeController : MonoBehaviour
     private void Start()
     {
 
-        Player = gameObject.transform.root.gameObject;
         audioSource = GetComponent<AudioSource>();
         weaponBehaviour = GetComponent<WeaponBehaviour>();
         data = weaponBehaviour.MeleeData;
+        if(data.CollisionObject == null)
+        {
+            data.CollisionObject = gameObject.GetComponent<CollisionDetector>(); 
+        }
 
     }
     public void AttackWeapon()
@@ -175,27 +179,32 @@ public class MeleeController : MonoBehaviour
     {
         if(debugMode)
         Debug.Log("StartAttack");
-        CollisionDetector collisionDetector = gameObject.GetComponent<CollisionDetector>();
+        CollisionDetector collisionDetector = data.CollisionObject;
+
         collisionDetector.IncludedLayerMask = weaponBehaviour.affectedLayers;
         float attacktimer = 0f;
         while(attacktimer < weaponBehaviour.useCD * data.startHitTime)
         {
             attacktimer += Time.deltaTime;
-            if(collisionDetector != null && collisionDetector.isHit && collisionDetector.HitEntity != null)
+            if (debugMode) { Debug.Log((collisionDetector != null) + " - " + collisionDetector.isHit + " - " + collisionDetector.HitEntities); }
+            if (collisionDetector != null && collisionDetector.isHit && collisionDetector.HitEntities != null)
             {
-                if (!hitObjects.Contains(collisionDetector.HitEntity)) // Check if the object has already been hit
+                foreach (GameObject hitObj in collisionDetector.HitEntities)
                 {
-                    if(debugMode)
-                    Debug.Log("HitEntity");
-                    //HitFunction.Invoke(collisionDetector.HitEntity);
-                    hitObjects.Add(collisionDetector.HitEntity); // Add the object to the HashSet
-                    HitDamage(collisionDetector.HitEntity);
-                    if (!data.isAOE)
+                    if (!hitObjects.Contains(hitObj)) // Check if the object has already been hit
                     {
-                        hitObjects.Clear();
-                        attacktimer = weaponBehaviour.useCD * data.startHitTime;
-                    }
+                        if (debugMode)
+                            Debug.Log("HitEntity -> Entity: " + collisionDetector.HitEntities);
+                        //HitFunction.Invoke(collisionDetector.HitEntity);
+                        hitObjects.Add(hitObj); // Add the object to the HashSet
+                        HitDamage(hitObj);
+                        if (!data.isAOE)
+                        {
+                            hitObjects.Clear();
+                            attacktimer = weaponBehaviour.useCD * data.startHitTime;
+                        }
 
+                    }
                 }
             }
             yield return null;
@@ -206,6 +215,7 @@ public class MeleeController : MonoBehaviour
     {
         weaponBehaviour.HitTakeDamage(hit);
     }
+    
     private IEnumerator AttackAnim()
     {
         int test = arrayBehaviour.GetRandomObjectFromList(data.AtkAniID);

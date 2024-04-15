@@ -22,7 +22,7 @@ public class AmmoBehaviour : MonoBehaviour
 
         Inventory = transform.root.GetComponent<InventoryBehaviour>();
         ammoStoringBehaviour = transform.root.GetComponent<AmmoStoringBehaviour>();
-        if(AmmoData.ReloadInputActionReference == null)
+        if(AmmoData.ReloadInputActionReference == null && weaponBehaviour.UseInput)
         {
             AmmoData.ReloadInputActionReference = InputActionReference.Create(new PlayerInput().PlayerActions.Reload);
           
@@ -56,13 +56,19 @@ public class AmmoBehaviour : MonoBehaviour
         }
         if(reloadAction == null)
             reloadAction = AmmoData.ReloadInputActionReference.ToInputAction();
-        reloadAction.performed += i => { ReloadAmmo(); };
-        reloadAction.Enable();
+        if (weaponBehaviour.UseInput)
+        {
+            reloadAction.performed += i => { ReloadAmmo(); };
+            reloadAction.Enable();
+        }
     }
     private void OnDisable()
     {
-        reloadAction.performed -= i => { ReloadAmmo(); };
-        reloadAction.Disable();
+        if (weaponBehaviour.UseInput)
+        {
+            reloadAction.performed -= i => { ReloadAmmo(); };
+            reloadAction.Disable();
+        }
         reloadCoroutine = null;
     }
     private void ReloadAmmo()
@@ -143,6 +149,7 @@ public class AmmoBehaviour : MonoBehaviour
     }
     private void StoreAmmoData()
     {
+        if(ammoStoringBehaviour != null)
         ammoStoringBehaviour.StoreAmmo(AmmoData.AmmoStoringSystemId, AmmoData.RemainAmmo, AmmoData.TotalAmmo);
     }
     private void Update()

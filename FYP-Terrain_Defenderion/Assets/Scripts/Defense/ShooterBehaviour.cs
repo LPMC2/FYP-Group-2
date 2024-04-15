@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
 public class ShooterBehaviour : MonoBehaviour
 {
     [SerializeField] private bool m_findTargetAtStart = false;
     [SerializeField] private ShootType bulletType;
+    [SerializeField] private UnityEvent m_onFireEvents;
     [SerializeField] private List<GameObject> m_launchPositionObjects =new List<GameObject>();
     [SerializeField] private List<GameObject> m_shootObject = new List<GameObject>();
     [SerializeField] private GameObject HeadObject;
@@ -69,11 +70,14 @@ public class ShooterBehaviour : MonoBehaviour
         {
             audioSource = gameObject.GetComponent<AudioSource>();
         }
-        foreach(GameObject fireObj in m_shootObject)
+        if (m_shootObject.Count > 0)
         {
-            ObjectPool objectPool1 = new ObjectPool();
-            objectPool1.Initialize(fireObj,20, gameObject.transform);
-            objectPools.Add(objectPool1);
+            foreach (GameObject fireObj in m_shootObject)
+            {
+                ObjectPool objectPool1 = new ObjectPool();
+                objectPool1.Initialize(fireObj, 20, gameObject.transform);
+                objectPools.Add(objectPool1);
+            }
         }
         if(m_findTargetAtStart)
         GetAllTargets();
@@ -285,7 +289,7 @@ public class ShooterBehaviour : MonoBehaviour
                             targetLocked = false;
                             yield break; // Stop shooting if target is null or out of range
                         }
-
+                        m_onFireEvents.Invoke();
                         switch (bulletType)
                         {
                             case ShootType.ForwardObject:
@@ -343,15 +347,20 @@ public class ShooterBehaviour : MonoBehaviour
 
 
         GameObject bullet = ShootObject;//Instantiate(ShootObject, targetObj.transform.position, Quaternion.identity);
-        bullet.transform.position = targetObj.transform.position;
-        bullet.transform.rotation = rotation;
+        if (bullet != null)
+        {
+            bullet.transform.position = targetObj.transform.position;
+            bullet.transform.rotation = rotation;
+
+
+            Projectile projectile = bullet.GetComponent<Projectile>();
+            projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner, false, m_HitLayer);
+        }
         if (fireParticleEffect != null)
         {
-            GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, rotation*fireParticleEffect.transform.rotation, targetObj.transform);
+            GameObject particle = Instantiate(fireParticleEffect, targetObj.transform.position, rotation * fireParticleEffect.transform.rotation, targetObj.transform);
             particle.transform.localPosition = fireParticleEffect.transform.position;
         }
-        Projectile projectile = bullet.GetComponent<Projectile>();
-        projectile.InitializeProjectile(rotateObject.transform.forward, objectSpeed, damageMultiplier, projectileType, owner, false, m_HitLayer);
 
     }
 }
@@ -359,5 +368,6 @@ public enum ShootType
 {
     ForwardObject,
     MotionObject,
-    Ray
+    Ray,
+    Custom
 }

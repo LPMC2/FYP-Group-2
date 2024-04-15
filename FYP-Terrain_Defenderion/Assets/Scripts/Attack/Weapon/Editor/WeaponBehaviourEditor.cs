@@ -33,6 +33,7 @@ public class WeaponBehaviourEditor : Editor
     private SerializedProperty m_OnActiveSoundEffectIDroperty;
     private SerializedProperty m_ResetSoundEffectIDProperty;
     private SerializedProperty m_onLeaveAnimationIDProperty;
+    private SerializedProperty m_animatorProperty;
     private SerializedProperty m_onCancelUnityEventProperty;
     private void OnEnable()
     {
@@ -63,6 +64,7 @@ public class WeaponBehaviourEditor : Editor
         m_ResetSoundEffectIDProperty = serializedObject.FindProperty("m_ResetSoundEffectID");
         m_onLeaveAnimationIDProperty = serializedObject.FindProperty("m_OnLeaveAnimationID");
         m_onCancelUnityEventProperty = serializedObject.FindProperty("onCancelUnityEvent");
+        m_animatorProperty = serializedObject.FindProperty("animator");
     }
     WeaponBehaviour weaponBehaviour;
     public override void OnInspectorGUI()
@@ -85,6 +87,7 @@ public class WeaponBehaviourEditor : Editor
         {
             EditorGUILayout.BeginVertical(GUI.skin.button);
             EditorGUILayout.LabelField("Animation Settings", new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = Color.red } });
+            EditorGUILayout.PropertyField(m_animatorProperty);
             EditorGUILayout.PropertyField(m_onIdleAnimationIDProperty);
             EditorGUILayout.PropertyField(m_onUseAnimationIDProperty);
             EditorGUILayout.PropertyField(m_resetAniIDProperty);

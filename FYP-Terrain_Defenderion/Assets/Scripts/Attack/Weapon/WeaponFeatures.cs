@@ -99,6 +99,7 @@ public class WeaponFeature
     [Serializable]
     public class MeleeData
     {
+        [SerializeField] private CollisionDetector collisionObject;
         [Header("Attack Settings")]
         [SerializeField] private AttackMethod attackMethod;
         [SerializeField] private bool areaAttack = true;
@@ -111,6 +112,7 @@ public class WeaponFeature
         [SerializeField] private int AttackSoundID = -1;
         [SerializeField] private List<int> AttackAnimationID = new List<int>();       
         [SerializeField] private float SpeedMultiplier = 1f;
+        public CollisionDetector CollisionObject { get { return collisionObject; } set { collisionObject = value; } }
         public AttackMethod AttackMethod { get { return attackMethod; } }
         public bool isAOE { get { return areaAttack; } }
         public float startHitTime { get { return StartHitTime; } }
