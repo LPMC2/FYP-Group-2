@@ -70,6 +70,9 @@ public class EnemyController : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool DebugMode = false;
     private List<GameObject> targets = new List<GameObject>();
+    private int ownTeamId = -1;
+    private int targetTeamId = -1;
+    private float initialStopDis = -1;
     private void DebugLog(string text)
     {
         if (!DebugMode) return;
@@ -147,7 +150,7 @@ public class EnemyController : MonoBehaviour
         {
             TeamBehaviour.Singleton.TeamManager[m_DefaultTeamId].AddMember(gameObject);
         }
-        
+        initialStopDis = agent.stoppingDistance;
     }
     private void OnEnable()
     {
@@ -306,8 +309,10 @@ public class EnemyController : MonoBehaviour
                 agent.SetDestination(target.position);
             agent.speed = chaseSpeed;
             isInRange = true;
-            agent.stoppingDistance = AttackDistance;
+            agent.stoppingDistance = initialStopDis;
             isMoving = false;
+            ownTeamId = TeamBehaviour.Singleton.GetTeamID(gameObject);
+            targetTeamId = TeamBehaviour.Singleton.GetTeamID(targetObj);
         }
     }
     private float cacheExpirationTime = 1f; // Time in seconds before cache expires
@@ -435,7 +440,7 @@ public class EnemyController : MonoBehaviour
         /* Note: agent.SetDestination() requires network update(Server & Client) when in multiplayer 
          * 
         */
-        if (target == null || TeamBehaviour.Singleton.GetTeamID(target.gameObject) == TeamBehaviour.Singleton.GetTeamID(gameObject))
+        if (target == null || targetTeamId == ownTeamId)
         {
             //if(enemyState.CurrentAIState != AIState.State.Patrol)
             //    agent.SetDestination(gameObject.transform.position);
@@ -449,7 +454,7 @@ public class EnemyController : MonoBehaviour
             return;
         }
         float distance = Vector3.Distance(target.position, transform.position);
-        DebugLog("Distance:" + Mathf.RoundToInt(distance).ToString() + "\nRemaining Distance: " + Mathf.RoundToInt(agent.remainingDistance).ToString());
+        DebugLog("Distance:" + Mathf.RoundToInt(distance).ToString() + "\nRemaining Distance: " + agent.remainingDistance.ToString() + "/" + AttackDistance);
         if (distance <= lookRadius || isInRange)
         {
             if (LastTargetPosition != target.position)
@@ -457,10 +462,11 @@ public class EnemyController : MonoBehaviour
                 LastTargetPosition = target.position;
                 agent.SetDestination(target.position);
             }
+            DebugLog("IS In Range");
             if (distance <= agent.stoppingDistance || agent.remainingDistance <= AttackDistance || distance <= AttackDistance)
             {
                 
-                //Debug.Log("Attack");
+
                 //Attack the target
                 FaceTarget();
                 StartAttack();
@@ -526,15 +532,14 @@ public class EnemyController : MonoBehaviour
     private Coroutine AttackCor;
     private void StartAttack()
     {
-
-        AttackTime += Time.deltaTime;
-
-        if (AttackTime >= attackCD && target != null)
+        if (target == null) return;
+        
+        DebugLog("Attack: " + AttackTime + " / " + attackCD);
+        if(AttackCor == null)
         {
-
             AttackCor = StartCoroutine(AttackCoroutine());
-            AttackTime = 0;
         }
+        
     }
     public void ResetTarget()
     {
@@ -648,6 +653,8 @@ public class EnemyController : MonoBehaviour
         }
             // Wait for the attack animation to complete before exiting the coroutine
             yield return new WaitForSeconds(attackCD);
+        StopCoroutine(AttackCor);
+        AttackCor = null;
     }
     private void FireLaser()
     {

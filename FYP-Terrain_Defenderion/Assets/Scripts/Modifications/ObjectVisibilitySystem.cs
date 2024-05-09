@@ -8,7 +8,7 @@ public class ObjectVisibilitySystem : MonoBehaviour
     [SerializeField] private float distance = 100f;
     [SerializeField] private float frequency = 10;
     private List<Transform> objList;
-
+    private float timer = 0;
     private void OnEnable()
     {
         objList = new List<Transform>();
@@ -18,9 +18,10 @@ public class ObjectVisibilitySystem : MonoBehaviour
     private void Update()
     {
         // Perform object visibility check with a desired frequency
-        if (Time.frameCount % frequency == 0)
+        if (Time.time >= timer)
         {
             CheckObjectVisibility();
+            timer = Time.time + frequency;
         }
     }
 
