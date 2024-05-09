@@ -15,6 +15,8 @@ public class Item
     public string itemName;
     public bool useItemSprite = false;
     public Sprite itemSprite;
+    [TextArea]
+    public string description;
     [Header("Capture Settings")]
     public float CustomBuffer = 1f;
     public Vector3 captureAngle = Vector3.zero;
@@ -43,6 +45,10 @@ public class Item
         } else
         {
             info = "&" + itemName;
+        }
+        if (description != "")
+        {
+            info += "\n`" + description;
         }
         return info;
     }
