@@ -87,6 +87,10 @@ public class BehaviourTracker : MonoBehaviour
         {
             m_trackedPlacedStructures.Clear();
         }
+        public void RemovePlacedStructure(GameObject gameObject)
+        {
+            m_trackedPlacedStructures.Remove(gameObject);
+        }
         public int GetTrackedPlacedStructure()
         {
             int amount = 0;

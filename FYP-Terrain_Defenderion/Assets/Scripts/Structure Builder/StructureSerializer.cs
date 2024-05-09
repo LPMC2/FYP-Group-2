@@ -344,6 +344,7 @@ public static class StructureSerializer
                 } else
                 {
                     utilityList.Add(block);
+                    cost += structureStorage[i].tokenCost;
                     //Disable collider
                     Collider collider = block.GetComponent<Collider>();
                     if(collider != null)

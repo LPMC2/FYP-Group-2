@@ -80,7 +80,10 @@ public class TokenManager : MonoBehaviour
             {
                 string InitialText = tokenDisplayText.text = "Tokens Left: " + tokens.ToString();
                 displayBehaviour.StartFadeInText("Unable to afford " + itemName + ". Need " + -(getTokens() - cost) + " more tokens", Color.red);
-                StopCoroutine(resetCoroutine);
+                if (resetCoroutine != null)
+                {
+                    StopCoroutine(resetCoroutine);
+                }
                 resetCoroutine = StartCoroutine(Reset(InitialText));
                 return false;
             }

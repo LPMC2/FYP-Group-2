@@ -370,6 +370,7 @@ public class GridGenerator : MonoBehaviour
                         structureManager.SetDefenseFriendly(newBlock, newBlock);
                     }
                 }
+                BehaviourTracker.Singleton.TrackerData.AddTrackedPlacedStructure(newBlock);
                 break;
         }
         if (newBlock == null) return;
@@ -504,6 +505,7 @@ public class GridGenerator : MonoBehaviour
                     TeamBehaviour.Singleton.TeamManager[0].RemoveMember(lastOutlineBlock.transform.gameObject);
                 }
                 lastOutlineBlock.transform.gameObject.SetActive(false);
+                BehaviourTracker.Singleton.TrackerData.RemovePlacedStructure(lastOutlineBlock);
             }
             if (gridData != null)
             {
