@@ -178,7 +178,8 @@ public class ShooterBehaviour : MonoBehaviour
         float dis = 0f;
         foreach(Collider t in list)
         {
-            if (t.gameObject.activeInHierarchy && !TeamBehaviour.Singleton.IsOwnTeam(gameObject, t.gameObject))
+            Debug.Log("target: " + t.gameObject + " / " + TeamBehaviour.Singleton.IsOwnTeam(transform.parent.gameObject, t.gameObject));
+            if (t.gameObject.activeInHierarchy && !TeamBehaviour.Singleton.IsOwnTeam(transform.parent.gameObject, t.gameObject))
             {
                 float newDis = Vector3.Distance(baseVec3, t.transform.position);
                 if (dis < newDis && newDis <= range)
