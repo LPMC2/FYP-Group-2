@@ -80,14 +80,18 @@ public class GridManager : MonoBehaviour
         {
             case 0:
                 gridSize = GridSize.Normal;
+                UpdateToken(m_NormalGridTokenAmount, false);
                 break;
             case 1:
                 gridSize = GridSize.Small;
+                UpdateToken(m_SmallGridTokenAmount, false);
                 break;
             case 2:
                 gridSize = GridSize.Large;
+                UpdateToken(m_LargeGridTokenAmount, false);
                 break;
         }
+        UpdateDefenseCount();
     }
     [Header("Defense Settings")]
     private int m_MaxDefenseCount = 5;

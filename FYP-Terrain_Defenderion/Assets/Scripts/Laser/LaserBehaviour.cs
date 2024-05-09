@@ -58,11 +58,12 @@ public class LaserBehaviour : MonoBehaviour
         audioSource.playOnAwake = false;
         audioSource.clip = laserSound;
     }
+    Coroutine coroutine;
     public void fire(float damageMultiplier = 1f)
     {
         //Damage Multiplier
         damage = damageMultiplier;
-
+        setLaserTimer = fireTime / 1.5f * laserClosingTime;
         // Start a timer for preFireCD seconds before firing the laser
         StartCoroutine(FireLaserAfterDelay(preFireCD));
     }
@@ -167,7 +168,7 @@ private IEnumerator FireLaserForDuration(float duration)
                 yield return null;
             
         }
-        if (!canHitMultipleTimes)
+       
             hitObjects.Clear();
         // Reset the line renderer to its original position and disable it
         lineRenderer.SetPosition(0, transform.position + laserOffset);

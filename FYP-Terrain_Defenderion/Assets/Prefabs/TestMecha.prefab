@@ -437,8 +437,8 @@ GameObject:
   - component: {fileID: 2759151622011593800}
   - component: {fileID: 9063873985251698710}
   - component: {fileID: 5317700722558510792}
-  - component: {fileID: 4144931842246204128}
   - component: {fileID: 4683987875417792809}
+  - component: {fileID: 7288190488457822992}
   m_Layer: 7
   m_Name: TestMecha
   m_TagString: Untagged
@@ -460,7 +460,7 @@ Transform:
   m_Children:
   - {fileID: 8447206829610606988}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7832203176948818906
 MeshFilter:
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_PatrolDirection: {x: 20, y: 0, z: 20}
   stopTimer: 1
   itemPlaceholder: {fileID: 0}
-  AttackDistance: 5
+  AttackDistance: 6
   target: {fileID: 0}
   attackType: 0
   projectileType: 1
@@ -560,22 +560,24 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0
-  AnimateObject: {fileID: 0}
+  AnimateObject: {fileID: 4578386394905783182}
   AttackSound: {fileID: 0}
   DeathSound: {fileID: 0}
   attackAnimations:
     m_useAnimationRig: 1
-    animationLayer: 2
-    playAttackAnimation: []
+    animationLayer: 0
+    playAttackAnimation:
+    - Mecha_Attack
     switchAnimationTime: 0.25
   movementAnimations:
     m_useAnimationRig: 1
-    animationLayer: 2
-    playAttackAnimation: []
+    animationLayer: 0
+    playAttackAnimation:
+    - Mecha_Walk
     switchAnimationTime: 0.25
   deathAnimations:
     m_useAnimationRig: 1
-    animationLayer: 2
+    animationLayer: 0
     playAttackAnimation: []
     switchAnimationTime: 0.25
   currentAttackAnimation: -1
@@ -624,58 +626,6 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &4144931842246204128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4578386394905783182}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b0c9bc782d380541b86604d11c5b99a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  laserOriginGameObject: {fileID: 0}
-  laserLength: 25
-  laserOffset: {x: 0, y: 0, z: 0}
-  laserCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.020832062
-      value: 1.0108337
-      inSlope: -1.0069476
-      outSlope: -1.0069476
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0125122
-      value: -0.029689789
-      inSlope: -1.0069476
-      outSlope: -1.0069476
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  laserClosingTime: 0.2
-  material: {fileID: 2100000, guid: dd5f33bc8c642ba4e827e90f0348fe80, type: 2}
-  fireTime: 0.5
-  preFireCD: 0
-  laserSound: {fileID: 0}
-  hitLayerMask:
-    serializedVersion: 2
-    m_Bits: 4480
-  isPiercing: 1
-  canHitMultipleTimes: 1
-  oneShotOnly: 1
-  lineRenderer: {fileID: 0}
-  damage: 0
 --- !u!114 &4683987875417792809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,6 +675,27 @@ MonoBehaviour:
   Invincible: 0
   frontHealthBar: {fileID: 0}
   backHealthBar: {fileID: 0}
+--- !u!95 &7288190488457822992
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4578386394905783182}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3376a0fa0be0a504ea78d672730c7646, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4682620209453306959
 GameObject:
   m_ObjectHideFlags: 0

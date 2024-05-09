@@ -7,6 +7,7 @@ public class ShooterBehaviour : MonoBehaviour
     [SerializeField] private bool m_findTargetAtStart = false;
     [SerializeField] private ShootType bulletType;
     [SerializeField] private UnityEvent m_onFireEvents;
+    [SerializeField] private UnityEvent m_onFireEndEvents;
     [SerializeField] private List<GameObject> m_launchPositionObjects =new List<GameObject>();
     [SerializeField] private List<GameObject> m_shootObject = new List<GameObject>();
     [SerializeField] private GameObject HeadObject;
@@ -48,6 +49,7 @@ public class ShooterBehaviour : MonoBehaviour
     private Quaternion targetRotation; // Store the target rotation
     private GameObject rotateObject;
     [SerializeField] private bool isDebug = false;
+    LaserBehaviour laserBehaviour;
     private void Awake()
     {
         if (m_launchPositionObjects.Count == 0)
@@ -81,6 +83,7 @@ public class ShooterBehaviour : MonoBehaviour
         }
         if(m_findTargetAtStart)
         GetAllTargets();
+         laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
     }
 
     private bool isCooldown = false; // Track cooldown state
@@ -299,7 +302,7 @@ public class ShooterBehaviour : MonoBehaviour
                                 FireBullet(ProjectileType.InstantForce, structure);
                                 break;
                             case ShootType.Ray:
-                                LaserBehaviour laserBehaviour = gameObject.GetComponent<LaserBehaviour>();
+
                                 if (laserBehaviour != null)
                                 {
                                     laserBehaviour.fire(damageMultiplier);
@@ -324,6 +327,7 @@ public class ShooterBehaviour : MonoBehaviour
 
     private void ResetShooter()
     {
+        m_onFireEndEvents.Invoke();
         target = null;
         currentTarget = null;
         isRotating = false;

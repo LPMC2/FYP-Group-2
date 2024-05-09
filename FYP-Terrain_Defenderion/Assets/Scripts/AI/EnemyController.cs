@@ -147,7 +147,7 @@ public class EnemyController : MonoBehaviour
         {
             TeamBehaviour.Singleton.TeamManager[m_DefaultTeamId].AddMember(gameObject);
         }
-        agent.stoppingDistance = AttackDistance;
+        
     }
     private void OnEnable()
     {
@@ -155,6 +155,10 @@ public class EnemyController : MonoBehaviour
         {
             GetAllTargets();
         },1f);
+    }
+    public void setAggroState(bool state)
+    {
+        isAggro = state;
     }
     public void setAggro(GameObject originTarget)
     {
@@ -453,7 +457,7 @@ public class EnemyController : MonoBehaviour
                 LastTargetPosition = target.position;
                 agent.SetDestination(target.position);
             }
-            if (distance <= agent.stoppingDistance || agent.remainingDistance <= AttackDistance)
+            if (distance <= agent.stoppingDistance || agent.remainingDistance <= AttackDistance || distance <= AttackDistance)
             {
                 
                 //Debug.Log("Attack");

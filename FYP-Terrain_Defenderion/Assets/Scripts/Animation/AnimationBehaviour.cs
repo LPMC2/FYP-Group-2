@@ -44,7 +44,8 @@ public class AnimationBehaviour
     public void StartAnimationConstant(Animator animator, int animationId, float speed)
     {
         if (animator == null || animationId == -1) return;
-        if (playAttackAnimation.Length > animationId || playAttackAnimation.Length == 1)
+        Debug.Log("Animation: " + animationId + "/" + playAttackAnimation.Length);
+        if (playAttackAnimation.Length > animationId || (playAttackAnimation.Length == 1 && animationId == 0))
         {
             Debug.Log("original speed: " + speed + "\nnew speed: " + (1.0f / speed));
             float speedMultiplier = (1.0f / speed);

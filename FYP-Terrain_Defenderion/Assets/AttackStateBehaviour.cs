@@ -10,13 +10,63 @@ public class AttackStateBehaviour : MonoBehaviour
     [SerializeField] private State CloseRangeAttackState;
     [SerializeField] private State LongRangeAttackState;
     private AttackState currentState;
+    [SerializeField] private StructureManager structureManager;
+    [SerializeField] private TeamBehaviour teamBehaviour;
+    private GameObject target;
+    [SerializeField] private GameObject core;
+    [SerializeField] private float distanceToAttact = 100f;
+
     // Start is called before the first frame update
     void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
         enemyController = gameObject.GetComponent<EnemyController>();
     }
-
+    private void SetTarget()
+    {
+        if(target != null && !target.activeInHierarchy)
+        {
+            target = null;
+        }
+        if (target != null) return;
+        target = core;
+        foreach(StructurePooling structure in structureManager.structurePoolings)
+        {
+            foreach(GameObject gameObject in structure.structures)
+            {
+                if (!gameObject.activeInHierarchy) continue;
+                if (target != null)
+                {
+                    float newDistance = Vector3.Distance(transform.position, gameObject.transform.position);
+                    float preDistance = Vector3.Distance(transform.position, target.transform.position);
+                    if(newDistance < preDistance)
+                    {
+                        target = gameObject;
+                    }
+                } else
+                    target = gameObject;
+            }
+        }
+        FocusTarget();
+    }
+    private void FocusTarget()
+    {
+        if (target == null) return;
+        foreach(GameObject enemy in teamBehaviour.TeamManager[1].TeamList)
+        {
+            if(enemy.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                float distance = Vector3.Distance(enemy.transform.position, transform.position);
+                if (distance > distanceToAttact) continue;
+                EnemyController enemyController = enemy.GetComponent<EnemyController>();
+                if (enemyController != null)
+                {
+                    enemyController.setAggro(target);
+                    enemyController.setAggroState(false);
+                }
+            }
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -50,7 +100,8 @@ public class AttackStateBehaviour : MonoBehaviour
                 currentState = AttackState.Default;
             }
         }
-            
+        SetTarget();
+
         
     }
     public enum AttackState
