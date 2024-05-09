@@ -43,6 +43,7 @@ public class ObjectVisibilitySystem : MonoBehaviour
     {
         foreach (Transform obj in objList)
         {
+            if (obj == null) continue;
             // Calculate the distance between the player and the object
             float distanceToObj = Vector3.Distance(transform.position, obj.position);
 

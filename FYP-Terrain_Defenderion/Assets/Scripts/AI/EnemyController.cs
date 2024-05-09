@@ -552,11 +552,13 @@ public class EnemyController : MonoBehaviour
     {
         AttackTime = 0f;
         LastTargetPosition = Vector3.zero;
+        
         if (AttackCor != null)
         {
             StopCoroutine(AttackCor);
             AttackCor = null;
         }
+        
     }
     private IEnumerator AttackCoroutine()
     {
