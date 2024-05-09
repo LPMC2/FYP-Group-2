@@ -399,9 +399,10 @@ MonoBehaviour:
   onCancelUnityEvent:
     m_PersistentCalls:
       m_Calls: []
+  animator: {fileID: 0}
   isDebug: 0
   m_ammoSettings:
-    m_totalAmmo: 40
+    m_totalAmmo: 100
     m_ammoCount: 1
     m_remainAmmo: 1
     m_reloadingTime: 2.5
@@ -453,6 +454,7 @@ MonoBehaviour:
       - CrossbowFire
       - CrossbowReload
   m_meleeSettings:
+    collisionObject: {fileID: 0}
     attackMethod: 0
     areaAttack: 1
     StartHitTime: 0.5
